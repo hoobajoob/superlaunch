@@ -1,0 +1,10 @@
+[
+	{
+		"name":"Super Launch",
+		"description":"Super Launch Tile Test.",
+		"link":"http://www.TeamBearAttack.com",
+		"file":"mainLevel.tmx",
+		"usesPhysics":true,
+		"useCulling":true
+	}
+]
