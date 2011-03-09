@@ -12,14 +12,28 @@ function new()
 	
 	local onListItemRelease = function(event)
 		_G["map"] = event.target.data --"mainLevel.tmx"
-	
-		director:changeScene("screen_Map", "moveFromRight")
+		if _G["map"].name == "Noah Launcher" then
+			director:changeScene("noahLauncher", "moveFromRight")
+		else
+			director:changeScene("screen_Map", "moveFromRight")
+		end
 	end
 	
 	local maps = lime.utils.readInTable("maps.json", system.ResourceDirectory)
 		
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
+	
+	local menuButton = ui.newButton{
+				default = "buttonRed.png",
+				over = "buttonRedOver.png",
+				onPress = menuButtonPress,
+				text = "Return To Menu",
+				emboss = true,
+				x = 240,
+				y = 155
+			}
+	menuButton.isVisible = false;
 	
 	-- create the list of items
 	self.list = tableView.newList{

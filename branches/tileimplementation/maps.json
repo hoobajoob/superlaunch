@@ -6,5 +6,13 @@
 		"file":"mainLevel.tmx",
 		"usesPhysics":true,
 		"useCulling":true
+	},
+	{
+		"name":"Noah Launcher",
+		"description":"Noah Launch Tile Test.",
+		"link":"http://www.TeamBearAttack.com",
+		"file":"mainLevel.tmx",
+		"usesPhysics":true,
+		"useCulling":true
 	}
 ]

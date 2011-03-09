@@ -3,16 +3,17 @@ GroundTextures{Ice, Sand, Pavement, Lava}
 HeightIncreasers{Trampoline, StaticRamp, SpeedRamp, JetPack}
 Stoppers{Spikes, SpaceJunk, OtherAnimals, Heman}
 Life Increasers
-Menu
+XXMenu
 Slingshot Animation and Joints
 ground randomizer
 object randomizer
 XXEnd Wall
-In Sky Visibility
+XXIn Sky Visibility
 XXShorter Ground Material
-Dynamic Ground/Object Creation?
+XXDynamic Ground/Object Creation?
 Sounds
 XXTimer on Lava collision to reduce life when settled
 XXWhen movement = 0, reduce life
 XXExplosion on death
 Show All Objects
+Smooth camera y movement

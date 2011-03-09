@@ -1,6 +1,6 @@
 module(..., package.seeall)
 
-function createScene( params )
+function new()
 	local scene = {}
 
 	local physics = require( "physics" )
@@ -18,33 +18,41 @@ function createScene( params )
 	local showAd
 	local explosion
 	local boost = 100
-
-	if ( params.onDeath and ( type(params.onDeath) == "function" ) ) then
-		print("setting onDeath")
-		onDeath = params.onDeath
-	end
-	if ( params.showAddFunction and ( type(params.showAddFunction) == "function" ) ) then
-		print("setting showAddFunction")
-		showAd = params.showAdFunction
-		showAd()
-	end
-	
+	local mainContainerGroup = display.newGroup()
 	local game = display.newGroup()
+	mainContainerGroup:insert( game )
 	game.x = 0
+	local overlayDisplay = display.newGroup()
+	mainContainerGroup:insert( overlayDisplay )
 
 	-- Sky and ground graphics
 	function createFirstSection()
-	--[[
-		local sky = display.newImage( "sky.png", true )
+	
+		sky = display.newImage( "sky.png", true )
 		game:insert( sky )
-		sky.x = 160; sky.y = 120
-		local msky = display.newImage( "skymiddle.png", true )
+		sky:setReferencePoint( display.CenterLeftReferencePoint )
+		sky.x = 0; sky.y = 120
+		msky = display.newImage( "skymiddle.png", true )
 		game:insert( msky )
-		msky.x = 160; msky.y = -430
-		local tsky = display.newImage( "skytop.png", true )
+		msky:setReferencePoint( display.CenterLeftReferencePoint )
+		msky.x = 0; msky.y = -430
+		tsky = display.newImage( "skytop.png", true )
 		game:insert( tsky )
-		tsky.x = 160; tsky.y = -980
---]]
+		tsky:setReferencePoint( display.CenterLeftReferencePoint )
+		tsky.x = 0; tsky.y = -980
+		sky2 = display.newImage( "sky.png", true )
+		game:insert( sky2 )
+		sky2:setReferencePoint( display.CenterLeftReferencePoint )
+		sky2.x = 480; sky2.y = 120
+		msky2 = display.newImage( "skymiddle.png", true )
+		game:insert( msky2 )
+		msky2:setReferencePoint( display.CenterLeftReferencePoint )
+		msky2.x = 480; msky2.y = -430
+		tsky2 = display.newImage( "skytop.png", true )
+		game:insert( tsky2 )
+		tsky2:setReferencePoint( display.CenterLeftReferencePoint )
+		tsky2.x = 480; tsky2.y = -980
+
 		local grass = display.newImage( "grass.png", true )
 		game:insert( grass )
 		grass.x = 160; grass.y = groundReferencePoint
@@ -149,7 +157,8 @@ function createScene( params )
 		size = 32,
 		align = "right"
 	}
-
+	scoreDisplay.bodyName = "scoreDisplay"
+	overlayDisplay:insert( scoreDisplay )
 	score = 0
 	scoreDisplay:setText( score )
 
@@ -164,6 +173,8 @@ function createScene( params )
 		size = life,
 		width = 5
 	}
+	lifeBar.bodyName = "lifeBar"
+	overlayDisplay:insert( lifeBar )
 	lifeBar:setSize( life )
 	
 	------------------------------------------------------------
@@ -176,10 +187,13 @@ function createScene( params )
 		size = boost,
 		width = 5
 	}
+	boostBar.bodyName = "boostBar"
+	overlayDisplay:insert( boostBar )
 	boostBar:setSize( boost )
 
 	local function showExplosion()
-		lifeBar:setSize ( 0 )
+		lifeBar:setSize ( 50 )
+		boostBar:setSize ( 50 )
 		noahDestructor:removeSelf()
 		explosion = display.newImage( "explosion.png" )
 		explosion.x = 100; explosion.y = 230
@@ -194,7 +208,7 @@ function createScene( params )
 		local tAddShown = (event.time - tAdShownPrevious)
 		if noahDestructor.x > ( worldLength - 2 ) * 960 then
 			AddSection()
-			game:insert( noahDestructor )
+		noahDestructor:toFront();
 		end
 		if noahDestructor.x > score then
 			score = noahDestructor.x
@@ -214,6 +228,29 @@ function createScene( params )
 				lifeBar:setSize( life )
 			end
 		end
+		
+		if ( game.x + sky.x + sky.contentWidth) < 0 then
+			sky:translate( sky.contentWidth, 0)
+		end
+		if ( game.x + sky2.x + sky2.contentWidth) < 0 then
+			sky2:translate( sky2.contentWidth, 0)
+		end		
+		
+		if ( game.x + msky.x + msky.contentWidth) < 0 then
+			msky:translate(  msky.contentWidth, 0)
+		end
+		if ( game.x + msky2.x + msky2.contentWidth) < 0 then
+			msky2:translate( msky2.contentWidth, 0)
+		end
+				
+		if ( game.x + tsky.x + tsky.contentWidth) < 0 then
+			tsky:translate( tsky.contentWidth, 0)
+		end
+		if ( game.x + tsky2.x + tsky2.contentWidth) < 0 then
+			tsky2:translate( tsky2.contentWidth, 0)
+		end
+		
+		
 		if life <= 0 then			
 			Runtime:removeEventListener( "enterFrame", frameCheck )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
@@ -224,11 +261,55 @@ function createScene( params )
 			noahDestructor:removeEventListener( "postCollision", noahDestructor )
 			--]]
 			showExplosion()
-			onDeath()
+			local menuButton = nil
+			local menuButtonPress = function( event )
+				menuButton.isVisible = false
+				scoreDisplay:getParent():remove( scoreDisplay )
+				
+				print("Clearing All "..game.numChildren.."in Game")				
+				for i=1, game.numChildren, 1 do
+					if game[i] ~= nil then
+						game:remove( i )
+					end
+				end
+				---[[
+				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+				for i=1, overlayDisplay.numChildren, 1 do
+					if overlayDisplay[i] ~= nil then
+						if overlayDisplay[i].bodyName ~= nil then
+							print("Clearing "..overlayDisplay[i].bodyName)
+						end
+						overlayDisplay:remove( i )
+					end
+				end
+				--]]
+				game:removeSelf()
+				overlayDisplay:removeSelf()
+				mainContainerGroup:removeSelf()
+				physics = nil
+				ui = nil
+				if explosion~= nil then
+					explosion:removeSelf()
+				end
+				director:changeScene("screen_Menu", "moveFromLeft")
+			end
+						
+			menuButton = ui.newButton{
+				default = "buttonRed.png",
+				over = "buttonRedOver.png",
+				onPress = menuButtonPress,
+				text = "Return To Menu",
+				emboss = true,
+				x = 240,
+				y = 155
+			}
+			menuButton.isVisible = true
+			menuButton.bodyName = "menuButton"
+			--overlayDisplay:insert(menuButton)
 		end
 	end
 	
-	local jetpackButton	
+	local jetpackButton
 	local tJetpack = system.getTimer()
 	local function applyJetpackBoost( event )
 		local tDelta = (event.time - tJetpack)
@@ -240,12 +321,10 @@ function createScene( params )
 				noahDestructor:applyLinearImpulse( 2, -15, noahDestructor.x, noahDestructor.y )
 			end
 		else
-			jetpackButton = ui.newButton{
-				default = "jetPack.png",
-				emboss = true,
-				x = 445,
-				y = 245
-			}
+			jetpackButton = display.newImage( "jetPack.png" )
+			jetpackButton.x = 445; jetpackButton.y = 245
+			jetpackButton.bodyName = "Jet Pack Button"
+			overlayDisplay:insert(jetpackButton)
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 	end
@@ -267,6 +346,8 @@ function createScene( params )
 		x = 445,
 		y = 245
 	}
+	jetpackButton.bodyName = "Jet Pack Button"
+	overlayDisplay:insert(jetpackButton)
 	
 	local tLava = system.getTimer()
 	local function removeLifeLava( event )
@@ -277,18 +358,6 @@ function createScene( params )
 			lifeBar:setSize( life )
 		end
 	end	
-	
-	if params.default then
-		button = display.newGroup()
-		default = display.newImage( params.default )
-		button:insert( default, true )
-	end
-	
-	if params.over then
-		over = display.newImage( params.over )
-		over.isVisible = false
-		button:insert( over, true )
-	end
 
 	local function onTouch( event )
 		local t = event.target
@@ -440,19 +509,6 @@ function createScene( params )
 
 	noahDestructor.postCollision = onLocalPostCollision
 	noahDestructor:addEventListener( "postCollision", noahDestructor )
-		
-	function scene:clearAll()	
-		print("Clearing All")
-		for i,v in ipairs(game) do
-			game[i]:removeSelf()
-		end
-		game:removeSelf()
-		physics = nil
-		ui = nil
-		if explosion~= nil then
-			explosion:removeSelf()
-		end
-	end
 	
-	return scene
+	return game
 end
