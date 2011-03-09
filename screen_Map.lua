@@ -61,8 +61,9 @@ function new()
 	local fallingBlockObject
 	
 	local onTouch = function(event)
+		--self.map:drag(event)
 		local phase = event.phase
-		if "ended" == phase or "cancelled" == phase then
+		if fallingBlockObject ~= nil and ("ended" == phase or "cancelled" == phase) then
 			fallingBlockObject:applyLinearImpulse( 3, -1, fallingBlockObject.x, fallingBlockObject.y )
 		end
 	end
@@ -71,7 +72,6 @@ function new()
 		print("Setting oFBP")
 		self.map:setFocus(object.sprite)
 		fallingBlockObject = object.sprite
-		Runtime:addEventListener("touch", onTouch)
 	end
 	
 	-- Create a background colour just to make the map look a little nicer
@@ -153,24 +153,20 @@ function new()
 		self.map:update(event)
 	end
 	
-	local onTouch = function(event)
-		self.map:drag(event)
-	end
-	
 	local onTap = function(event)
 		
 		if self.buttonJustPressed then
 			self.buttonJustPressed = false
 			return
 		end
-		
+		--[[
 		local screenPosition = { x = event.x, y = event.y }
 		local worldPosition = lime.utils.screenToWorldPosition(self.map, screenPosition)
 
 	--	self.map:setPosition(worldPosition.x, worldPosition.y)
 	--	self.map:fadeToPosition(worldPosition.x, worldPosition.y)
 		self.map:slideToPosition(worldPosition.x, worldPosition.y)
-		
+		--]]
 	end
 	
 	function clean()
