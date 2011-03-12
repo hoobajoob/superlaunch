@@ -2,7 +2,7 @@ module(..., package.seeall)
 
 function new()
 	local scene = {}
-
+	require "sprite"
 	local physics = require( "physics" )
 	local ui = require( "ui" )
 	require('socket')
@@ -26,7 +26,7 @@ function new()
 	mainContainerGroup:insert( overlayDisplay )
 
 	-- Sky and ground graphics
-	function createFirstSection()
+	local function createFirstSection()
 	
 		sky = display.newImage( "sky.png", true )
 		game:insert( sky )
@@ -43,15 +43,15 @@ function new()
 		sky2 = display.newImage( "sky.png", true )
 		game:insert( sky2 )
 		sky2:setReferencePoint( display.CenterLeftReferencePoint )
-		sky2.x = 480; sky2.y = 120
+		sky2.x = 960; sky2.y = 120
 		msky2 = display.newImage( "skymiddle.png", true )
 		game:insert( msky2 )
 		msky2:setReferencePoint( display.CenterLeftReferencePoint )
-		msky2.x = 480; msky2.y = -430
+		msky2.x = 960; msky2.y = -430
 		tsky2 = display.newImage( "skytop.png", true )
 		game:insert( tsky2 )
 		tsky2:setReferencePoint( display.CenterLeftReferencePoint )
-		tsky2.x = 480; tsky2.y = -980
+		tsky2.x = 960; tsky2.y = -980
 
 		local grass = display.newImage( "grass.png", true )
 		game:insert( grass )
@@ -60,21 +60,9 @@ function new()
 		grass.bodyName = "grass1"
 	end
 
-	function AddSection()
+	local function AddSection()
 		worldLength = worldLength + 1
-		local addition = 1120 + ( (worldLength - 1) * 960 )
-		--[[
-		local dsky = display.newImage( "sky.png", true )
-		game:insert( dsky )
-		dsky.x = addition; dsky.y = 120
-		local msky = display.newImage( "skymiddle.png", true )
-		game:insert( msky )
-		msky.x = addition; msky.y = -430
-		local tsky = display.newImage( "skytop.png", true )
-		game:insert( tsky )
-		tsky.x = addition; tsky.y = -980
-		--]]
-		addition = addition - 960		
+		local addition = 160 + ( (worldLength - 1) * 960 )
 		
 		local dgrass
 		if worldLength==3 or worldLength==6 or worldLength>8 then
@@ -92,175 +80,155 @@ function new()
 		game:insert( dgrass )
 
 		if worldLength > 2 then
-			math.random( os.time() )
+			math.randomseed( os.time() )
 			math.random()
 			if math.random() < .5 then
-				local ramp = display.newImage( "ramp.png" )
-				ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
-				ramp.bodyName = "ramp"..worldLength
-				physics.addBody( ramp, "static", { friction=0, bounce=0, shape={ 40,25, -40,25, 40,-31 } } )	
-				game:insert( ramp )		
+				local spikeWall = display.newImage( "spikewall.png" )
+					spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 65
+					spikeWall.bodyName = "spikeWall"..worldLength
+					physics.addBody( spikeWall, "static", { friction=1, bounce=0 } )
+					game:insert( spikeWall )
 			else
-				local keg = display.newImage( "keg.png" )
-				keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
-				keg.bodyName = "keg"..worldLength
-				physics.addBody( keg, "static", { friction=0, bounce=0 } )
-				game:insert( keg )
+				if math.random() < .5 then
+					local ramp = display.newImage( "ramp.png" )
+					ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
+					ramp.bodyName = "ramp"..worldLength
+					physics.addBody( ramp, "static", { friction=0, bounce=0, shape={ 40,25, -40,25, 40,-31 } } )	
+					game:insert( ramp )		
+				else
+					local keg = display.newImage( "keg.png" )
+					keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
+					keg.bodyName = "keg"..worldLength
+					physics.addBody( keg, "static", { friction=0, bounce=0 } )
+					game:insert( keg )
+				end
 			end
-			
-			local star = display.newImage( "star.png" )
-			star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
-			star.bodyName = "star"
-			physics.addBody( star, "static", { friction=0, bounce=0 } )
-			star.isSensor = true
-			game:insert( star )
-			
-			local bacon = display.newImage( "bacon.png" )
-			bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
-			bacon.bodyName = "bacon"
-			physics.addBody( bacon, "static", { friction=0, bounce=0 } )
-			bacon.isSensor = true
-			game:insert( bacon )
+				
+				local star = display.newImage( "star.png" )
+				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
+				star.bodyName = "star"
+				physics.addBody( star, "static", { friction=0, bounce=0 } )
+				star.isSensor = true
+				game:insert( star )
+				
+				local bacon = display.newImage( "bacon.png" )
+				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
+				bacon.bodyName = "bacon"
+				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
+				bacon.isSensor = true
+				game:insert( bacon )
 		end
 	end
 
-	createFirstSection()
-	for i=1,2 do
-		AddSection()
-	end
+	function start( character )
 	
-	noahDestructorShape = { 16,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14, -20 }
-	noahDestructor = display.newImage("noah.png")
-	noahDestructor.x = 160; noahDestructor.y = groundReferencePoint - 200
-
-
-	slingshotString = display.newImage( "string.png" )
-	slingshotString.x = 150; slingshotString.y = groundReferencePoint - 180
-	slingshotString.bodyName = "slingShotString"
-	game:insert(slingshotString)
-	--joint = physics.newJoint( "pivot", slingshot, slingshotString, 55, 220 )
-
-	slingshot = display.newImage( "slingshot.png" )
-	slingshot.x = 170; slingshot.y = groundReferencePoint - 180
-	physics.addBody( slingshot, "static", { friction=0.5 } )
-	slingshot.bodyName = "slingShot"
-	game:insert(slingshot)
-
-	------------------------------------------------------------
-	-- Simple score display
-
-	local scoreDisplay = ui.newLabel{
-		bounds = { display.contentWidth - 120, 10 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
-		text = "0",
-		--font = "Trebuchet-BoldItalic",
-		textColor = { 255, 225, 102, 255 },
-		size = 32,
-		align = "right"
-	}
-	scoreDisplay.bodyName = "scoreDisplay"
-	overlayDisplay:insert( scoreDisplay )
-	score = 0
-	scoreDisplay:setText( score )
-
-
-	------------------------------------------------------------
-	-- Life display
-
-
-	local lifeBar = ui.newBar{
-		bounds = { 0, 10 + display.screenOriginY, 5, 5 },
-		lineColor = { 0, 255, 50, 255 },
-		size = life,
-		width = 5
-	}
-	lifeBar.bodyName = "lifeBar"
-	overlayDisplay:insert( lifeBar )
-	lifeBar:setSize( life )
-	
-	------------------------------------------------------------
-	-- boost display
-
-
-	local boostBar = ui.newBar{
-		bounds = { 0, 300 + display.screenOriginY, 5, 5 },
-		lineColor = { 0, 255, 50, 255 },
-		size = boost,
-		width = 5
-	}
-	boostBar.bodyName = "boostBar"
-	overlayDisplay:insert( boostBar )
-	boostBar:setSize( boost )
-
-	local function showExplosion()
-		lifeBar:setSize ( 50 )
-		boostBar:setSize ( 50 )
-		noahDestructor:removeSelf()
-		explosion = display.newImage( "explosion.png" )
-		explosion.x = 100; explosion.y = 230
-	end
-
-	local tPrevious = system.getTimer()
-	local tNotMovingPrevious = system.getTimer()
-	local tAdShownPrevious = system.getTimer()
-	local function frameCheck( event )
-		local tNotMovingDelta = (event.time - tNotMovingPrevious)
-		local tDelta = (event.time - tPrevious)
-		local tAddShown = (event.time - tAdShownPrevious)
-		if noahDestructor.x > ( worldLength - 2 ) * 960 then
+		createFirstSection()
+		for i=1,2 do
 			AddSection()
-		noahDestructor:toFront();
-		end
-		if noahDestructor.x > score then
-			score = noahDestructor.x
-			scoreDisplay:setText( string.format( "%i", score ) )
-		end
-		if (noahDestructor.x > 100) then
-			game.x = -noahDestructor.x + 100
-		end
-		if (noahDestructor.y < 220) then
-			game.y = -noahDestructor.y + 220
-		end
-		if noahDestructor ~= nil then
-			vx, vy = noahDestructor:getLinearVelocity()
-			if vx < 35 and vy < 35 and tNotMovingDelta > 100 then
-				tNotMovingPrevious = event.time
-				life = life - 5
-				lifeBar:setSize( life )
-			end
-		end
-		
-		if ( game.x + sky.x + sky.contentWidth) < 0 then
-			sky:translate( sky.contentWidth, 0)
-		end
-		if ( game.x + sky2.x + sky2.contentWidth) < 0 then
-			sky2:translate( sky2.contentWidth, 0)
 		end		
 		
-		if ( game.x + msky.x + msky.contentWidth) < 0 then
-			msky:translate(  msky.contentWidth, 0)
+		noahDestructorShape = { 16,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14, -20 }
+	
+		if character ~= nil then
+			if character == "noah" then
+				local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
+				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
+				sprite.add( spriteSet1, "noahSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
+				noahDestructor = sprite.newSprite( spriteSet1 )
+				noahDestructor:prepare("noahSprite")
+				noahDestructor:play()
+				--noahDestructor = display.newImage("noah.png")			
+			elseif character == "baby" then
+				noahDestructor = display.newImage("baby.png")		
+			elseif character == "dog" then
+				noahDestructor = display.newImage("dog.png")			
+			end
+		else
+			noahDestructor = display.newImage("noah.png")		
 		end
-		if ( game.x + msky2.x + msky2.contentWidth) < 0 then
-			msky2:translate( msky2.contentWidth, 0)
+		noahDestructor.x = 160; noahDestructor.y = groundReferencePoint - 200
+
+
+		slingshotString = display.newImage( "string.png" )
+		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 180
+		slingshotString.bodyName = "slingShotString"
+		game:insert(slingshotString)
+		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 55, 220 )
+
+		slingshot = display.newImage( "slingshot.png" )
+		slingshot.x = 170; slingshot.y = groundReferencePoint - 180
+		physics.addBody( slingshot, "static", { friction=0.5 } )
+		slingshot.bodyName = "slingShot"
+		game:insert(slingshot)
+
+		------------------------------------------------------------
+		-- Simple score display
+
+		local scoreDisplay = ui.newLabel{
+			bounds = { display.contentWidth - 120, 10 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+			text = "0",
+			--font = "Trebuchet-BoldItalic",
+			textColor = { 255, 225, 102, 255 },
+			size = 32,
+			align = "right"
+		}
+		scoreDisplay.bodyName = "scoreDisplay"
+		overlayDisplay:insert( scoreDisplay )
+		score = 0
+		scoreDisplay:setText( score )
+
+
+		------------------------------------------------------------
+		-- Life display
+
+
+		local lifeBar = ui.newBar{
+			bounds = { 0, 10 + display.screenOriginY, 5, 5 },
+			lineColor = { 0, 255, 50, 255 },
+			size = life,
+			width = 5
+		}
+		lifeBar.bodyName = "lifeBar"
+		overlayDisplay:insert( lifeBar )
+		lifeBar:setSize( life )
+		
+		------------------------------------------------------------
+		-- boost display
+
+
+		local boostBar = ui.newBar{
+			bounds = { 0, 300 + display.screenOriginY, 5, 5 },
+			lineColor = { 0, 255, 50, 255 },
+			size = boost,
+			width = 5
+		}
+		boostBar.bodyName = "boostBar"
+		overlayDisplay:insert( boostBar )
+		boostBar:setSize( boost )
+
+		local function showExplosion()
+			noahDestructor:removeSelf()
+			explosion = display.newImage( "explosion.png" )
+			explosion.x = 100; explosion.y = 230
 		end
-				
-		if ( game.x + tsky.x + tsky.contentWidth) < 0 then
-			tsky:translate( tsky.contentWidth, 0)
-		end
-		if ( game.x + tsky2.x + tsky2.contentWidth) < 0 then
-			tsky2:translate( tsky2.contentWidth, 0)
+
+		local function showBlood()
+			explosion = display.newImage( "blood.png" )
+			explosion.x = 100; explosion.y = 230
 		end
 		
-		
-		if life <= 0 then			
+		local function showDeath( deathType )
+			lifeBar:setSize( 0 )
+			boostBar:setSize ( 0 )
+			print("removing event Listeners")
 			Runtime:removeEventListener( "enterFrame", frameCheck )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
-			--[[
-			noahDestructor:removeEventListener( "touch", onTouch )
-			noahDestructor:removeEventListener( "collision", noahDestructor )
-			noahDestructor:removeEventListener( "postCollision", noahDestructor )
-			--]]
-			showExplosion()
+			if deathType == "explosion" then
+				showExplosion()
+			elseif deathType == "bloody" then
+				showBlood()
+			end
 			local menuButton = nil
 			local menuButtonPress = function( event )
 				menuButton.isVisible = false
@@ -307,208 +275,309 @@ function new()
 			menuButton.bodyName = "menuButton"
 			--overlayDisplay:insert(menuButton)
 		end
-	end
-	
-	local jetpackButton
-	local tJetpack = system.getTimer()
-	local function applyJetpackBoost( event )
-		local tDelta = (event.time - tJetpack)
-		if boost > 0 then
-			if tDelta > 150 and noahDestructor ~= nil then	
-				tJetpack = event.time
-				boost = boost - 10
-				boostBar:setSize( boost )
-				noahDestructor:applyLinearImpulse( 2, -15, noahDestructor.x, noahDestructor.y )
+
+		local tPrevious = system.getTimer()
+		local tNotMovingPrevious = system.getTimer()
+		local tAdShownPrevious = system.getTimer()
+		local function frameCheck( event )
+			local tNotMovingDelta = (event.time - tNotMovingPrevious)
+			local tDelta = (event.time - tPrevious)
+			local tAddShown = (event.time - tAdShownPrevious)
+			if noahDestructor.x > ( worldLength - 2 ) * 960 then
+				AddSection()
+			noahDestructor:toFront();
 			end
-		else
-			jetpackButton = display.newImage( "jetPack.png" )
-			jetpackButton.x = 445; jetpackButton.y = 245
-			jetpackButton.bodyName = "Jet Pack Button"
-			overlayDisplay:insert(jetpackButton)
+			if noahDestructor.x > score then
+				score = noahDestructor.x
+				scoreDisplay:setText( string.format( "%i", score ) )
+			end
+			if (noahDestructor.x > 100) then
+				game.x = math.ceil(-noahDestructor.x) + 120
+			end
+			if (noahDestructor.y < 220) then
+				game.y = -noahDestructor.y - math.fmod(-noahDestructor.y, 2) + 220
+			end
+			if noahDestructor ~= nil then
+				vx, vy = noahDestructor:getLinearVelocity()
+				if vx < 35 and vy < 35 and tNotMovingDelta > 100 then
+					tNotMovingPrevious = event.time
+					life = life - 5
+					lifeBar:setSize( life )
+				end
+			end
+			
+			if ( game.x + sky.x + sky.contentWidth) < 0 then
+				sky:translate( sky.contentWidth * 2, 0)
+			end
+			if ( game.x + sky2.x + sky2.contentWidth) < 0 then
+				sky2:translate( sky2.contentWidth * 2, 0)
+			end		
+			
+			if (( game.x + msky.x + msky.contentWidth ) < 0 or ( game.x + msky2.x + msky2.contentWidth) < 0) and game.y > 160 then
+				msky.x = sky.x
+				msky2.x = sky2.x
+			end
+					
+			if (( game.x + tsky.x + tsky.contentWidth ) < 0 or ( game.x + tsky2.x + tsky2.contentWidth) < 0) and game.y > 160 then
+				tsky.x = sky.x
+				tsky2.x = sky2.x
+			end
+			
+			
+			if life <= 0 then	
+				showDeath( "explosion" )
+			end
+		end
+		
+		local jetpackButton
+		local tJetpack = system.getTimer()
+		local function applyJetpackBoost( event )
+			local tDelta = (event.time - tJetpack)
+			if boost > 0 then
+				if tDelta > 150 and noahDestructor ~= nil then	
+					tJetpack = event.time
+					boost = boost - 10
+					boostBar:setSize( boost )
+					noahDestructor:applyLinearImpulse( 2, -15, noahDestructor.x + 9, noahDestructor.y )
+				end
+			else
+				jetpackButton = display.newImage( "jetPack.png" )
+				jetpackButton.x = 445; jetpackButton.y = 245
+				jetpackButton.bodyName = "Jet Pack Button"
+				overlayDisplay:insert(jetpackButton)
+				Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
+			end
+		end
+			
+		local function startJets()		
+			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
+		end
+		
+		local function endJets()
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
-	end
 		
-	local function startJets()		
-		Runtime:addEventListener( "enterFrame", applyJetpackBoost )
-	end
-	
-	local function endJets()
-		Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
-	end
-	
-	jetpackButton = ui.newButton{
-		default = "jetPack.png",
-		over = "jetPackOver.png",
-		onPress = startJets,
-		onRelease = endJets,
-		emboss = true,
-		x = 445,
-		y = 245
-	}
-	jetpackButton.bodyName = "Jet Pack Button"
-	overlayDisplay:insert(jetpackButton)
-	
-	local tLava = system.getTimer()
-	local function removeLifeLava( event )
-		local tDelta = (event.time - tLava)
-		if tDelta > 150 then	
-			tLavaPrevious = event.time
-			life = life - 3
-			lifeBar:setSize( life )
-		end
-	end	
-
-	local function onTouch( event )
-		local t = event.target
-
-		local phase = event.phase
-		if "began" == phase then
-			-- Make target the top-most object
-			local parent = t.parent
-			parent:insert( t )
-			display.getCurrentStage():setFocus( t )
-			-- Spurious events can be sent to the target, e.g. the user presses 
-			-- elsewhere on the screen and then moves the finger over the target.
-			-- To prevent this, we add this flag. Only when it's true will "move"
-			-- events be sent to the target.
-			t.isFocus = true
-
-			-- Store initial position
-			t.x0 = event.x - t.x
-			t.y0 = event.y - t.y
-		elseif t.isFocus then
-			if "moved" == phase then
-				-- Make object move (we subtract t.x0,t.y0 so that moves are
-				-- relative to initial grab point, rather than object "snapping").
-				t.x = event.x - t.x0
-				t.y = event.y - t.y0
-			elseif "ended" == phase or "cancelled" == phase then
-				display.getCurrentStage():setFocus( nil )
-				t.isFocus = false
-				slingshot:removeSelf()
-				slingshotString:removeSelf()
-				physics.addBody( t, { density=3.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
-				game:insert(t)
-				t.bodyName = "noahDestructorDynamic"
-				if t.x<1 then
-					t.x = 1
-				end
-				if t.y>295 then
-					t.y = 295
-				end
-				t:removeEventListener( "touch", onTouch )
-				t:applyLinearImpulse( 2 * (140 - t.x) , 1 * (190 - t.y), t.x, t.y )
-				Runtime:addEventListener( "enterFrame", frameCheck )
+		jetpackButton = ui.newButton{
+			default = "jetPack.png",
+			over = "jetPackOver.png",
+			onPress = startJets,
+			onRelease = endJets,
+			emboss = true,
+			x = 445,
+			y = 245
+		}
+		jetpackButton.bodyName = "Jet Pack Button"
+		overlayDisplay:insert(jetpackButton)
+		
+		local tLava = system.getTimer()
+		local function removeLifeLava( event )
+			local tDelta = (event.time - tLava)
+			if tDelta > 150 then	
+				tLavaPrevious = event.time
+				life = life - 3
+				lifeBar:setSize( life )
 			end
-		end
+		end	
 
-		-- Important to return true. This tells the system that the event
-		-- should not be propagated to listeners of any objects underneath.
-		return true
-	end
+		local function onTouch( event )
+			local t = event.target
 
-	noahDestructor:addEventListener( "touch", onTouch )
-	
-	function boostNoah()
-		noahDestructor:applyForce( 100, 100, noahDestructor.x, noahDestructor.y )
-	end
+			local phase = event.phase
+			if "began" == phase then
+				-- Make target the top-most object
+				local parent = t.parent
+				parent:insert( t )
+				display.getCurrentStage():setFocus( t )
+				-- Spurious events can be sent to the target, e.g. the user presses 
+				-- elsewhere on the screen and then moves the finger over the target.
+				-- To prevent this, we add this flag. Only when it's true will "move"
+				-- events be sent to the target.
+				t.isFocus = true
 
-	----------------------------------------------------------
-	-- Two collision types (run Corona Terminal to see output)
-	----------------------------------------------------------
-
-
-	-- METHOD 1: Use table listeners to make a single object report collisions between "self" and "other"
-
-	local function onLocalCollision( self, event )
-		if ( event.phase == "began" ) then
-			print( self.bodyName .. ": collision began with " .. event.other.bodyName )
-			if self.bodyName == "lava" or event.other.bodyName == "lava" then
-				life = life - 1
-				lifeBar:setSize( life )
-				Runtime:addEventListener( "enterFrame", removeLifeLava )
-			elseif event.other.bodyName == "star" then
-				noahDestructor:applyLinearImpulse( 100, -100, noahDestructor.x, noahDestructor.y )
-			elseif event.other.bodyName == "bacon" then
-				if life > 74 then
-					life = 100
-				else
-					life = life + 25
-				end			
-				lifeBar:setSize( life )
-				noahDestructor:applyLinearImpulse( -10, -50, noahDestructor.x, noahDestructor.y )
+				-- Store initial position
+				t.x0 = event.x - t.x
+				t.y0 = event.y - t.y
+			elseif t.isFocus then
+				if "moved" == phase then
+					-- Make object move (we subtract t.x0,t.y0 so that moves are
+					-- relative to initial grab point, rather than object "snapping").
+					t.x = event.x - t.x0
+					t.y = event.y - t.y0
+				elseif "ended" == phase or "cancelled" == phase then
+					display.getCurrentStage():setFocus( nil )
+					t.isFocus = false
+					slingshot:removeSelf()
+					slingshotString:removeSelf()
+					physics.addBody( t, { density=3.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
+					game:insert(t)
+					t.bodyName = "noahDestructorDynamic"
+					if t.x<1 then
+						t.x = 1
+					end
+					if t.y>295 then
+						t.y = 295
+					end
+					t:removeEventListener( "touch", onTouch )
+					t:applyLinearImpulse( 2 * (140 - t.x) , 1 * (190 - t.y), t.x + 9, t.y)
+					Runtime:addEventListener( "enterFrame", frameCheck )
+				end
 			end
 
+			-- Important to return true. This tells the system that the event
+			-- should not be propagated to listeners of any objects underneath.
+			return true
+		end
+
+		noahDestructor:addEventListener( "touch", onTouch )
+		
+		function boostNoah()
+			noahDestructor:applyForce( 100, 100, noahDestructor.x, noahDestructor.y )
+		end
+
+		----------------------------------------------------------
+		-- Two collision types (run Corona Terminal to see output)
+		----------------------------------------------------------
+
+
+		-- METHOD 1: Use table listeners to make a single object report collisions between "self" and "other"
+
+		local function onLocalCollision( self, event )
+			if ( event.phase == "began" ) then
+				print( self.bodyName .. ": collision began with " .. event.other.bodyName )
+				if self.bodyName == "lava" or event.other.bodyName == "lava" then
+					life = life - 1
+					lifeBar:setSize( life )
+					Runtime:addEventListener( "enterFrame", removeLifeLava )
+				elseif event.other.bodyName == "star" then
+					noahDestructor:applyLinearImpulse( 100, -100, noahDestructor.x + 9, noahDestructor.y )
+				elseif event.other.bodyName == "bacon" then
+					if life > 74 then
+						life = 100
+					else
+						life = life + 25
+					end			
+					lifeBar:setSize( life )
+					noahDestructor:applyLinearImpulse( -10, -50, noahDestructor.x + 9, noahDestructor.y )
+				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
+					showDeath ( "bloody" )					
+				end
+
+				elseif ( event.phase == "ended" ) then
+					print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
+					if self.bodyName == "lava" or event.other.bodyName == "lava" then				
+						Runtime:removeEventListener( "enterFrame", removeLifeLava )
+					end
+				end
+		end
+
+		noahDestructor.collision = onLocalCollision
+		noahDestructor:addEventListener( "collision", noahDestructor )
+			
+
+		-- METHOD 2: Use a runtime listener to globally report collisions between "object1" and "object2"
+		-- Note that the order of object1 and object2 may be reported arbitrarily in any collision
+
+		local tPrevious = system.getTimer()
+		local function onGlobalCollision( event )
+			if ( event.phase == "began" ) then
+				print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
 			elseif ( event.phase == "ended" ) then
-				print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
-				if self.bodyName == "lava" or event.other.bodyName == "lava" then				
-					Runtime:removeEventListener( "enterFrame", removeLifeLava )
-				end
+
+				print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision ended" )
+
 			end
-	end
+			
+			print( "**** " .. event.element1 .. " -- " .. event.element2 )
+			
+		end
 
-	noahDestructor.collision = onLocalCollision
-	noahDestructor:addEventListener( "collision", noahDestructor )
-		
+		Runtime:addEventListener( "collision", onGlobalCollision )
 
-	-- METHOD 2: Use a runtime listener to globally report collisions between "object1" and "object2"
-	-- Note that the order of object1 and object2 may be reported arbitrarily in any collision
 
-	local tPrevious = system.getTimer()
-	local function onGlobalCollision( event )
-		if ( event.phase == "began" ) then
-			print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
-		elseif ( event.phase == "ended" ) then
+		-------------------------------------------------------------------------------------------
+		-- New pre- and post-collision events (run Corona Terminal to see output)
+		--
+		-- preCollision can be quite "noisy", so you probably want to make its listeners
+		-- local to the specific objects you care about, rather than a global Runtime listener
+		-------------------------------------------------------------------------------------------
 
-			print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision ended" )
+		local function onLocalPreCollision( self, event )
+			-- This new event type fires shortly before a collision occurs, so you can use this if you want
+			-- to override some collisions in your game logic. For example, you might have a platform game
+			-- where the character should jump "through" a platform on the way up, but land on the platform
+			-- as they fall down again.
+			
+			-- Note that this event is very "noisy", since it fires whenever any objects are somewhat close!
+
+			--print( "preCollision: " .. self.bodyName .. " is about to collide with " .. event.other.bodyName )
+			
 
 		end
-		
-		print( "**** " .. event.element1 .. " -- " .. event.element2 )
-		
+
+		local function onLocalPostCollision( self, event )
+			-- This new event type fires only after a collision has been completely resolved. You can use 
+			-- this to obtain the calculated forces from the collision. For example, you might want to 
+			-- destroy objects on collision, but only if the collision force is greater than some amount.
+			
+			---[[
+			if ( event.force > 20.0 ) then
+				print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
+				life = life - ( string.format( "%i", event.force / 20  ) )
+				lifeBar:setSize( life )
+			end--]]
+		end
+
+		-- Here we assign the above two functions to local listeners within noahDestructor only, using table listeners:
+
+		noahDestructor.postCollision = onLocalPostCollision
+		noahDestructor:addEventListener( "postCollision", noahDestructor )
 	end
-
-	Runtime:addEventListener( "collision", onGlobalCollision )
-
-
-	-------------------------------------------------------------------------------------------
-	-- New pre- and post-collision events (run Corona Terminal to see output)
-	--
-	-- preCollision can be quite "noisy", so you probably want to make its listeners
-	-- local to the specific objects you care about, rather than a global Runtime listener
-	-------------------------------------------------------------------------------------------
-
-	local function onLocalPreCollision( self, event )
-		-- This new event type fires shortly before a collision occurs, so you can use this if you want
-		-- to override some collisions in your game logic. For example, you might have a platform game
-		-- where the character should jump "through" a platform on the way up, but land on the platform
-		-- as they fall down again.
-		
-		-- Note that this event is very "noisy", since it fires whenever any objects are somewhat close!
-
-		--print( "preCollision: " .. self.bodyName .. " is about to collide with " .. event.other.bodyName )
-		
-
-	end
-
-	local function onLocalPostCollision( self, event )
-		-- This new event type fires only after a collision has been completely resolved. You can use 
-		-- this to obtain the calculated forces from the collision. For example, you might want to 
-		-- destroy objects on collision, but only if the collision force is greater than some amount.
-		
-		---[[
-		if ( event.force > 20.0 ) then
-			print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
-			life = life - ( string.format( "%i", event.force / 20  ) )
-			lifeBar:setSize( life )
-		end--]]
-	end
-
-	-- Here we assign the above two functions to local listeners within noahDestructor only, using table listeners:
-
-	noahDestructor.postCollision = onLocalPostCollision
-	noahDestructor:addEventListener( "postCollision", noahDestructor )
 	
+	local noahButton = nil
+	local babyButton = nil
+	local dogButton = nil
+	
+	local function noahButtonPress()
+		noahButton.isVisible = false
+		babyButton.isVisible = false
+		dogButton.isVisible = false
+		start( "noah" )
+	end
+	
+	local function babyButtonPress()
+		babyButton.isVisible = false
+		noahButton.isVisible = false
+		dogButton.isVisible = false
+		start( "baby" )
+	end
+	
+	local function dogButtonPress()
+		babyButton.isVisible = false
+		noahButton.isVisible = false
+		dogButton.isVisible = false
+		start( "dog" )
+	end
+
+	noahButton = ui.newButton{
+					default = "noah.png",
+					onPress = noahButtonPress,
+					emboss = true,
+					x = 180,
+					y = 200
+				}
+	babyButton = ui.newButton{
+					default = "baby.png",
+					onPress = babyButtonPress,
+					emboss = true,
+					x = 320,
+					y = 200
+				}
+	dogButton = ui.newButton{
+					default = "dog.png",
+					onPress = dogButtonPress,
+					emboss = true,
+					x = 250,
+					y = 100
+				}
 	return game
 end
