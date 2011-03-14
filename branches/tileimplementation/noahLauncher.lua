@@ -59,6 +59,8 @@ function new()
 		physics.addBody( grass, "static", { friction=0.2, bounce=0.1 } )
 		grass.bodyName = "grass1"
 	end
+	
+	spikeWallShape = { -20,-43, 38,40, 22,40, -36,-43 }
 
 	local function AddSection()
 		worldLength = worldLength + 1
@@ -82,11 +84,11 @@ function new()
 		if worldLength > 2 then
 			math.randomseed( os.time() )
 			math.random()
-			if math.random() < .5 then
+			if math.random(5) == 1 then
 				local spikeWall = display.newImage( "spikewall.png" )
-					spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 65
+					spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 80
 					spikeWall.bodyName = "spikeWall"..worldLength
-					physics.addBody( spikeWall, "static", { friction=1, bounce=0 } )
+					physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape=spikeWallShape } )
 					game:insert( spikeWall )
 			else
 				if math.random() < .5 then
@@ -134,20 +136,24 @@ function new()
 				local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
 				sprite.add( spriteSet1, "noahSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
-				noahDestructor = sprite.newSprite( spriteSet1 )
-				noahDestructor:prepare("noahSprite")
-				noahDestructor:play()
-				--noahDestructor = display.newImage("noah.png")			
+				noahDestructor = sprite.newSprite( spriteSet1 )		
 			elseif character == "baby" then
-				noahDestructor = display.newImage("baby.png")		
+				local sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
+				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
+				sprite.add( spriteSet1, "noahSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
+				noahDestructor = sprite.newSprite( spriteSet1 )	
 			elseif character == "dog" then
-				noahDestructor = display.newImage("dog.png")			
+				local sheet1 = sprite.newSpriteSheet( "dogSprite.png", 64, 80 )
+				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
+				sprite.add( spriteSet1, "noahSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
+				noahDestructor = sprite.newSprite( spriteSet1 )		
 			end
 		else
 			noahDestructor = display.newImage("noah.png")		
 		end
 		noahDestructor.x = 160; noahDestructor.y = groundReferencePoint - 200
-
+		noahDestructor.angularDamping = 1000
+		--noahDestructor.isFixedRotation = true
 
 		slingshotString = display.newImage( "string.png" )
 		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 180
@@ -206,29 +212,34 @@ function new()
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
 
-		local function showExplosion()
-			noahDestructor:removeSelf()
-			explosion = display.newImage( "explosion.png" )
-			explosion.x = 100; explosion.y = 230
+		local function showExplosion()		
+			local explosionSheet = sprite.newSpriteSheet( "explosionSprite.png", 170, 130 )
+			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 4)
+			sprite.add( explosionSpriteSet, "explosionSprite", 1, 4, 2500, 1 )
+			explosion = sprite.newSprite( explosionSpriteSet )
+			game:insert( explosion )
+			explosion.x = noahDestructor.x; explosion.y = 230
+			explosion:play()
 		end
 
 		local function showBlood()
-			explosion = display.newImage( "blood.png" )
-			explosion.x = 100; explosion.y = 230
+			blood = display.newImage( "blood.png" )
+			game:insert( blood  )
+			blood .x = noahDestructor.x + 10; blood .y = noahDestructor.y
 		end
 		
 		local function showDeath( deathType )
 			lifeBar:setSize( 0 )
 			boostBar:setSize ( 0 )
-			print("removing event Listeners")
-			Runtime:removeEventListener( "enterFrame", frameCheck )
-			Runtime:removeEventListener( "enterFrame", removeLifeLava )
-			Runtime:removeEventListener( "collision", onGlobalCollision )
+			lifeBar.isVisible = false
+			lifeBar = nil
 			if deathType == "explosion" then
 				showExplosion()
 			elseif deathType == "bloody" then
 				showBlood()
 			end
+			noahDestructor:pause()
+			noahDestructor.bodyType = "static"
 			local menuButton = nil
 			local menuButtonPress = function( event )
 				menuButton.isVisible = false
@@ -240,7 +251,6 @@ function new()
 						game:remove( i )
 					end
 				end
-				---[[
 				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
 				for i=1, overlayDisplay.numChildren, 1 do
 					if overlayDisplay[i] ~= nil then
@@ -250,15 +260,11 @@ function new()
 						overlayDisplay:remove( i )
 					end
 				end
-				--]]
 				game:removeSelf()
 				overlayDisplay:removeSelf()
 				mainContainerGroup:removeSelf()
 				physics = nil
 				ui = nil
-				if explosion~= nil then
-					explosion:removeSelf()
-				end
 				director:changeScene("screen_Menu", "moveFromLeft")
 			end
 						
@@ -299,32 +305,50 @@ function new()
 			end
 			if noahDestructor ~= nil then
 				vx, vy = noahDestructor:getLinearVelocity()
-				if vx < 35 and vy < 35 and tNotMovingDelta > 100 then
+				if vx < 35 and vy < 5 and tNotMovingDelta > 100 then
 					tNotMovingPrevious = event.time
 					life = life - 5
 					lifeBar:setSize( life )
 				end
 			end
 			
-			if ( game.x + sky.x + sky.contentWidth) < 0 then
+			
+			if ( game.x + sky.x + sky.contentWidth) > sky.contentWidth * 2 then
+				sky:translate( -(sky.contentWidth * 2), 0)
+			end
+			if ( game.x + sky2.x + sky2.contentWidth) > sky.contentWidth * 2 then
+				sky2:translate( -(sky2.contentWidth * 2), 0)
+			end
+			
+			if ( game.x + sky.x + sky.contentWidth) < -50 then
 				sky:translate( sky.contentWidth * 2, 0)
 			end
-			if ( game.x + sky2.x + sky2.contentWidth) < 0 then
+			if ( game.x + sky2.x + sky2.contentWidth) < -50 then
 				sky2:translate( sky2.contentWidth * 2, 0)
 			end		
 			
-			if (( game.x + msky.x + msky.contentWidth ) < 0 or ( game.x + msky2.x + msky2.contentWidth) < 0) and game.y > 160 then
+			local mskyTotal = game.x + msky.x + msky.contentWidth
+			local msky2Total = game.x + msky2.x + msky2.contentWidth
+			
+			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 160 then
 				msky.x = sky.x
 				msky2.x = sky2.x
-			end
+			end			
+			
+			local tskyTotal = game.x + tsky.x + tsky.contentWidth
+			local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
 					
-			if (( game.x + tsky.x + tsky.contentWidth ) < 0 or ( game.x + tsky2.x + tsky2.contentWidth) < 0) and game.y > 160 then
+			if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 320 then
 				tsky.x = sky.x
 				tsky2.x = sky2.x
 			end
 			
 			
 			if life <= 0 then	
+				print("removing event Listeners")
+				Runtime:removeEventListener( "enterFrame", frameCheck )
+				Runtime:removeEventListener( "enterFrame", removeLifeLava )
+				Runtime:removeEventListener( "collision", onGlobalCollision )
 				showDeath( "explosion" )
 			end
 		end
@@ -338,14 +362,16 @@ function new()
 					tJetpack = event.time
 					boost = boost - 10
 					boostBar:setSize( boost )
-					noahDestructor:applyLinearImpulse( 2, -15, noahDestructor.x + 9, noahDestructor.y )
+					noahDestructor:applyLinearImpulse( 10, -50, noahDestructor.x - 1, noahDestructor.y )
 				end
 			else
+				jetpackButton.isVisible = false				
 				jetpackButton = display.newImage( "jetPack.png" )
 				jetpackButton.x = 445; jetpackButton.y = 245
 				jetpackButton.bodyName = "Jet Pack Button"
 				overlayDisplay:insert(jetpackButton)
 				Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
+				
 			end
 		end
 			
@@ -408,7 +434,9 @@ function new()
 					t.isFocus = false
 					slingshot:removeSelf()
 					slingshotString:removeSelf()
-					physics.addBody( t, { density=3.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
+					t:prepare("noahSprite")
+					t:play()
+					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
 					game:insert(t)
 					t.bodyName = "noahDestructorDynamic"
 					if t.x<1 then
@@ -418,7 +446,7 @@ function new()
 						t.y = 295
 					end
 					t:removeEventListener( "touch", onTouch )
-					t:applyLinearImpulse( 2 * (140 - t.x) , 1 * (190 - t.y), t.x + 9, t.y)
+					t:applyLinearImpulse( 2 * (170 - t.x) , 1 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
 			end
@@ -459,6 +487,10 @@ function new()
 					lifeBar:setSize( life )
 					noahDestructor:applyLinearImpulse( -10, -50, noahDestructor.x + 9, noahDestructor.y )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
+					print("removing event Listeners")
+					Runtime:removeEventListener( "enterFrame", frameCheck )
+					Runtime:removeEventListener( "enterFrame", removeLifeLava )
+					Runtime:removeEventListener( "collision", onGlobalCollision )
 					showDeath ( "bloody" )					
 				end
 
