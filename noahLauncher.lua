@@ -7,7 +7,7 @@ function new()
 	local ui = require( "ui" )
 	require('socket')
 	physics.start()
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local worldLength = 0
 	local groundReferencePoint = 335
 	local noahDestructor
@@ -23,7 +23,9 @@ function new()
 	mainContainerGroup:insert( game )
 	game.x = 0
 	local overlayDisplay = display.newGroup()
-	mainContainerGroup:insert( overlayDisplay )
+	mainContainerGroup:insert( overlayDisplay )	
+	math.randomseed( os.time() )
+	math.random()
 
 	-- Sky and ground graphics
 	local function createFirstSection()
@@ -31,32 +33,32 @@ function new()
 		sky = display.newImage( "sky.png", true )
 		game:insert( sky )
 		sky:setReferencePoint( display.CenterLeftReferencePoint )
-		sky.x = 0; sky.y = 120
+		sky.x = -40; sky.y = 120
 		msky = display.newImage( "skymiddle.png", true )
 		game:insert( msky )
 		msky:setReferencePoint( display.CenterLeftReferencePoint )
-		msky.x = 0; msky.y = -430
+		msky.x = -40; msky.y = -430
 		tsky = display.newImage( "skytop.png", true )
 		game:insert( tsky )
 		tsky:setReferencePoint( display.CenterLeftReferencePoint )
-		tsky.x = 0; tsky.y = -980
+		tsky.x = -40; tsky.y = -980
 		sky2 = display.newImage( "sky.png", true )
 		game:insert( sky2 )
 		sky2:setReferencePoint( display.CenterLeftReferencePoint )
-		sky2.x = 960; sky2.y = 120
+		sky2.x = 920; sky2.y = 120
 		msky2 = display.newImage( "skymiddle.png", true )
 		game:insert( msky2 )
 		msky2:setReferencePoint( display.CenterLeftReferencePoint )
-		msky2.x = 960; msky2.y = -430
+		msky2.x = 920; msky2.y = -430
 		tsky2 = display.newImage( "skytop.png", true )
 		game:insert( tsky2 )
 		tsky2:setReferencePoint( display.CenterLeftReferencePoint )
-		tsky2.x = 960; tsky2.y = -980
+		tsky2.x = 920; tsky2.y = -980
 
 		local grass = display.newImage( "grass.png", true )
 		game:insert( grass )
 		grass.x = 160; grass.y = groundReferencePoint
-		physics.addBody( grass, "static", { friction=0.2, bounce=0.1 } )
+		physics.addBody( grass, "static", { friction=0.1, bounce=0 } )
 		grass.bodyName = "grass1"
 	end
 	
@@ -67,58 +69,64 @@ function new()
 		local addition = 160 + ( (worldLength - 1) * 960 )
 		
 		local dgrass
-		if worldLength==3 or worldLength==6 or worldLength>8 then
+		if worldLength > 1 and math.random(5) < 3 then
 			dgrass = display.newImage( "lava.png", true )
 			dgrass.bodyName = "lava"
 			dgrass.x = addition; dgrass.y = groundReferencePoint
-			physics.addBody( dgrass, "static", { friction=0.8, bounce=0 } )
+			physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2 } )
 		else
 			dgrass = display.newImage( "grass.png", true )
 			dgrass.bodyName = "grass"..worldLength
 			dgrass.x = addition; dgrass.y = groundReferencePoint
-			physics.addBody( dgrass, "static", { friction=0.2, bounce=0.15 } )
+			physics.addBody( dgrass, "static", { friction=0.1, bounce=0.3 } )
 		end
 		
 		game:insert( dgrass )
 
-		if worldLength > 2 then
-			math.randomseed( os.time() )
-			math.random()
-			if math.random(5) == 1 then
-				local spikeWall = display.newImage( "spikewall.png" )
+		if worldLength > 2 then		
+			if math.random(5) < 4 then
+				if math.random(5) < 3 then
+					local trampoline = display.newImage( "ramp.png" )
+					trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
+					trampoline.bodyName = "trampoline"..worldLength
+					physics.addBody( trampoline, "static", { friction=0, bounce=6, shape={ 20,0, -20,0, -20,-3, 20,-3 } } )	
+					game:insert( trampoline )		
+				else						
+					local ramp = display.newImage( "ramp.png" )
+					ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
+					ramp.bodyName = "ramp"..worldLength
+					physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+					game:insert( ramp )		
+				end
+			else 
+				if math.random(5) == 1 then
+					local spikeWall = display.newImage( "spikewall.png" )
 					spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 80
 					spikeWall.bodyName = "spikeWall"..worldLength
 					physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape=spikeWallShape } )
 					game:insert( spikeWall )
-			else
-				if math.random() < .5 then
-					local ramp = display.newImage( "ramp.png" )
-					ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
-					ramp.bodyName = "ramp"..worldLength
-					physics.addBody( ramp, "static", { friction=0, bounce=0, shape={ 40,25, -40,25, 40,-31 } } )	
-					game:insert( ramp )		
 				else
 					local keg = display.newImage( "keg.png" )
 					keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
 					keg.bodyName = "keg"..worldLength
-					physics.addBody( keg, "static", { friction=0, bounce=0 } )
+					physics.addBody( keg, "static", { friction=1, bounce=0 } )
 					game:insert( keg )
 				end
 			end
 				
-				local star = display.newImage( "star.png" )
-				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
-				star.bodyName = "star"
-				physics.addBody( star, "static", { friction=0, bounce=0 } )
-				star.isSensor = true
-				game:insert( star )
-				
-				local bacon = display.newImage( "bacon.png" )
-				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
-				bacon.bodyName = "bacon"
-				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
-				bacon.isSensor = true
-				game:insert( bacon )
+			local star = display.newImage( "star.png" )
+			star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
+			star.bodyName = "star"
+			physics.addBody( star, "static", { friction=0, bounce=0 } )
+			star.isSensor = true
+			game:insert( star )
+			
+			local bacon = display.newImage( "bacon.png" )
+			bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
+			bacon.bodyName = "bacon"
+			physics.addBody( bacon, "static", { friction=0, bounce=0 } )
+			bacon.isSensor = true
+			game:insert( bacon )
 		end
 	end
 
@@ -147,13 +155,12 @@ function new()
 				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
 				sprite.add( spriteSet1, "noahSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
 				noahDestructor = sprite.newSprite( spriteSet1 )		
+				noahDestructor:rotate(90)
 			end
 		else
 			noahDestructor = display.newImage("noah.png")		
 		end
 		noahDestructor.x = 160; noahDestructor.y = groundReferencePoint - 200
-		noahDestructor.angularDamping = 1000
-		--noahDestructor.isFixedRotation = true
 
 		slingshotString = display.newImage( "string.png" )
 		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 180
@@ -362,7 +369,7 @@ function new()
 					tJetpack = event.time
 					boost = boost - 10
 					boostBar:setSize( boost )
-					noahDestructor:applyLinearImpulse( 10, -50, noahDestructor.x - 1, noahDestructor.y )
+					noahDestructor:applyLinearImpulse( 10, -30, noahDestructor.x - 1, noahDestructor.y )
 				end
 			else
 				jetpackButton.isVisible = false				
@@ -398,9 +405,9 @@ function new()
 		local tLava = system.getTimer()
 		local function removeLifeLava( event )
 			local tDelta = (event.time - tLava)
-			if tDelta > 150 then	
+			if tDelta > 250 then	
 				tLavaPrevious = event.time
-				life = life - 3
+				life = life - 1
 				lifeBar:setSize( life )
 			end
 		end	
@@ -439,6 +446,8 @@ function new()
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
 					game:insert(t)
 					t.bodyName = "noahDestructorDynamic"
+					t.isFixedRotation = true
+					--t.angularDamping = 10
 					if t.x<1 then
 						t.x = 1
 					end
@@ -477,7 +486,7 @@ function new()
 					lifeBar:setSize( life )
 					Runtime:addEventListener( "enterFrame", removeLifeLava )
 				elseif event.other.bodyName == "star" then
-					noahDestructor:applyLinearImpulse( 100, -100, noahDestructor.x + 9, noahDestructor.y )
+					noahDestructor:applyLinearImpulse( 0, -150, noahDestructor.x + 9, noahDestructor.y )
 				elseif event.other.bodyName == "bacon" then
 					if life > 74 then
 						life = 100
@@ -485,7 +494,7 @@ function new()
 						life = life + 25
 					end			
 					lifeBar:setSize( life )
-					noahDestructor:applyLinearImpulse( -10, -50, noahDestructor.x + 9, noahDestructor.y )
+					noahDestructor:applyLinearImpulse( -10, -75, noahDestructor.x + 9, noahDestructor.y )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
@@ -554,7 +563,7 @@ function new()
 			---[[
 			if ( event.force > 20.0 ) then
 				print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
-				life = life - ( string.format( "%i", event.force / 20  ) )
+				life = life - ( string.format( "%i", event.force / 50  ) )
 				lifeBar:setSize( life )
 			end--]]
 		end
