@@ -236,6 +236,7 @@ end
 function newBar( params )
 	local bar
 	local size, lineColor
+	local group
 	
 	if ( params.bounds ) then
 		local bounds = params.bounds
@@ -250,7 +251,7 @@ function newBar( params )
 		if ( params.align ) then align = params.align else align = "center" end
 		
 		if ( params.size ) then
-			bar = display.newLine( left, top, size, top )
+			bar = display.newLine( left, top, left + size, top )
 			bar.width = width
 		end
 
@@ -258,7 +259,7 @@ function newBar( params )
 		function bar:setSize( newSize )
 			if ( newSize ) then
 				bar:removeSelf()
-				bar = display.newLine( left, top, newSize, top )
+				bar = display.newLine( left, top, left + newSize, top )
 				bar.width = width
 				if newSize > 60 then
 					bar:setColor( 0, 255, 50, 255 )

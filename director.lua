@@ -221,7 +221,7 @@ end
 -- LOAD SCENE
 ------------------------------------------------------------------------
  
-local function loadScene ( moduleName, target )
+local function loadScene ( moduleName, arguments, target )
 
 	-- Test parameters
 	if type(moduleName) == "nil" then
@@ -248,7 +248,7 @@ local function loadScene ( moduleName, target )
  		--
  		unloadScene( moduleName )
  		--
-		currScreen = require(moduleName).new()
+		currScreen = require(moduleName).new( arguments )
 		currView:insert(currScreen)
 		currScene = moduleName
 
@@ -265,7 +265,7 @@ local function loadScene ( moduleName, target )
  		--
  		unloadScene( moduleName )
  		--
-		nextScreen = require(moduleName).new()
+		nextScreen = require(moduleName).new( arguments )
 		nextView:insert(nextScreen)
 		nextScene = moduleName
 		
@@ -353,7 +353,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth*-1, time=fxTime } )
@@ -369,7 +369,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		--
@@ -384,7 +384,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth*-1
 		nextView.y = 0
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth, time=fxTime } )
@@ -400,7 +400,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth*-1
 		nextView.y = 0
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		--
@@ -415,7 +415,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight*-1
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		showFx = transition.to ( currView, { y=display.contentHeight, time=fxTime } )
@@ -431,7 +431,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight*-1
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		--
@@ -446,7 +446,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		showFx = transition.to ( currView, { y=display.contentHeight*-1, time=fxTime } )
@@ -462,7 +462,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		--
@@ -477,7 +477,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		nextView.alpha = 0
 		nextView.x = 0
@@ -503,7 +503,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		local fade = display.newRect( 0 - display.contentWidth, 0 - display.contentHeight, display.contentWidth * 3, display.contentHeight * 3 )
 		fade.alpha = 0
@@ -537,7 +537,7 @@ function director:changeScene(nextLoadScene,
 		showFx = transition.to ( currView, { xScale=0.001, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth*0.5, time=fxTime } )
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		nextView.xScale=0.001
 		nextView.x=display.contentWidth*0.5
@@ -560,7 +560,7 @@ function director:changeScene(nextLoadScene,
 		showFx = transition.to ( currView, { xScale=0.001, delay=fxTime, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth*0.5, delay=fxTime, time=fxTime } )
 		--
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 		--
 		nextView.x = display.contentWidth*0.5
 		nextView.xScale=0.001
@@ -582,7 +582,7 @@ function director:changeScene(nextLoadScene,
         
 	else
 		timer.performWithDelay( 0, fxEnded )
-		loadScene (newScene)
+		loadScene (newScene, arg1)
 	end
     
 	return true
