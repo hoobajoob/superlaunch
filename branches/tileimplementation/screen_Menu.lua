@@ -13,7 +13,7 @@ function new()
 	local onListItemRelease = function(event)
 		_G["map"] = event.target.data --"mainLevel.tmx"
 		if _G["map"].name == "Noah Launcher" then
-			director:changeScene("noahLauncher", "moveFromRight")
+			director:changeScene("timedModeMain", "moveFromRight")
 		else
 			director:changeScene("screen_Map", "moveFromRight")
 		end
@@ -23,7 +23,7 @@ function new()
 		
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
-	
+	--[[
 	local menuButton = ui.newButton{
 				default = "buttonRed.png",
 				over = "buttonRedOver.png",
@@ -34,7 +34,7 @@ function new()
 				y = 155
 			}
 	menuButton.isVisible = false;
-	
+	--]]
 	-- create the list of items
 	self.list = tableView.newList{
 		data=maps, 
