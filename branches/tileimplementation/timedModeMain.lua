@@ -8,6 +8,7 @@ function new()
 	local self = display.newGroup()
 
 	self.back = display.newRect(self, 0, 0, display.contentWidth, display.contentHeight)
+	self.list = {}
 		
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
@@ -50,6 +51,7 @@ function new()
 					x = 180,
 					y = 200
 				}
+	self:insert(noahButton)
 	babyButton = ui.newButton{
 					default = "baby.png",
 					onPress = babyButtonPress,
@@ -57,6 +59,7 @@ function new()
 					x = 320,
 					y = 200
 				}
+	self:insert(babyButton)
 	dogButton = ui.newButton{
 					default = "dog.png",
 					onPress = dogButtonPress,
@@ -64,6 +67,7 @@ function new()
 					x = 250,
 					y = 100
 				}
+	self:insert(dogButton)
 	
 	return self
 	
