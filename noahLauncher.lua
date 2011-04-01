@@ -40,27 +40,35 @@ function new( arguments )
 			sky = display.newImage( "sky.png", true )
 			game:insert( sky )
 			sky:setReferencePoint( display.CenterLeftReferencePoint )
-			sky.x = -40; sky.y = 120
+			sky.x = -60; sky.y = 140
 			msky = display.newImage( "skymiddle.png", true )
 			game:insert( msky )
 			msky:setReferencePoint( display.CenterLeftReferencePoint )
-			msky.x = -40; msky.y = -430
+			msky.x = -60; msky.y = -180
 			tsky = display.newImage( "skytop.png", true )
 			game:insert( tsky )
 			tsky:setReferencePoint( display.CenterLeftReferencePoint )
-			tsky.x = -40; tsky.y = -980
+			tsky.x = -60; tsky.y = -500
+			ttsky = display.newImage( "skytransition.png", true )
+			game:insert( ttsky )
+			ttsky:setReferencePoint( display.CenterLeftReferencePoint )
+			ttsky.x = -60; ttsky.y = -820
 			sky2 = display.newImage( "sky.png", true )
 			game:insert( sky2 )
 			sky2:setReferencePoint( display.CenterLeftReferencePoint )
-			sky2.x = 920; sky2.y = 120
+			sky2.x = 420; sky2.y = 140
 			msky2 = display.newImage( "skymiddle.png", true )
 			game:insert( msky2 )
 			msky2:setReferencePoint( display.CenterLeftReferencePoint )
-			msky2.x = 920; msky2.y = -430
+			msky2.x = 420; msky2.y = -180
 			tsky2 = display.newImage( "skytop.png", true )
 			game:insert( tsky2 )
 			tsky2:setReferencePoint( display.CenterLeftReferencePoint )
-			tsky2.x = 920; tsky2.y = -980
+			tsky2.x = 420; tsky2.y = -500
+			ttsky2 = display.newImage( "skytransition.png", true )
+			game:insert( ttsky2 )
+			ttsky2:setReferencePoint( display.CenterLeftReferencePoint )
+			ttsky2.x = 420; ttsky2.y = -820
 
 			local grass = display.newImage( "grass.png", true )
 			game:insert( grass )
@@ -163,7 +171,7 @@ function new( arguments )
 				noahDestructor = sprite.newSprite( spriteSet1 )		
 				noahDestructor:rotate(90)
 			end
-			--if # arguments > 2 then
+			--[[if # arguments > 2 then
 				if arguments[2] == true then
 					
 					timeBar = ui.newBar{
@@ -179,7 +187,7 @@ function new( arguments )
 					timeMode = true
 					print( "lifemode on")
 				end
-			--end
+			--end--]]
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -387,17 +395,17 @@ function new( arguments )
 			end
 			
 			
-			if ( game.x + sky.x + sky.contentWidth) > sky.contentWidth * 2 then
+			if ( game.x + sky.x ) > sky.contentWidth then
 				sky:translate( -(sky.contentWidth * 2), 0)
 			end
-			if ( game.x + sky2.x + sky2.contentWidth) > sky.contentWidth * 2 then
+			if ( game.x + sky2.x ) > sky.contentWidth then
 				sky2:translate( -(sky2.contentWidth * 2), 0)
 			end
 			
-			if ( game.x + sky.x + sky.contentWidth) < -50 then
+			if ( game.x + sky.x + sky.contentWidth) < 0 then
 				sky:translate( sky.contentWidth * 2, 0)
 			end
-			if ( game.x + sky2.x + sky2.contentWidth) < -50 then
+			if ( game.x + sky2.x + sky2.contentWidth) < 0 then
 				sky2:translate( sky2.contentWidth * 2, 0)
 			end
 			
@@ -409,7 +417,7 @@ function new( arguments )
 			local mskyTotal = game.x + msky.x + msky.contentWidth
 			local msky2Total = game.x + msky2.x + msky2.contentWidth
 			
-			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 160 then
+			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 60 then
 				msky.x = sky.x
 				msky2.x = sky2.x
 			end			
@@ -417,9 +425,17 @@ function new( arguments )
 			local tskyTotal = game.x + tsky.x + tsky.contentWidth
 			local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
 					
-			if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 320 then
+			if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 220 then
 				tsky.x = sky.x
 				tsky2.x = sky2.x
+			end
+			
+			local ttskyTotal = game.x + ttsky.x + ttsky.contentWidth
+			local ttsky2Total = game.x + ttsky2.x + ttsky2.contentWidth
+					
+			if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
+				ttsky.x = sky.x
+				ttsky2.x = sky2.x
 			end
 			
 			
