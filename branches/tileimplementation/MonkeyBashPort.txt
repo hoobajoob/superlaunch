@@ -6,4 +6,4 @@ Life Increasers
 Slingshot Animation and Joints
 ground randomizer
 Sounds
-Smooth camera y movement
+Music
