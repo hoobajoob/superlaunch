@@ -12,11 +12,15 @@ function new( arguments )
 	local mainContainerGroup
 	local game
 	local overlayDisplay
+	--load sounds
+	local explosionSound = audio.loadSound("grenade.mp3")
+	local bounceSound = audio.loadSound("boing.ogg")
+	local swooshSound = audio.loadSound("swoosh.mp3")	
+	--------
 	math.randomseed( os.time() )
 	math.random()
 	
 	function start()
-	
 		physics.start()
 		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
@@ -260,12 +264,13 @@ function new( arguments )
 			explosion = sprite.newSprite( explosionSpriteSet )
 			game:insert( explosion )
 			explosion.x = noahDestructor.x; explosion.y = 230
+			local explosionChannel = audio.play( explosionSound, { channel=2 }  )
 			explosion:play()
 		end
 
 		local function showBlood()
 			blood = display.newImage( "blood.png" )
-			game:insert( blood  )
+			game:insert( blood )
 			blood .x = noahDestructor.x + 10; blood .y = noahDestructor.y
 		end
 		
@@ -307,6 +312,7 @@ function new( arguments )
 				restartButton:removeSelf()
 				physics = nil
 				ui = nil
+				audio.stop( backgroundMusicChannel )
 				director:changeScene("screen_Menu", "moveFromLeft")
 			end
 						
@@ -529,6 +535,7 @@ function new( arguments )
 					t.isFocus = false
 					slingshot:removeSelf()
 					slingshotString:removeSelf()
+					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
 					t:prepare("noahSprite")
 					t:play()
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
@@ -653,6 +660,7 @@ function new( arguments )
 				print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
 				life = life - ( string.format( "%i", event.force / 50  ) )
 				lifeBar:setSize( life )
+				local bounceChannel = audio.play( bounceSound, { channel=3 }  ) 
 			end--]]
 		end
 
