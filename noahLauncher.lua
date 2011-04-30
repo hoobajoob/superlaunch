@@ -12,13 +12,37 @@ function new( arguments )
 	local mainContainerGroup
 	local game
 	local overlayDisplay
-	--load sounds
+	--[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local bounceSound = audio.loadSound("boing.ogg")
 	local swooshSound = audio.loadSound("swoosh.mp3")	
-	--------
+	--]]------
+	local timeLeft = 100
 	math.randomseed( os.time() )
 	math.random()
+	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
+		timeMode = true
+		timeBar = ui.newBar{
+			bounds = { 0, 290 + display.screenOriginY, 5, 5 },
+			lineColor = { 0, 255, 50, 255 },
+			size = timeLeft,
+			width = 5
+		}
+		timeBar.bodyName = "timeBar"
+		timeBar:setSize( timeLeft )
+		timeBar.isVisible = true
+		print( "timeMode on")
+		local tTimeLeft = system.getTimer()
+		local function timeCheck( event )
+			local tTimeLeftDelta = (event.time - tTimeLeft)
+			if timeMode and tTimeLeftDelta > 750 then
+				tTimeLeft = event.time;
+				timeLeft = timeLeft - 1
+				timeBar:setSize( timeLeft )
+			end
+		end
+		Runtime:addEventListener( "enterFrame", timeCheck )
+	end
 	
 	function start()
 		physics.start()
@@ -88,7 +112,7 @@ function new( arguments )
 			local dgrass
 			if worldLength > 1 and math.random(5) < 3 then
 				dgrass = display.newImage( "lava.png", true )
-				dgrass.bodyName = "lava"
+				dgrass.bodyName = "lava"..worldLength
 				dgrass.x = addition; dgrass.y = groundReferencePoint
 				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2 } )
 			else
@@ -156,8 +180,11 @@ function new( arguments )
 		local timeMode = false
 		
 		noahDestructorShape = { 16,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14, -20 }
+
 		if arguments ~= nil then
+			print ("Number of Arguments = " .. #arguments)
 			local character = arguments[1]
+			print("Character is: "..character)
 			if character == "noah" then
 				local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -175,23 +202,6 @@ function new( arguments )
 				noahDestructor = sprite.newSprite( spriteSet1 )		
 				noahDestructor:rotate(90)
 			end
-			--[[if # arguments > 2 then
-				if arguments[2] == true then
-					
-					timeBar = ui.newBar{
-						bounds = { 0, 290 + display.screenOriginY, 5, 5 },
-						lineColor = { 0, 255, 50, 255 },
-						size = timeLeft,
-						width = 5
-					}
-					timeBar.bodyName = "timeBar"
-					overlayDisplay:insert( timeBar )
-					timeBar:setSize( timeLeft )
-					timeBar.isVisible = true
-					timeMode = true
-					print( "lifemode on")
-				end
-			--end--]]
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -256,7 +266,7 @@ function new( arguments )
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
-
+		
 		local function showExplosion()		
 			local explosionSheet = sprite.newSpriteSheet( "explosionSprite.png", 170, 130 )
 			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 4)
@@ -290,20 +300,26 @@ function new( arguments )
 			local menuButtonPress = function( event )
 				menuButton.isVisible = false
 				scoreDisplay.parent:remove( scoreDisplay )
-				
-				print("Clearing All "..game.numChildren.."in Game")				
-				for i=1, game.numChildren, 1 do
-					if game[i] ~= nil then
-						game:remove( i )
+				while game.numChildren > 0	do		
+					print("Clearing All "..game.numChildren.."in Game")				
+					for i=1, game.numChildren, 1 do
+						if game[i] ~= nil then
+							if game[i].bodyName ~= nil then
+								print("Clearing "..game[i].bodyName)
+							end
+							game:remove( i )
+						end
 					end
 				end
-				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-				for i=1, overlayDisplay.numChildren, 1 do
-					if overlayDisplay[i] ~= nil then
-						if overlayDisplay[i].bodyName ~= nil then
-							print("Clearing "..overlayDisplay[i].bodyName)
+				while overlayDisplay.numChildren > 0	do	
+					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+					for i=1, overlayDisplay.numChildren, 1 do
+						if overlayDisplay[i] ~= nil then
+							if overlayDisplay[i].bodyName ~= nil then
+								print("Clearing "..overlayDisplay[i].bodyName)
+							end
+							overlayDisplay:remove( i )
 						end
-						overlayDisplay:remove( i )
 					end
 				end
 				game:removeSelf()
@@ -312,7 +328,7 @@ function new( arguments )
 				restartButton:removeSelf()
 				physics = nil
 				ui = nil
-				audio.stop( backgroundMusicChannel )
+				--audio.stop( backgroundMusicChannel )
 				director:changeScene("screen_Menu", "moveFromLeft")
 			end
 						
@@ -332,21 +348,28 @@ function new( arguments )
 			
 			local restartButtonPress = function( event )
 				restartButton.isVisible = false
-				scoreDisplay.parent:remove( scoreDisplay )
+				scoreDisplay.parent:remove( scoreDisplay )				
 				
-				print("Clearing All "..game.numChildren.."in Game")				
-				for i=1, game.numChildren, 1 do
-					if game[i] ~= nil then
-						game:remove( i )
+				while game.numChildren > 0	do		
+					print("Clearing All "..game.numChildren.."in Game")				
+					for i=1, game.numChildren, 1 do
+						if game[i] ~= nil then
+							if game[i].bodyName ~= nil then
+								print("Clearing "..game[i].bodyName)
+							end
+							game:remove( i )
+						end
 					end
 				end
-				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-				for i=1, overlayDisplay.numChildren, 1 do
-					if overlayDisplay[i] ~= nil then
-						if overlayDisplay[i].bodyName ~= nil then
-							print("Clearing "..overlayDisplay[i].bodyName)
+				while overlayDisplay.numChildren > 0	do	
+					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+					for i=1, overlayDisplay.numChildren, 1 do
+						if overlayDisplay[i] ~= nil then
+							if overlayDisplay[i].bodyName ~= nil then
+								print("Clearing "..overlayDisplay[i].bodyName)
+							end
+							overlayDisplay:remove( i )
 						end
-						overlayDisplay:remove( i )
 					end
 				end
 				menuButton.isVisible = false
@@ -371,10 +394,8 @@ function new( arguments )
 		local tPrevious = system.getTimer()
 		local tNotMovingPrevious = system.getTimer()
 		local tAdShownPrevious = system.getTimer()
-		local tTimeLeft = system.getTimer()
 		local function frameCheck( event )
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
-			local tTimeLeftDelta = (event.time - tTimeLeft)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
 			if noahDestructor.x > ( worldLength - 2 ) * 960 then
@@ -415,11 +436,6 @@ function new( arguments )
 				sky2:translate( sky2.contentWidth * 2, 0)
 			end
 			
-			if timeMode and tTimeLeftDelta > 5000 then
-				timeLeft = timeLeft - 1
-				timeBar:setSize( timeLeft )
-			end
-			
 			local mskyTotal = game.x + msky.x + msky.contentWidth
 			local msky2Total = game.x + msky2.x + msky2.contentWidth
 			
@@ -444,6 +460,9 @@ function new( arguments )
 				ttsky2.x = sky2.x
 			end
 			
+			if timeLeft <=0 then
+				life = 0
+			end
 			
 			if life <= 0 then	
 				print("removing event Listeners")
@@ -466,7 +485,8 @@ function new( arguments )
 					noahDestructor:applyLinearImpulse( 10, -30, noahDestructor.x - 1, noahDestructor.y )
 				end
 			else
-				jetpackButton.isVisible = false				
+				jetpackButton.isVisible = false	
+				jetpackButton:removeSelf();
 				jetpackButton = display.newImage( "jetPack.png" )
 				jetpackButton.x = 445; jetpackButton.y = 245
 				jetpackButton.bodyName = "Jet Pack Button"
@@ -535,7 +555,7 @@ function new( arguments )
 					t.isFocus = false
 					slingshot:removeSelf()
 					slingshotString:removeSelf()
-					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
+					--local swooshChannel = audio.play( swooshSound, { channel=2 }  )
 					t:prepare("noahSprite")
 					t:play()
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
@@ -660,7 +680,7 @@ function new( arguments )
 				print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
 				life = life - ( string.format( "%i", event.force / 50  ) )
 				lifeBar:setSize( life )
-				local bounceChannel = audio.play( bounceSound, { channel=3 }  ) 
+				--local bounceChannel = audio.play( bounceSound, { channel=3 }  ) 
 			end--]]
 		end
 
@@ -672,5 +692,5 @@ function new( arguments )
 		return game
 	end
 	
-	start()
+	return start()
 end
