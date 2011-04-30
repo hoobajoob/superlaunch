@@ -4,7 +4,7 @@ module(..., package.seeall)
 -- DIRECTOR CLASS
 --====================================================================--
 --
--- Version: 1.2
+-- Version: 1.3
 -- Made by Ricardo Rauber Pereira @ 2010
 -- Blog: http://rauberlabs.blogspot.com/
 -- Mail: ricardorauber@gmail.com
@@ -27,6 +27,7 @@ module(..., package.seeall)
 -- 14-NOV-2010 - Ricardo Rauber - Bux fixes and new getScene function to get
 --                                the name of the active scene (lua file)
 -- 14-FEB-2011 - Ricardo Rauber - General Bug Fixes
+-- 26-APR-2011 - Ricardo Rauber - Changed cleanGroups() and added Pop Up
 --
 --====================================================================--
 -- INFORMATION
@@ -67,10 +68,11 @@ module(..., package.seeall)
 directorView = display.newGroup()
 currView     = display.newGroup()
 nextView     = display.newGroup()
+popupView    = display.newGroup()
 effectView   = display.newGroup()
 --
-local currScreen, nextScreen
-local currScene, nextScene = "main", "main"
+local currScreen, nextScreen, popupScreen
+local currScene, nextScene, popupScene = "main", "main", "main"
 local newScene
 local fxTime = 200
 local safeDelay = 50
@@ -78,12 +80,15 @@ local isChangingScene = false
 --
 directorView:insert(currView)
 directorView:insert(nextView)
+directorView:insert(popupView)
 directorView:insert(effectView)
 --
 currView.x = 0
 currView.y = 0
 nextView.x = display.contentWidth
 nextView.y = 0
+popupView.x = 0
+popupView.y = 0
 
 ------------------------------------------------------------------------        
 -- GET COLOR
@@ -168,22 +173,59 @@ function director:getNextScene ()
 end
  
 ------------------------------------------------------------------------        
--- CLEAN GROUP
+-- CLEAN GROUPS
 ------------------------------------------------------------------------
+
+local coronaMetaTable = getmetatable(display.getCurrentStage())
  
-local function cleanGroups ( curGroup, level )
-	if curGroup.numChildren then
-		while curGroup.numChildren > 0 do
-			cleanGroups ( curGroup[curGroup.numChildren], level+1 )
+local isDisplayObject = function(aDisplayObject)
+	return (type(aDisplayObject) == "table" and getmetatable(aDisplayObject) == coronaMetaTable)
+end
+
+--[[
+=============================================================
+Note:
+I kept level parameter just because when cleanGroups removes
+the level 0 it raises some errors. I wanted to keep the groups
+where they are, so if you want to change it, go ahead.
+--
+Special thanks for FrankS, jonbeebe, p120ph37 and Tom
+http://developer.anscamobile.com/forum/2011/03/06/remove-all-objects
+=============================================================
+--]]
+
+local function cleanGroups ( objectOrGroup, level )
+	if(not isDisplayObject(objectOrGroup)) then return end
+    
+	if objectOrGroup.numChildren then
+		while objectOrGroup.numChildren > 0 do
+			cleanGroups ( objectOrGroup[objectOrGroup.numChildren], level+1 )
 		end
-		if level > 0 then
-			curGroup:removeSelf()
-		end
-	else
-		curGroup:removeSelf()
-		curGroup = nil
-		return true
 	end
+	if level > 0 then
+	
+		-- check if object/group has an attached touch listener
+		if objectOrGroup.touch then
+			objectOrGroup:removeEventListener( "touch", objectOrGroup )
+			objectOrGroup.touch = nil
+		end
+
+		-- check to see if this object has any attached
+		-- enterFrame listeners via object.enterFrame or
+		-- object.repeatFunction
+		if objectOrGroup.enterFrame then
+			Runtime:removeEventListener( "enterFrame", objectOrGroup )
+			objectOrGroup.enterFrame = nil
+		end
+
+		if objectOrGroup.repeatFunction then
+			Runtime:removeEventListener( "enterFrame", objectOrGroup )
+			objectOrGroup.repeatFunction = nil
+		end
+	
+		objectOrGroup:removeSelf()
+	end
+	return
 end
 
 ------------------------------------------------------------------------        
@@ -238,7 +280,7 @@ local function loadScene ( moduleName, arguments, target )
 	-- Prev
  	if string.lower(target) == "curr" then
  		--
- 		callClean ( moduleName )
+		callClean ( moduleName )
  		--
  		cleanGroups(currView,0)
  		--
@@ -266,6 +308,9 @@ local function loadScene ( moduleName, arguments, target )
  		unloadScene( moduleName )
  		--
 		nextScreen = require(moduleName).new( arguments )
+		if arguments ~= nil then
+			print("Number of Arguments = " ..#arguments)
+		end
 		nextView:insert(nextScreen)
 		nextScene = moduleName
 		
@@ -275,12 +320,12 @@ end
 
 -- Load curr screen
 function director:loadCurrScene ( moduleName )
-	loadScene ( moduleName, "curr" )
+	loadScene ( moduleName, {}, "curr" )
 end
 
 -- Load next screen
 function director:loadNextScene ( moduleName )
-	loadScene ( moduleName, "next" )
+	loadScene ( moduleName, {}, "next" )
 end
  
 ------------------------------------------------------------------------
@@ -317,6 +362,7 @@ end
  
 function director:changeScene(nextLoadScene, 
                               effect, 
+							  arguments,
                               arg1,
                               arg2,
                               arg3)
@@ -340,6 +386,18 @@ function director:changeScene(nextLoadScene,
 			return true
 		end
 	end
+	
+	-----------------------------------
+	-- If is popup, don't change
+	-----------------------------------
+	
+	if popupScene ~= "main" then
+		return true
+	end
+	
+	-----------------------------------
+	-- Variables
+	-----------------------------------
         
 	newScene = nextLoadScene
 	local showFx
@@ -347,13 +405,13 @@ function director:changeScene(nextLoadScene,
 	-----------------------------------
 	-- EFFECT: Move From Right
 	-----------------------------------
-        
+	        
 	if effect == "moveFromRight" then
                         
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth*-1, time=fxTime } )
@@ -369,7 +427,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		--
@@ -384,7 +442,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth*-1
 		nextView.y = 0
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth, time=fxTime } )
@@ -400,7 +458,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth*-1
 		nextView.y = 0
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { x=0, time=fxTime } )
 		--
@@ -415,7 +473,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight*-1
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		showFx = transition.to ( currView, { y=display.contentHeight, time=fxTime } )
@@ -431,7 +489,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight*-1
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		--
@@ -446,7 +504,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		showFx = transition.to ( currView, { y=display.contentHeight*-1, time=fxTime } )
@@ -462,7 +520,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = 0
 		nextView.y = display.contentHeight
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		showFx = transition.to ( nextView, { y=0, time=fxTime } )
 		--
@@ -477,7 +535,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		nextView.alpha = 0
 		nextView.x = 0
@@ -503,7 +561,7 @@ function director:changeScene(nextLoadScene,
 		nextView.x = display.contentWidth
 		nextView.y = 0
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		local fade = display.newRect( 0 - display.contentWidth, 0 - display.contentHeight, display.contentWidth * 3, display.contentHeight * 3 )
 		fade.alpha = 0
@@ -537,7 +595,7 @@ function director:changeScene(nextLoadScene,
 		showFx = transition.to ( currView, { xScale=0.001, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth*0.5, time=fxTime } )
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		nextView.xScale=0.001
 		nextView.x=display.contentWidth*0.5
@@ -560,7 +618,7 @@ function director:changeScene(nextLoadScene,
 		showFx = transition.to ( currView, { xScale=0.001, delay=fxTime, time=fxTime } )
 		showFx = transition.to ( currView, { x=display.contentWidth*0.5, delay=fxTime, time=fxTime } )
 		--
-		loadScene (newScene, arg1)
+		loadScene (newScene, arguments)
 		--
 		nextView.x = display.contentWidth*0.5
 		nextView.xScale=0.001
@@ -581,10 +639,93 @@ function director:changeScene(nextLoadScene,
 	-----------------------------------
         
 	else
-		timer.performWithDelay( 0, fxEnded )
-		loadScene (newScene, arg1)
+		timer.performWithDelay( safeDelay, fxEnded )
+		loadScene (newScene, arguments)
 	end
     
 	return true
 	
+end
+
+------------------------------------------------------------------------        
+-- OPEN POPUP
+------------------------------------------------------------------------
+
+function director:openPopUp ( newPopUpScene )
+
+	-----------------------------------
+	-- Verify the parameter
+	-----------------------------------
+	
+	if type( newPopUpScene ) ~= "string" then
+		return
+	end
+	
+	-----------------------------------
+	-- Test scene name
+	-----------------------------------
+	
+	if newPopUpScene == currScene
+	or newPopUpScene == nextScene
+	or newPopUpScene == "main"
+	then
+		return
+	end
+	
+	-----------------------------------
+	-- If is inside a popup, don't load
+	-----------------------------------
+	
+	if popupScene ~= "main" then
+		return
+	end
+	
+	-----------------------------------
+	-- Load scene
+	-----------------------------------
+	
+	callClean ( newPopUpScene )
+	--
+	cleanGroups( popupView,0 )
+	--
+	unloadScene( newPopUpScene )
+	--
+	popupScreen = require(newPopUpScene).new()
+	popupView:insert(popupScreen)
+	popupScene = newPopUpScene
+	--
+	currView.alpha = 0
+
+end
+
+------------------------------------------------------------------------        
+-- CLOSE POPUP
+------------------------------------------------------------------------
+
+function director:closePopUp ()
+
+	-----------------------------------
+	-- If no popup is loaded, don't do anything
+	-----------------------------------
+	
+	if popupScene == "main" then
+		return
+	end
+	
+	-----------------------------------
+	-- Unload scene
+	-----------------------------------
+	
+	callClean ( popupScene )
+	--
+	cleanGroups( popupView,0 )
+	--
+	unloadScene( popupScene )
+	--
+	popupScene = "main"
+	--
+	currView.alpha = 1
+	
+	return
+
 end

@@ -13,9 +13,6 @@ function new()
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
 	
-	timeLeft = 100
-
-	
 	function clean()
 	end
 	
