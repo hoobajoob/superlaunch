@@ -12,11 +12,12 @@ function new( arguments )
 	local mainContainerGroup
 	local game
 	local overlayDisplay
-	--[[load sounds
+	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local bounceSound = audio.loadSound("boing.ogg")
 	local swooshSound = audio.loadSound("swoosh.mp3")	
 	--]]------
+	local totalScore = {}
 	local timeLeft = 100
 	math.randomseed( os.time() )
 	math.random()
@@ -126,7 +127,7 @@ function new( arguments )
 
 			if worldLength > 2 then		
 				if math.random(5) < 4 then
-					if math.random(5) < 1 then
+					if math.random(5) < 4 then
 						local trampoline = display.newImage( "ramp.png" )
 						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
 						trampoline.bodyName = "trampoline"..worldLength
@@ -300,20 +301,18 @@ function new( arguments )
 			local menuButtonPress = function( event )
 				menuButton.isVisible = false
 				scoreDisplay.parent:remove( scoreDisplay )
+				print("Clearing All "..game.numChildren.."in Game")	
 				while game.numChildren > 0	do		
-					print("Clearing All "..game.numChildren.."in Game")				
-					for i=1, game.numChildren, 1 do
-						if game[i] ~= nil then
-							if game[i].bodyName ~= nil then
-								print("Clearing "..game[i].bodyName)
+						if game[1] ~= nil then
+							if game[1].bodyName ~= nil then
+								print("Clearing "..game[1].bodyName)
 							end
-							game:remove( i )
+							game:remove( 1 )
 						end
-					end
 				end
 				while overlayDisplay.numChildren > 0	do	
 					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren, 1 do
+					for i=1, overlayDisplay.numChildren do
 						if overlayDisplay[i] ~= nil then
 							if overlayDisplay[i].bodyName ~= nil then
 								print("Clearing "..overlayDisplay[i].bodyName)
@@ -325,10 +324,10 @@ function new( arguments )
 				game:removeSelf()
 				overlayDisplay:removeSelf()
 				mainContainerGroup:removeSelf()
-				restartButton:removeSelf()
+				if restartButton ~= nil then restartButton:removeSelf() end
 				physics = nil
 				ui = nil
-				--audio.stop( backgroundMusicChannel )
+				audio.stop( backgroundMusicChannel )
 				director:changeScene("screen_Menu", "moveFromLeft")
 			end
 						
@@ -347,12 +346,13 @@ function new( arguments )
 			
 			
 			local restartButtonPress = function( event )
+				
 				restartButton.isVisible = false
 				scoreDisplay.parent:remove( scoreDisplay )				
 				
 				while game.numChildren > 0	do		
 					print("Clearing All "..game.numChildren.."in Game")				
-					for i=1, game.numChildren, 1 do
+					for i=1, game.numChildren do
 						if game[i] ~= nil then
 							if game[i].bodyName ~= nil then
 								print("Clearing "..game[i].bodyName)
@@ -363,7 +363,7 @@ function new( arguments )
 				end
 				while overlayDisplay.numChildren > 0	do	
 					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren, 1 do
+					for i=1, overlayDisplay.numChildren do
 						if overlayDisplay[i] ~= nil then
 							if overlayDisplay[i].bodyName ~= nil then
 								print("Clearing "..overlayDisplay[i].bodyName)
@@ -377,18 +377,54 @@ function new( arguments )
 				--director:changeScene("testChange", "crossFade", arguments)
 				start()
 			end
-						
-			restartButton = ui.newButton{
-				default = "buttonRed.png",
-				over = "buttonRedOver.png",
-				onPress = restartButtonPress,
-				text = "Restart",
-				emboss = true,
-				x = 240,
-				y = 195
-			}
-			restartButton.isVisible = true
-			restartButton.bodyName = "restartButton"				
+			
+			if #totalScore == 5 then
+					local lowestScoreIndex = 1
+					local lowestScore = totalScore[1]
+					for i=2, #totalScore do
+						if lowestScore > totalScore[i] then
+							lowestScoreIndex = i
+							lowestScore = totalScore[i]
+						end
+					end
+					if score > lowestScore then
+						totalScore[lowestScoreIndex] = score
+						print ("Replacing score "..lowestScore.." with "..score)
+					end
+				else
+					table.insert(totalScore, score)
+				end
+			
+			if timedModeMain and timeLeft <= 0 then
+				local aggregatedScore = 0
+				for i=1, #totalScore do
+					aggregatedScore = aggregatedScore + totalScore[i]
+					print("Score " .. i .. " = " .. totalScore[i])
+				end
+				local totalDisplay = ui.newLabel{
+						bounds = { display.contentWidth - 320, 200 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+						text = string.format( "%i", aggregatedScore ),
+						--font = "Trebuchet-BoldItalic",
+						textColor = { 255, 225, 102, 255 },
+						size = 32,
+						align = "center"
+					}
+					totalDisplay.bodyName = "totalDisplay"
+					overlayDisplay:insert( totalDisplay )
+					score = 0
+			else
+				restartButton = ui.newButton{
+					default = "buttonRed.png",
+					over = "buttonRedOver.png",
+					onPress = restartButtonPress,
+					text = "Restart",
+					emboss = true,
+					x = 240,
+					y = 195
+				}
+				restartButton.isVisible = true
+				restartButton.bodyName = "restartButton"	
+			end
 		end
 
 		local tPrevious = system.getTimer()
@@ -555,7 +591,7 @@ function new( arguments )
 					t.isFocus = false
 					slingshot:removeSelf()
 					slingshotString:removeSelf()
-					--local swooshChannel = audio.play( swooshSound, { channel=2 }  )
+					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
 					t:prepare("noahSprite")
 					t:play()
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=noahDestructorShape } )
@@ -595,7 +631,7 @@ function new( arguments )
 
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
-				print( self.bodyName .. ": collision began with " .. event.other.bodyName )
+				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
 				if self.bodyName == "lava" or event.other.bodyName == "lava" then
 					life = life - 1
 					lifeBar:setSize( life )
@@ -619,7 +655,7 @@ function new( arguments )
 				end
 
 				elseif ( event.phase == "ended" ) then
-					print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
+					--print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
 					if self.bodyName == "lava" or event.other.bodyName == "lava" then				
 						Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					end
@@ -636,14 +672,14 @@ function new( arguments )
 		local tPrevious = system.getTimer()
 		local function onGlobalCollision( event )
 			if ( event.phase == "began" ) then
-				print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
+				--aprint( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
 			elseif ( event.phase == "ended" ) then
 
-				print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision ended" )
+				--print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision ended" )
 
 			end
 			
-			print( "**** " .. event.element1 .. " -- " .. event.element2 )
+			--print( "**** " .. event.element1 .. " -- " .. event.element2 )
 			
 		end
 
@@ -677,10 +713,10 @@ function new( arguments )
 			
 			---[[
 			if ( event.force > 20.0 ) then
-				print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
+				--print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
 				life = life - ( string.format( "%i", event.force / 50  ) )
 				lifeBar:setSize( life )
-				--local bounceChannel = audio.play( bounceSound, { channel=3 }  ) 
+				local bounceChannel = audio.play( bounceSound, { channel=3 }  ) 
 			end--]]
 		end
 

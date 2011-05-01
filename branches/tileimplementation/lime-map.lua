@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-map.lua
 --
@@ -50,7 +50,7 @@ Map_mt = { __index = Map }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-Map.version = 2.8
+Map.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
@@ -66,6 +66,9 @@ local readInConfigFile = utils.readInConfigFile
 local addObjectToGroup = utils.addObjectToGroup
 local stringToBool = utils.stringToBool
 local showScreenSpaceTiles = utils.showScreenSpaceTiles
+local splitString = utils.splitString
+local fadeObjectToPosition = utils.fadeObjectToPosition
+local slideObjectToPosition = utils.slideObjectToPosition
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
@@ -94,7 +97,7 @@ function Map:new(filename, baseDirectory, customMapParams)
     self.baseDirectory = baseDirectory
     
 	-- Get the absolute path
-	local path = system.pathForFile(filename, baseDirectory or system.Resourcesirectory)
+	local path = system.pathForFile(filename, baseDirectory or system.ResourcesDirectory)
 	
 	
 	if(lime.isDebugModeEnabled()) then
@@ -313,7 +316,7 @@ function Map:setProperty(name, value)
 		property = self:addProperty(Property:new(name, value))
 	end
 	
-	self[name] = value
+	self[name] = self:getPropertyValue(name)
 	
 	return property
 end
@@ -437,6 +440,42 @@ function Map:getObjectLayer(indexOrName)
 	
 end
 
+--- Gets a list of TileLayers across the map that have a specified property. 
+-- @param name The name of the Property to look for.
+-- @return A list of found TileLayer. Empty if none found.
+function Map:getTileLayersWithProperty(name)
+
+	local tileLayers = {}
+	
+	for i = 1, #self.tileLayers, 1 do
+	
+		if self.tileLayers[i]:hasProperty(name) then
+			tileLayers[#tileLayers + 1] = self.tileLayers[i]
+		end
+	end
+
+	return tileLayers
+	
+end
+
+--- Gets a list of ObjectLayers across the map that have a specified property. 
+-- @param name The name of the Property to look for.
+-- @return A list of found ObjectLayer. Empty if none found.
+function Map:getObjectLayersWithProperty(name)
+
+	local objectLayers = {}
+	
+	for i = 1, #self.objectLayers, 1 do
+		
+		if self.objectLayers[i]:hasProperty(name) then
+			objectLayers[#objectLayers + 1] = self.objectLayers[i]
+		end
+	end
+
+	return objectLayers
+	
+end
+
 --- Gets a TileSet.
 -- @param indexOrName The index or name of the TileSet to get.
 -- @return The tileset at indexOrName.
@@ -462,11 +501,35 @@ end
 
 
 --- Gets a Tile image from a GID.
+-- Fixed fantastically by FrankS - http://developer.anscamobile.com/forum/2011/02/18/bug-mapgettilesetfromgidgid
 -- @param gid The gid to use.
 -- @return The tileset at the gid location.
 function Map:getTileSetFromGID(gid)
-	
+
 	if gid then
+	
+		local tileSets = self.tileSets
+
+		if #tileSets > 0 and gid >= tileSets[1].firstgid then
+            
+            for i = 2, #tileSets, 1 do 
+            	if tileSets[i].firstgid > gid then 
+                	return tileSets[i-1] 
+                end
+            end
+                
+            return tileSets[#self.tileSets]  -- leap of faith that it's in the last tileset
+            
+        else
+        
+            return nil 
+            
+        end
+        
+	end
+	
+		--[[
+		
 		local tileSet = nil
 		
 		local nextTileSet = nil
@@ -498,6 +561,8 @@ function Map:getTileSetFromGID(gid)
 	end
 	
 	return tileSet
+	
+	--]]
 end
 
 --- Shows the Map.
@@ -505,6 +570,13 @@ function Map:show()
 	for i=1, #self.tiles, 1 do	
 		self.tileLayers[i]:show()	
 	end	
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = true
+	end
+
 end
 
 --- Hides the Map.
@@ -512,16 +584,37 @@ function Map:hide()
 	for i=1, #self.tileLayers, 1 do
 		self.tileLayers[i]:hide()		
 	end
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = false
+	end
+	
+end
+
+--- Gets the Maps visual.
+function Map:getVisual()
+	return self.world
 end
 
 --- Moves the Map.
 -- @param x The amount to move the Map along the X axis.
 -- @param y The amount to move the Map along the Y axis.
 function Map:move(x, y)
-	moveObject(self.world, x, y)
 	
-	if self.orientation ~= "isometric" then
+	if self.world then
+		moveObject(self.world, x, y)
+		
 		self.world.x, self.world.y = clampPosition(self.world.x, self.world.y, self.bounds)
+		
+		if self.orientation == "orthogonal" then
+			if self.ParallaxEnabled then
+				self:setParallaxPosition{ x = self.world.x, y = self.world.y }
+			end
+		else
+			
+		end
 	end
 	
 end
@@ -531,19 +624,54 @@ end
 function Map:drag(event)
 
 	if self.world then
+	
+		if(self.slideTransition) then
+			transition.cancel(self.slideTransition)
+			Runtime:removeEventListener("enterFrame", self.onSlideTransitionUpdate)
+		end
+	
 		dragObject(self.world, event)
 		
-		if self.orientation ~= "isometric" then
-			self.world.x, self.world.y = clampPosition(self.world.x, self.world.y, self.bounds)
+		self.world.x, self.world.y = clampPosition(self.world.x, self.world.y, self.bounds)
 		
+		if self.orientation == "orthogonal" then
 			if self.ParallaxEnabled then
 				self:setParallaxPosition{ x = self.world.x, y = self.world.y }
 			end
+		else
 		
 		end
 	end		
 end
 	
+--- Sets the rotation of the Map.
+-- @param The new rotation.
+function Map:setRotation(angle)
+
+	for i=1, #self.tileLayers, 1 do 
+		self.tileLayers[i]:setRotation(angle)
+	end
+	
+	for i=1, #self.objectLayers, 1 do 
+		self.objectLayers[i]:setRotation(angle)
+	end
+	
+end
+
+--- Rotates the Map.
+-- @param The angle to rotate by.
+function Map:rotate(angle)
+
+	for i=1, #self.tileLayers, 1 do 
+		self.tileLayers[i]:rotate(angle)
+	end
+	
+	for i=1, #self.objectLayers, 1 do 
+		self.objectLayers[i]:rotate(angle)
+	end
+	
+end
+
 --- Sets the position of the Map.
 -- @param x The new X position of the Map.
 -- @param y The new Y position of the Map.
@@ -555,13 +683,16 @@ function Map:setPosition(x, y)
 		self.world.x = round(viewPoint.x)
 		self.world.y = round(viewPoint.y)
 
-		if self.orientation ~= "isometric" then
-			self.world.x, self.world.y = clampPosition(self.world.x, self.world.y, self.bounds)
-			
+		self.world.x, self.world.y = clampPosition(self.world.x, self.world.y, self.bounds)
+	
+		if self.orientation == "orthogonal" then
+						
 			if self.ParallaxEnabled then
 				self:setParallaxPosition{ x = self.world.x, y = self.world.y }
 			end
-		
+			
+			self.world.x, self.world.y = clampPosition(self.world.x, self.world.y, self.bounds)
+			
 		end
 		
 	end	
@@ -585,31 +716,7 @@ end
 -- @param moveDelay The time inbetween both fades. Optional, default is 0.
 -- @param onCompleteHandler Event handler to be called on movement completion. Optional.
 function Map:fadeToPosition(x, y, fadeTime, moveDelay, onCompleteHandler)
-	
-	local beginFadeIn = function(event)
-	
-		if self.moveDelayTimer then
-			timer.cancel(self.moveDelayTimer)
-		end
-		
-		transition.to(self.world, {alpha = 1, time=fadeTime or 1000, onComplete=onCompleteHandler})
-	end
-	
-	local onFadeOut = function(event)
-		self:setPosition(x, y)
-		
-		if moveDelay then
-			self.moveDelayTimer = timer.performWithDelay(moveDelay, beginFadeIn, 1)
-		else
-			beginFadeIn()
-		end
-	end
-
-	if(self.fadeTransition) then
-		transition.cancel(self.fadeTransition)
-	end
-	
-	self.fadeTransition = transition.to(self.world, {alpha = 0, time=fadeTime or 1000, onComplete=onFadeOut})
+	fadeObjectToPosition(self, self.world, x, y, fadeTime, moveDelay, onCompleteHandler)
 end
 
 --- Slides the Map to a new position.
@@ -619,39 +726,17 @@ end
 -- @param onCompleteHandler Event handler to be called on movement completion. Optional.
 function Map:slideToPosition(x, y, slideTime, onCompleteHandler)
 	
-	local onTransitionUpdate = function(event)
-		if self.ParallaxEnabled then
-			self:setParallaxPosition{x = self.world.x, y = self.world.y }
-		end
-	end
-	
-	local onSlideComplete = function(event)
-	
-		if onCompleteHandler then
-			onCompleteHandler(event)
-		end
-		
-		Runtime:removeEventListener("enterFrame", onTransitionUpdate)
-	end
-	
 	local viewPoint = calculateViewpoint(self.world, x, y)
-		
-	if(self.slideTransition) then
-		transition.cancel(self.slideTransition)
-		Runtime:removeEventListener("enterFrame", onTransitionUpdate)
-	end
 	
 	local clampedX, clampedY = x, y
 	
-	if self.orientation ~= "isometric" then
+	if self.orientation == "orthogonal" then
 		-- Clamp the position first to ensure that it is not outside the bounds
-		clampedX, clampedY = clampPosition(round(viewPoint.x, 0.5), round(viewPoint.y, 0.5), self.bounds)
+		clampedX, clampedY = clampPosition( round( viewPoint.x, 0.5 ), round( viewPoint.y, 0.5 ), self.bounds)
 	end
+
+	slideObjectToPosition(self, self.world, clampedX, clampedY, slideTime, onCompleteHandler)
 	
-	
-	Runtime:addEventListener("enterFrame", onTransitionUpdate)
-	
-	self.slideTransition = transition.to( self.world, {time=slideTime or 1000, x=clampedX, y=clampedY, onComplete=onSlideComplete})
 end
 
 --- Shows all debug images on the Map.
@@ -682,15 +767,16 @@ end
 --- Gets all Tiles across all TileLayers at a specified position.
 -- @param position The position of the Tiles. A table containing either x & y or row & column.
 -- @param count The number of Tiles to get. Optional.
+-- @params full If true the search will check all tiles using their updated rather than original grid position. Might be slower then non-full search so use with caution.
 -- @return A table of found Tiles. Empty if none found.
-function Map:getTilesAt(position, count)
+function Map:getTilesAt(position, count, full)
 	
 	local tiles = {}
 	local tile = nil
 	
 	for i=1, #self.tileLayers, 1 do
 		
-		tile = self.tileLayers[i]:getTileAt(position)
+		tile = self.tileLayers[i]:getTileAt(position, full)
 		
 		if(tile) then
 			tiles[#tiles + 1] = tile
@@ -709,9 +795,10 @@ end
 	
 --- Gets the first found tile at a specified position.
 -- @param position The position of the Tile. A table containing either x & y or row & column.
+-- @params full If true the search will check all tiles using their updated rather than original grid position. Might be slower then non-full search so use with caution.
 -- @return tile The found Tile. nil if none found.	
-function Map:getTileAt(position)
-	local tiles = self:getTilesAt(position, 1)
+function Map:getTileAt(position, full)
+	local tiles = self:getTilesAt(position, 1, full)
 	return tiles[1]
 end
 	
@@ -722,19 +809,241 @@ function Map:getTilesWithProperty(name)
 
 	local tiles = {}
 	
-	local layerTiles = {}
+	local tileLayers = {}
 	
 	for i = 1, #self.tileLayers, 1 do
 		
-		layerTiles = self.tileLayers[i]:getTilesWithProperty(name)
+		tileLayers = self.tileLayers[i]:getTilesWithProperty(name)
 		
-		for j = 1, #layerTiles, 1 do
-			tiles[#tiles + 1] = layerTiles[j]
+		for j = 1, #tileLayers, 1 do
+			tiles[#tiles + 1] = tileLayers[j]
 		end
 
 	end
 
 	return tiles
+end
+
+--- Gets a list of Objects across all ObjectLayers that have a specified property. 
+-- @param name The name of the Property to look for.
+-- @return A list of found Objects. Empty if none found.
+function Map:getObjectsWithProperty(name)
+
+	local objects = {}
+	
+	local objectLayers = {}
+	
+	for i = 1, #self.objectLayers, 1 do
+		
+		objectLayers = self.objectLayers[i]:getObjectsWithProperty(name)
+		
+		for j = 1, #objectLayers, 1 do
+			objects[#objects + 1] = objectLayers[j]
+		end
+
+	end
+
+	return objects
+end
+
+--- Gets a list of Objects across all ObjectLayers that have a specified name. 
+-- @param name The name of the Objects to look for.
+-- @return A list of found Objects. Empty if none found.
+function Map:getObjectsWithName(name)
+
+	local objects = {}
+	
+	local objectLayers = {}
+	
+	for i = 1, #self.objectLayers, 1 do
+		
+		objectLayers = self.objectLayers[i]:getObjectsWithName(name)
+		
+		for j = 1, #objectLayers, 1 do
+			objects[#objects + 1] = objectLayers[j]
+		end
+
+	end
+
+	return objects
+end
+
+--- Gets a list of Objects across all ObjectLayers that have a specified type. 
+-- @param objectType The type of the Objects to look for.
+-- @return A list of found Objects. Empty if none found.
+function Map:getObjectsWithType(objectType)
+
+	local objects = {}
+	
+	local objectLayers = {}
+	
+	for i = 1, #self.objectLayers, 1 do
+		
+		objectLayers = self.objectLayers[i]:getObjectsWithType(objectType)
+		
+		for j = 1, #objectLayers, 1 do
+			objects[#objects + 1] = objectLayers[j]
+		end
+
+	end
+
+	return objects
+end
+
+--- Gets a list of all tile properties across the map that have the same name.
+--	Originally created by FrankS - http://developer.anscamobile.com/forum/2011/02/19/additional-convenience-functions-navigate-lime-world-tree
+-- @param name The type of the Property to look for.
+-- @return A list of found Objects. Empty if none found.
+function Map:findValuesByTilePropertyName(name)
+
+	local tiles = selfgetTilesWithProperty(name)
+	local values = {}
+	
+	for i = 1, #tiles, 1 do
+		values[#values + 1] = tiles[i]:getPropertyValue(name)
+	end
+
+	return values
+	
+end
+
+--- Creates a sprite from a passed in GID
+--	Originally created by FrankS - http://developer.anscamobile.com/forum/2011/02/19/additional-convenience-functions-navigate-lime-world-tree
+-- @param gid The gid of the tile to create.
+-- @return A corona display object. Nil if gid was invalid.
+function Map:createSprite(gid)
+
+	local tileSet = self:getTileSetFromGID( gid )
+	
+	if tileSet then
+		return tileSet:createSprite(gid)
+	end
+
+end
+
+--- Creates a new tile from a passed in GID. This will include all properties however it will not Build it ( by design ). If you wish to build it then simply call ":build()" on the returned tile.
+-- @param gid The gid of the tile to create.
+-- @param layerName The name of the TileLayer to create the Tile on.
+function Map:createTile(gid, layerName)
+	
+	local tileLayer = self:getTileLayer( layerName )
+	
+	if tileLayer then	
+		return tileLayer:createTile( gid )
+	end
+	
+end
+
+--- Creates and builds a new tile from a passed in GID. This will include all properties.
+-- @param gid The gid of the tile to create.
+-- @param layerName The name of the TileLayer to create the Tile on.
+function Map:createAndBuildTile(gid, layerName)
+	
+	local tileLayer = self:getTileLayer( layerName )
+	
+	if tileLayer then	
+		return tileLayer:createAndBuildTile( gid )
+	end
+	
+end
+
+--- Creates a new tile from a passed in GID and sets its position. This will include all properties however it will not Build it ( by design ). If you wish to build it then simply call ":build()" on the returned tile.
+-- @param gid The gid of the tile to create.
+-- @param layerName The name of the TileLayer to create the Tile on.
+-- @param position The world position for the Tile.
+function Map:createTileAt(gid, layerName, position)
+	
+	local tileLayer = self:getTileLayer( layerName )
+	
+	if tileLayer then
+		return tileLayer:createTileAt( gid, position )
+	end
+	
+end
+
+--- Creates and builds a new tile from a passed in GID and sets its position.
+-- @param gid The gid of the tile to create.
+-- @param layerName The name of the TileLayer to create the Tile on.
+-- @param position The world position for the Tile.
+function Map:createAndBuildTileAt(gid, layerName, position)
+	
+	local tileLayer = self:getTileLayer( layerName )
+	
+	if tileLayer then
+		return tileLayer:createAndBuildTileAt( gid, position )
+	end
+	
+end
+
+--- Gets a property value from a tileset.
+--	Originally created by FrankS - http://developer.anscamobile.com/forum/2011/02/19/additional-convenience-functions-navigate-lime-world-tree
+-- @param gid The gid of the tile to check.
+-- @param name The name of the property to look for.
+-- @return The value of the property. Nil if none found.
+function Map:getTilePropertyValueForGID(gid, name)
+
+	local tileSet = self:getTileSetFromGID(gid)
+	
+	if tileSet then
+	
+		local properties = tileSet:getPropertiesForTile(gid)
+	
+		for i = 1, #properties, 1 do
+			if properties[i]:getName() == name then
+				return properties[i]:getValue()
+			end
+		end
+		
+	end
+
+end
+
+--- Gets the GID and local id for a tile from a named tileset with a specified local id.
+--	Originally created by FrankS - http://developer.anscamobile.com/forum/2011/02/19/additional-convenience-functions-navigate-lime-world-tree
+-- @param tileSetName The name of the tileset to look for. Can also be specified in a single string - "tileSetName:localTileID".
+-- @param localTileID The local id of the tile. Can also be specified in a single string - "tileSetName:localTileID".
+-- @return The gid of the tile. Nil if none found.
+-- @return The local id of the tile. Nil if none found.
+function Map:getGIDForTileNameID(tileSetName, localTileID)
+
+	-- see if only localTileID specified in first arg
+	if type( tileSetName ) == "number" or tonumber(tileSetName) then 
+		return nil, tonumber(tileSetName)   
+	end
+	
+	-- (maybe) only localTileID specified in first arg string
+	local name, localID = unpack( splitString( tileSetName, ":" ) )
+		
+	if type(name) ~= "string" then 
+		return nil, tonumber(name)  
+	end
+	
+	 -- see if we can truly return gid, localTileID
+	localID = tonumber(localID) or tonumber(localTileID) or 0
+	
+	local tileSet = self:getTileSet(name)
+	
+	if tileSet then 
+		return (tonumber(tileSet.firstgid) + localID), localID 
+	end
+	
+	-- fall-through...give up
+	return nil  
+end
+
+--- Gets the name of the tileset and the local id of a specified gid
+--	Originally created by FrankS - http://developer.anscamobile.com/forum/2011/02/19/additional-convenience-functions-navigate-lime-world-tree
+-- @param gid The gid of the tile to check.
+-- @return The name of the tileset. Nil if none found.
+-- @return The local id of the tile. Nil if none found.
+function Map:getTileNameIDForGID(gid)
+
+	local tileSet = self:getTileSetFromGID(gid)
+	
+	if tileSet then
+		return tileSet.name, (gid - tileSet.firstgid)
+	end
+	
 end
 
 --- Adds a displayObject to the world. 
@@ -785,16 +1094,16 @@ end
 
 --- Fires an already added property listener.
 -- @param property The property object that was hit.
--- @param type The type of the property object. "map", "tileLayer", "objectLayer", "tile", "obeject".
+-- @param propertyType The type of the property object. "map", "tileLayer", "objectLayer", "tile", "obeject".
 -- @param object The object that has the property.
-function Map:firePropertyListener(property, type, object)
+function Map:firePropertyListener(property, propertyType, object)
 
 	if self.propertyListeners[property.name] then
 	
 		local listeners = self.propertyListeners[property.name] or {}
 		
 		for i=1, #listeners, 1 do
-			listeners[i](property, type, object)
+			listeners[i](property, propertyType, object)
 		end
 	end	
 end
@@ -823,16 +1132,25 @@ end
 -- @params position The position for the Map.
 function Map:setParallaxPosition(position)
 
+	local newPosition = {}
+	
 	for i = 1, #self.tileLayers, 1 do
 		
-		position.x = -position.x * (self.tileLayers[i].parallaxFactorX or 1) + display.contentWidth
-		position.y = -position.y * (self.tileLayers[i].parallaxFactorY or 1)
+		newPosition.x = position.x * (self.tileLayers[i].parallaxFactorX or 1)
+		newPosition.y = position.y * (self.tileLayers[i].parallaxFactorY or 1)
+
+		self.tileLayers[i]:setPosition( newPosition.x, newPosition.y, true )
 		
-	--	position.x, position.y = clampPosition(position.x, position.y, self.bounds)
-		
-		self.tileLayers[i]:setPosition(position.x, position.y)
 	end
-	
+
+	for i = 1, #self.objectLayers, 1 do
+		
+		newPosition.x = position.x * (self.objectLayers[i].parallaxFactorX or 1)
+		newPosition.y = position.y * (self.objectLayers[i].parallaxFactorY or 1)
+
+		self.objectLayers[i]:setPosition( newPosition.x, newPosition.y, true )
+		
+	end	
 end
 
 --- Updates the Map.
@@ -840,12 +1158,16 @@ end
 function Map:update(event)
 	
 	if self.focus then
+	
 		if self.focus.object then
+		
+			self:setPosition(self.focus.object.x + (self.focus.xOffset or 0), self.focus.object.y + (self.focus.yOffset or 0))
+			
 			if self.ParallaxEnabled then
-				self:setParallaxPosition(self.focus.object)
-			else
-				self:setPosition(self.focus.object.x + (self.focus.xOffset or 0), self.focus.object.y + (self.focus.yOffset or 0))
+				self.world.x = self.world.x + self.world.x * -1
+				self.world.y = self.world.y + self.world.y * -1
 			end
+			
 		end
 		
 	end
@@ -888,13 +1210,52 @@ function Map:create()
 	end
 	
 	self.pixelwidth = self.width * self.tilewidth
-	self.pixelheight = self.height * self.tileheight
+	self.pixelheight = self.height * self.tileheight	
+		
+	if self.orientation == "orthogonal" then 
+		
+		self.bounds = {}
+		self.bounds.x = 0
+		self.bounds.y = 0
+		self.bounds.width = self.pixelwidth
+		self.bounds.height = self.pixelheight	
 	
-	self.bounds = {}
-	self.bounds.x = 0
-	self.bounds.y = 0
-	self.bounds.width = self.pixelwidth
-	self.bounds.height = self.pixelheight	
+		if self.ParallaxEnabled then
+		
+			self.parallaxBaseLayer = self:getTileLayersWithProperty("parallaxBase")[1]
+			
+			if not self.parallaxBaseLayer then
+				self.parallaxBaseLayer = self.tileLayers[#self.tileLayers]
+			end
+			
+			if self.parallaxBaseLayer then
+				self.bounds.width = self.parallaxBaseLayer.pixelwidth - display.contentWidth / 2
+				self.bounds.height = self.parallaxBaseLayer.pixelheight
+			end
+		end
+		
+	else
+		
+		local firstTileLayer = self:getTileLayer(1)
+		
+		if firstTileLayer then
+		
+			local topTile = firstTileLayer.tiles[1]
+			local rightTile = firstTileLayer.tiles[firstTileLayer.width]
+			
+			local bottomTile = firstTileLayer.tiles[#firstTileLayer.tiles]
+			local leftTile = firstTileLayer.tiles[#firstTileLayer.tiles - ( firstTileLayer.width - 1) ]
+	
+			
+			self.bounds = {}
+			self.bounds.x = rightTile.sprite.x + ( rightTile.sprite.width / 2 )
+			self.bounds.y = topTile.sprite.y - ( rightTile.sprite.height / 2)
+			self.bounds.width = ( ( (leftTile.sprite.x - rightTile.sprite.x) * -1 ) / 2 ) + ( leftTile.sprite.width / 2 ) 
+			self.bounds.height = self.pixelheight + ( rightTile.sprite.height / 2)
+
+		end
+	
+	end
 
 	self.visualCreated = true
 	
@@ -902,7 +1263,9 @@ function Map:create()
 		print("Lime-Coconut: Map Created - " .. self.filename)
 	end
 	
-	showScreenSpaceTiles(self)
+	if _G.limeScreenCullingEnabled then
+		showScreenSpaceTiles(self)
+	end
 	
 	return self.world
 end
@@ -960,16 +1323,6 @@ function Map:build()
 	end	
 	
 	self.physicalCreated = true
-	
-	if self.ParallaxEnabled then
-	
-		if self.ParallaxEnabled == "" then
-			self.ParallaxEnabled = "true"
-		end
-		
-		self.ParallaxEnabled = stringToBool( self.ParallaxEnabled )
-	end
-	
 	
 	if(lime.isDebugModeEnabled()) then
 		print("Lime-Banana: Map Built - " .. self.filename)

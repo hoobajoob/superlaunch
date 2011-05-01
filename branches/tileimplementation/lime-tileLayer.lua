@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-tileLayer.lua
 --
@@ -50,7 +50,7 @@ TileLayer_mt = { __index = TileLayer }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-TileLayer.version = 2.8
+TileLayer.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
@@ -99,15 +99,39 @@ end
 --- Gets a tile that is at a  grid position on this layer.
 -- @params tileList The list of tiles. 2D array of grid positions.
 -- @params position The grid position to look for.
+-- @params full If full then the tileList must be a 1D list rather than 2D and the search will use the individual tiles row/col positions incase they have been updated.
 -- @return The found tile or nil if none found.
-local getTileAt = function(tileList, position)
-	if(tileList) then
-		if(tileList[position.column]) then
-			if(tileList[position.column][position.row]) then
-				return tileList[position.column][position.row]
+local getTileAt = function(tileList, position, full)
+
+	local _tileList = tileList
+	local _position = position
+	local _full = full
+	
+	if _tileList  then
+	
+		if _full then
+			
+			for i = 1, #_tileList, 1 do
+				
+				if _tileList[i].row == _position.row and _tileList[i].column == _position.column then
+					return _tileList[i]
+				end
 			end
+			
+		else
+	
+			if _tileList[_position.column] then
+			
+				if _tileList[_position.column][_position.row] then
+					return _tileList[_position.column][_position.row]
+				end
+				
+			end
+			
 		end
+		
 	end
+	
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -230,7 +254,7 @@ function TileLayer:setProperty(name, value)
 		self:addProperty(Property:new(name, value))
 	end
 	
-	self[name] = value
+	self[name] = self:getPropertyValue(name)
 end
 
 --- Gets a Property of the TileLayer.
@@ -298,30 +322,56 @@ end
 
 --- Shows the TileLayer.
 function TileLayer:show()
-	for i=1, #self.tiles, 1 do	
-		if self.tiles[i].sprite then
-			self.tiles[i].sprite.isVisible = true
-		end		
+
+	local tiles = self.tiles
+	
+	for i=1, #tiles, 1 do	
+		tiles[i]:show()	
 	end	
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = false
+	end
+	
 end
 
 --- Hides the TileLayer.
 function TileLayer:hide()
-	for i=1, #self.tiles, 1 do
-		if self.tiles[i].sprite then
-			self.tiles[i].sprite.isVisible = false
-		end		
+
+	local tiles = self.tiles
+	
+	for i=1, #tiles, 1 do
+		tiles[i]:hide()
 	end
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = false
+	end
+	
+end
+
+--- Gets the TileLayers visual.
+function TileLayer:getVisual()
+	return self.group
 end
 
 --- Gets a Tile on this TileLayer at a specified position.
 -- @param position The position of the Tile. A table containing either x & y or row & column.
+-- @params full If true the search will check all tiles using their updated rather than original grid position. Might be slower then non-full search so use with caution.
 -- @return The found Tile. nil if none found.
-function TileLayer:getTileAt(position)
+function TileLayer:getTileAt(position, full)
 	
 	if(position.row and position.column) then
 		
-		return getTileAt(self.tileGrid, position)
+		if full then
+			return getTileAt(self.tiles, position, true)
+		else
+			return getTileAt(self.tileGrid, position)
+		end
 	
 	elseif(position.x and position.y) then
 		
@@ -336,11 +386,13 @@ end
 -- @return A list of found Tiles. Empty if none found.
 function TileLayer:getTilesWithProperty(name)
 
+	local allTiles = self.tiles
+	
 	local tiles = {}
 	
-	for i = 1, #self.tiles, 1 do
-		if self.tiles[i]:hasProperty(name) then
-			tiles[#tiles + 1] = self.tiles[i]
+	for i = 1, #allTiles, 1 do
+		if allTiles[i]:hasProperty(name) then
+			tiles[#tiles + 1] = allTiles[i]
 		end
 	end
 
@@ -417,6 +469,84 @@ function TileLayer:setTileAt(gid, position)
 
 end
 
+--- Creates a new tile from a passed in GID. This will include all properties however it will not Build it ( by design ). If you wish to build it then simply call ":build()" on the returned tile.
+-- @param gid The gid of the tile to create.
+function TileLayer:createTile(gid)
+
+	local tileSet = self.map:getTileSetFromGID( gid )
+	
+	if tileSet then
+	
+		local data = {}
+		
+		data.isGenerated = true
+		data.properties = tileSet:getPropertiesForTile( gid )
+		
+		local tile = Tile:new(data, self.map, self)
+		
+		if tile then
+			
+			local index = #self.tiles + 1
+			
+			tile.gid = gid
+			
+			tile:create( index )
+			
+			self.tiles[ index ] = tile
+			
+			tile:updateGridPosition()
+		end
+		
+		return tile
+	end
+	
+end
+
+--- Creates and builds a new tile from a passed in GID. This will include all properties.
+-- @param gid The gid of the tile to create.
+function TileLayer:createAndBuildTile(gid)
+	local tile = self:createTile(gid)
+	
+	if tile then
+		tile:build()
+	end
+	
+	return tile
+end
+
+--- Creates a new tile from a passed in GID and sets its position. This will include all properties however it will not Build it ( by design ). If you wish to build it then simply call ":build()" on the returned tile.
+-- @param gid The gid of the tile to create.
+-- @param position The world position for the Tile.
+function TileLayer:createTileAt(gid, position)
+
+	local tile = self:createTile(gid)
+	
+	if tile then
+	
+		if position.row and position.column then
+			position = lime.utils.gridToWorldPosition( self.map, position )
+		end
+		
+		tile:setPosition(position.x, position.y)
+	end
+	
+	return tile
+end
+
+--- Creates and builds a new tile from a passed in GID and sets its position. This will include all properties.
+-- @param gid The gid of the tile to create.
+-- @param position The world position for the Tile.
+function TileLayer:createAndBuildTileAt(gid, position)
+
+	local tile = self:createTileAt(gid, position)
+	
+	if tile then
+		tile:build()
+	end
+	
+	return tile
+end
+
 --- Adds a displayObject to the layer. 
 -- @param displayObject The displayObject to add.
 -- @return The added displayObject.
@@ -424,21 +554,30 @@ function TileLayer:addObject(displayObject)
 	return addObjectToGroup(displayObject, self.group)
 end
 
+
 --- Sets the position of the TileLayer.
 -- @param x The new X position of the TileLayer.
 -- @param y The new Y position of the TileLayer.
-function TileLayer:setPosition(x, y)
+-- @param force If true then the layer will not be clamped or use the viewpoint calculator. Default is false. Optional.
+function TileLayer:setPosition(x, y, force)
 
 	if self.group then
-		local viewPoint = calculateViewpoint(self.group, x, y)
-
-		self.group.x = round(viewPoint.x)
-		self.group.y = round(viewPoint.y)
-
-		if self.map.orientation ~= "isometric" then
-			self.group.x, self.group.y = clampPosition(self.group.x, self.group.y, self.map.bounds)
+	
+		if force then 
+			
+			self.group.x = round(x)
+			self.group.y = round(y)
+			
+		else
+			local viewPoint = calculateViewpoint(self.group, x, y)
+	
+			self.group.x = round(viewPoint.x)
+			self.group.y = round(viewPoint.y)
+	
+			if self.map.orientation ~= "isometric" then
+				self.group.x, self.group.y = clampPosition(self.group.x, self.group.y, self.map.bounds)
+			end
 		end
-		
 	end
 	
 end
@@ -454,6 +593,18 @@ end
 -- @param event The Touch event.
 function TileLayer:drag(event)
 	dragObject(self.group, event)
+end
+
+--- Sets the rotation of the TileLayer.
+-- @param The new rotation.
+function TileLayer:setRotation(angle)
+	self.group.rotation = angle
+end
+
+--- Rotates the TileLayer.
+-- @param The angle to rotate by.
+function TileLayer:rotate(angle)
+	self.group.rotation = self.group.rotation + angle
 end
 
 --- Creates the visual representation of the layer.
@@ -491,6 +642,31 @@ function TileLayer:create()
 	for key, value in pairs(self.properties) do
 		self.map:firePropertyListener(self.properties[key], "layer", self)
 	end		
+	
+	-- Override tile properties if this layer has been marked as static - NOTE: THIS IS A TEMPORARY FEATURE UNTIL A MORE FLEXIBLE / SECURE FEATURE SET HAS BEEN DECIDED ON!
+	if self:getPropertyValue("IsStatic") then
+		
+		local tile = nil
+		
+		for i=1, #self.tiles, 1 do
+			
+			tile = self.tiles[i]
+			
+			if tile.gid ~= 0 then
+				tile.HasBody = "true"
+				tile.bodyType = "static"
+			end
+		
+		end
+		
+	end
+		
+	if self.opacity then
+		self.group.alpha = self.opacity 
+	end
+	
+	self.pixelwidth = self.width * self.map.tilewidth
+	self.pixelheight = self.height * self.map.tileheight
 	
 	return self.group
 end

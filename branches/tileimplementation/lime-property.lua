@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-property.lua
 --
@@ -46,7 +46,16 @@ Property_mt = { __index = Property }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-Property.version = 2.8
+Property.version = 3.2
+
+----------------------------------------------------------------------------------------------------
+----									LOCALISED VARIABLES										----
+----------------------------------------------------------------------------------------------------
+
+local utils = lime.utils
+local decodeJsonSafely = utils.decodeJsonSafely
+local getValueFromSeed = utils.getValueFromSeed
+local isPropertyASeed = utils.isPropertyASeed
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
@@ -63,8 +72,18 @@ function Property:new(name, value)
     setmetatable( self, Property_mt ) -- all instances share the same metatable
     
     self.name = name
-    self.value = value
-
+    
+    -- First try to get a value from a seed.
+    -- If the property is not a seed then
+    -- it will just be returned untouched
+    -- as a string.
+    
+    if isPropertyASeed(value) then
+    	self.value = getValueFromSeed(value)
+    else
+    	self.value = decodeJsonSafely(value)
+    end	
+	
     return self
     
 end
@@ -77,12 +96,12 @@ end
 
 --- Gets the value of the Property. 
 -- @return The value of the Property.
-function Property:getValue()
+function Property:getValue()	
 	return self.value
 end
 
 --- Sets the value of the Property. 
 -- @param value The new value.
 function Property:setValue(value)
-	self.value = value
+	self.value = decodeJsonSafely(value)
 end

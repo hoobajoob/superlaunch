@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-objectLayer.lua
 --
@@ -52,17 +52,21 @@ ObjectLayer_mt = { __index = ObjectLayer }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-ObjectLayer.version = 2.8
+ObjectLayer.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
 ----------------------------------------------------------------------------------------------------
 
 local utils = lime.utils
+local clampPosition = utils.clampPosition
+local round = utils.round
+local calculateViewpoint = utils.calculateViewpoint
 local moveObject = utils.moveObject
 local dragObject = utils.dragObject
 local readInConfigFile = utils.readInConfigFile
 local hexToRGB = utils.hexToRGB
+local addObjectToGroup = utils.addObjectToGroup
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
@@ -137,7 +141,7 @@ function ObjectLayer:setProperty(name, value)
 		self:addProperty(Property:new(name, value))
 	end
 	
-	self[name] = value
+	self[name] = self:getPropertyValue(name)
 end
 
 --- Gets a Property of the ObjectLayer.
@@ -205,9 +209,9 @@ end
 
 --- Get an object by its name. 
 -- @param name The name of the Object to get.
--- @param type The type of the Object to get. Optional.
+-- @param objectType The type of the Object to get. Optional.
 -- @return The found Object. nil if none found.
-function ObjectLayer:getObject(name, type)
+function ObjectLayer:getObject(name, objectType)
 
 	for i=1, #self.objects, 1 do
 		
@@ -219,8 +223,8 @@ function ObjectLayer:getObject(name, type)
 				
 				object = self.objects[i]
 				
-				if(type) then -- Type specified to check that it is equal
-					if(object.type == type) then
+				if(objectType) then -- Type specified to check that it is equal
+					if(object.type == objectType) then
 						return object
 					end
 				
@@ -238,9 +242,9 @@ end
 	
 --- Get a list of objectd by there name. 
 -- @param name The name of the Objects to get.
--- @param type The type of the Objects to get. Optional.
+-- @param objectType The type of the Objects to get. Optional.
 -- @return A list of the found Objects. Empty if none found.
-function ObjectLayer:getObjects(name, type)
+function ObjectLayer:getObjects(name, objectType)
 	
 	local objects = {}
 		
@@ -254,8 +258,8 @@ function ObjectLayer:getObjects(name, type)
 				
 				object = self.objects[i]
 				
-				if(type) then -- Type specified to check that it is equal
-					if(object.type == type) then
+				if(objectType) then -- Type specified to check that it is equal
+					if(object.type == objectType) then
 						objects[#objects + 1] = self.objects[i]
 					end
 				
@@ -304,14 +308,14 @@ function ObjectLayer:getObjectsWithName(name)
 end
 
 --- Gets a list of Objects on this ObjectLayer that have a certain type. 
--- @param type - The type of the Object to look for.
+-- @param objectType - The type of the Object to look for.
 -- @return A list of found Objects. Empty if none found.
-function ObjectLayer:getObjectsOfType(type)
+function ObjectLayer:getObjectsOfType(objectType)
 
 	local objects = {}
 	
 	for i = 1, #self.objects, 1 do
-		if self.objects[i].type == type then
+		if self.objects[i].type == objectType then
 			objects[#objects + 1] = self.objects[i]
 		end
 	end
@@ -319,26 +323,106 @@ function ObjectLayer:getObjectsOfType(type)
 	return objects
 end
 
+--- Shows the ObjectLayer.
+function ObjectLayer:show()
+	for i=1, #self.objects, 1 do	
+		self.objects[i]:show()	
+	end	
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = false
+	end
+	
+end
+
+--- Hides the ObjectLayer.
+function ObjectLayer:hide()
+	for i=1, #self.tiles, 1 do
+		self.objects[i]:hide()
+	end
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = false
+	end
+	
+end
+
+--- Gets the ObjectLayers visual.
+function ObjectLayer:getVisual()
+	return self.group
+end
+
 --- Moves the ObjectLayer.
 -- @param x The amount to move the ObjectLayer along the X axis.
 -- @param y The amount to move the ObjectLayer along the Y axis.
 function ObjectLayer:move(x, y)
-	moveObject(self, x, y)
+	moveObject(self.group, x, y)
 	
 	for i=1, #self.objects, 1 do
 		self.objects[i]:move(x, y)
 	end
 end
 
-
 --- Drags the ObjectLayer.
 -- @param event The Touch event.
 function ObjectLayer:drag(event)
-	dragObject(self, event)
+	dragObject(self.group, event)
 	
 	for i=1, #self.objects, 1 do
 		self.objects[i]:drag(x, y)
 	end	
+end
+
+--- Sets the position of the ObjectLayer.
+-- @param x The new X position of the ObjectLayer.
+-- @param y The new Y position of the ObjectLayer.
+-- @param force If true then the layer will not be clamped or use the viewpoint calculator. Default is false. Optional.
+function ObjectLayer:setPosition(x, y, force)
+
+	if self.group then
+	
+		if force then 
+			self.group.x = round(x)
+			self.group.y = round(y)
+		else
+			local viewPoint = calculateViewpoint(self.group, x, y)
+	
+			self.group.x = round(viewPoint.x)
+			self.group.y = round(viewPoint.y)
+	
+			if self.map.orientation ~= "isometric" then
+				self.group.x, self.group.y = clampPosition(self.group.x, self.group.y, self.map.bounds)
+			end
+		end
+	end
+	
+end
+
+--- Sets the rotation of the ObjectLayer.
+-- @param The new rotation.
+function ObjectLayer:setRotation(angle)
+	for i=1, #self.objects, 1 do 
+		self.objects[i]:setRotation(angle)
+	end
+end
+
+--- Rotates the ObjectLayer.
+-- @param The angle to rotate by.
+function ObjectLayer:rotate(angle)
+	for i=1, #self.objects, 1 do 
+		self.objects[i]:rotate(angle)
+	end
+end
+
+--- Adds a displayObject to the layer. 
+-- @param displayObject The displayObject to add.
+-- @return The added displayObject.
+function ObjectLayer:addObject(displayObject)
+	return addObjectToGroup(displayObject, self.group)
 end
 
 --- Shows all debug images on the ObjectLayer.
@@ -369,9 +453,19 @@ end
 --- Creates the visual debug representation of the ObjectLayer.
 function ObjectLayer:create()
 	
-	-- Display group used for debug visuals
-	self.group = display.newGroup()
-		
+	if(lime.isDebugModeEnabled()) then
+		print("Lime-Coconut: Creating object layer - " .. self.name)
+	end
+	
+	if not self.map.world then
+		self.map.world = display.newGroup()
+	end
+
+	-- Display group used for debug visuals and physics bodies
+	if not self.group then
+		self.group = display.newGroup()
+	end
+	
 	local object = nil
 	local listeners = nil
 		
@@ -412,13 +506,24 @@ function ObjectLayer:build()
 		print("Lime-Banana: Building Object Layer - " .. self.name)
 	end	
 	
+	if not self.map.world then
+		self.map.world = display.newGroup()
+	end
+
+	-- Display group used for debug visuals and physics bodies
+	if not self.group then
+		self.group = display.newGroup()
+	end	
+	
 	for i=1, #self.objects, 1 do
 		
 		if( self.objects[i].type == "Body" or self.objects[i]:hasProperty("HasBody") ) then
-			self.objects[i]:build()
+			self.objects[i]:build(self)
 		end
 		
 	end
+	
+	self.map.world:insert(self.group)
 	
 end
 

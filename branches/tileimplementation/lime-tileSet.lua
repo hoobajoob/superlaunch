@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-tileSet.lua
 --
@@ -53,7 +53,7 @@ TileSet_mt = { __index = TileSet }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-TileSet.version = 2.8
+TileSet.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
@@ -62,6 +62,8 @@ TileSet.version = 2.8
 local utils = lime.utils
 local round = utils.round
 local newSprite = sprite.newSprite
+local convertStringToNumberSafely = utils.convertStringToNumberSafely
+local getExtensionFromFilename = utils.getExtensionFromFilename
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
@@ -89,7 +91,7 @@ function TileSet:new(data, map, firstgid, rootDir)
 	end
 	
 	-- Allow overriding of the firstgid
-	self.firstgid = firstgid or self.firstgid
+	self.firstgid = convertStringToNumberSafely(firstgid or self.firstgid)
 	
 	local node = nil
 	local attributes = nil
@@ -145,77 +147,76 @@ function TileSet:new(data, map, firstgid, rootDir)
 		 		 
 		self.rootDir = rootDir or "" -- "maps/"
 		
-		for k, v in string.gmatch(filename, "(%w+).(%w+)") do
+		local extension = getExtensionFromFilename( filename )
 
-		   if(v == "tsx") then -- Using an external tileset
-				
-				local path = system.pathForFile(self.source, system.ResourcesDirectory)
-
-				if(path) then			
-				
-					local tilesetContents = utils.readInFileContents(path)
-	
-					local xml = XmlParser:ParseXmlFile(path)
-					
-					local tileSet = TileSet:new(xml, self.map, self.firstgid, rootDir)
-	
-					if(tileSet) then
-					
-						if(lime.isDebugModeEnabled()) then
-							print("Lime-Lychee: Loaded External Tileset - " .. utils.getFilenameFromPath(path))
-						end
-						
-						return tileSet
-					end
-
-				end
-				
-				return
-		    else
-				
-				-- Amount to scale the tile size by when creating the sprite sheet
-				self.tileXScale = 1
-				self.tileYScale = 1
-				
-				-- Check to see if on a Retina display
-				if display.contentScaleX == 0.5 then
-					
-					self.retinaSource = utils.addSuffixToFileName(self.source, "@2")
-
-					-- Check if there is a HD version of the tileset image
-					local path = system.pathForFile(self.rootDir .. self.retinaSource, system.ResourcesDirectory)
-					
-					if(lime.isDebugModeEnabled()) then
-						print("Lime-Lychee: If you aren't intending to use Retina spritesheets then you can ignore the previous warning.")
-					end
-					
-					if path then
-					
-						-- Mark the tileset as HD
-						self.usingHDSource = true
-						
-						-- Adjust the source value
-						self.source = self.retinaSource
-					
-						-- Adjust the scale amount for the tile size
-						self.tileXScale = 2
-						self.tileYScale = 2
-		
-					end
-
-					
-				end
-
-				self.spriteSheet = sprite.newSpriteSheet(self.rootDir .. self.source, self.tilewidth * self.tileXScale, self.tileheight * self.tileYScale)
-
-				self.tileCount = self.spriteSheet.frameCount
-
-				-- Create the actual spriteset object
-				self.spriteSet = sprite.newSpriteSet(self.spriteSheet, 1, self.tileCount)
+	   	if(extension == "tsx") then -- Using an external tileset
 			
+			local path = system.pathForFile(self.source, system.ResourceDirectory)
+
+			if(path) then			
+			
+				local tilesetContents = utils.readInFileContents(path)
+
+				local xml = XmlParser:ParseXmlFile(path)
+				
+				local tileSet = TileSet:new(xml, self.map, self.firstgid, rootDir)
+
+				if(tileSet) then
+				
+					if(lime.isDebugModeEnabled()) then
+						print("Lime-Lychee: Loaded External Tileset - " .. utils.getFilenameFromPath(path))
+					end
+					
+					return tileSet
+				end
+
 			end
+			
+			return
+		else
+			
+			-- Amount to scale the tile size by when creating the sprite sheet
+			self.tileXScale = 1
+			self.tileYScale = 1
+			
+			-- Check to see if on a Retina display
+			if display.contentScaleX == 0.5 then
+				
+				self.retinaSource = utils.addSuffixToFileName(self.source, "@2x")
+
+				-- Check if there is a HD version of the tileset image
+				local path = system.pathForFile(self.rootDir .. self.retinaSource, system.ResourceDirectory)
+				
+				if(lime.isDebugModeEnabled() and not path) then
+					print("Lime-Lychee: If you aren't intending to use Retina spritesheets then you can ignore the previous warning.")
+				end
+				
+				if path then
+				
+					-- Mark the tileset as HD
+					self.usingHDSource = true
+					
+					-- Adjust the source value
+					self.source = self.retinaSource
+				
+					-- Adjust the scale amount for the tile size
+					self.tileXScale = 2
+					self.tileYScale = 2
+	
+				end
+
+				
+			end
+
+			self.spriteSheet = sprite.newSpriteSheet(self.rootDir .. self.source, system.ResourceDirectory, self.tilewidth * self.tileXScale, self.tileheight * self.tileYScale)
+
+			self.tileCount = self.spriteSheet.frameCount
+
+			-- Create the actual spriteset object
+			self.spriteSet = sprite.newSpriteSet(self.spriteSheet, 1, self.tileCount)
 		
-		end		
+		end
+
 	end
 	
     return self
@@ -236,7 +237,7 @@ function TileSet:setProperty(name, value)
 		self:addProperty(Property:new(name, value))
 	end
 	
-	self[name] = value
+	self[name] = self:getPropertyValue(name)
 end
 
 ---Gets a Property of the TileSet.

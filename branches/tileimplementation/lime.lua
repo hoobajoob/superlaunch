@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime.lua
 --
@@ -62,18 +62,18 @@ require("lime-property")
 ----									MODULE VARIABLES										----
 ----------------------------------------------------------------------------------------------------
 
-version = 2.8
+version = 3.2
 
 requiredVersions = {}
-requiredVersions["atlas"] = 2.8
-requiredVersions["map"] = 2.8
-requiredVersions["tileLayer"] = 2.8
-requiredVersions["objectLayer"] = 2.8
-requiredVersions["tile"] = 2.8
-requiredVersions["object"] = 2.8
-requiredVersions["tileSet"] = 2.8
-requiredVersions["property"] = 2.8
-requiredVersions["utils"] = 2.8
+requiredVersions["atlas"] = 3.2
+requiredVersions["map"] = 3.2
+requiredVersions["tileLayer"] = 3.2
+requiredVersions["objectLayer"] = 3.2
+requiredVersions["tile"] = 3.2
+requiredVersions["object"] = 3.2
+requiredVersions["tileSet"] = 3.2
+requiredVersions["property"] = 3.2
+requiredVersions["utils"] = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									GLOBAL (YIK) PROPERTIES									----
@@ -84,6 +84,8 @@ _G.limeScreenCullingEnabled = true
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC PROPERTIES										----
 ----------------------------------------------------------------------------------------------------
+
+isSimulator = system.getInfo("environment") == "simulator"
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS										    ----

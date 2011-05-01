@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-utils.lua
 --
@@ -45,31 +45,141 @@ module(..., package.seeall)
 
 require "Json"
 
-
 ----------------------------------------------------------------------------------------------------
 ----									MODULE VARIABLES										----
 ----------------------------------------------------------------------------------------------------
 
-version = 2.8
+version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
 ----------------------------------------------------------------------------------------------------
 
+local floor = math.floor
+local abs = math.abs
+local ceil = math.ceil
+local atan = math.atan
+local rad = math.rad
+local deg = math.deg
+local sqrt = math.sqrt
+local pi = math.pi
+local twoPi = pi * 2
+
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
 ----------------------------------------------------------------------------------------------------
 
----Converts a world position into a tile (grid) position
+--[[
+
+	-- ORIGINAL UN-GRAHAMISED FUNCTIONS --
+	
+function tileIndexFromPos(x, y, posX, posY, tileWidth)
+ posX = posX or 0
+ posY = posY or 0
+ local index = {x,y}
+ 
+ index.x = ( (2 * y) + x - posX - posY) / 2
+ index.y = ( posX - x + (2 * y) - posY) / 2
+ 
+ index.x = math.floor( (index.x / tileWidth))
+ index.y = math.floor( (index.y / tileWidth))
+
+ return index
+end
+
+function posFromIndex(i, j, posX, posY, tileWidth)
+ posX = posX or 0
+ posY = posY or 0
+ local posOrtho = {x,y}
+ 
+ posOrtho.x = tileWidth * i
+ posOrtho.y = tileWidth * j
+ 
+ local posIso = {x = posX,y = posY}
+ 
+ posIso.x = posIso.x + ( posOrtho.x - posOrtho.y )
+ posIso.y = posIso.y + (( posOrtho.y + posOrtho.y ) / 2)
+ 
+ posIso.x = posIso.x + 0.1
+ posIso.y = posIso.y + 0.1
+ 
+ return posIso
+end
+
+--]]
+
+---Converts an isometric screen position into a grid position.
+-- @param map The current Map.
+-- @param position The screen position.
+-- @param origin The map origin.
+-- @returns The grid position.
+function screenToGridPositionIso(map, position, origin)
+
+	local _map = map
+	local _position = position
+	local _origin = origin
+	
+	_origin = _origin or {}
+	
+	_origin.x = _origin.x or 0
+	_origin.y = _origin.y or 0
+	
+	_position.column = ( ( 2 * _position.y ) + _position.x - _origin.x - _origin.y ) / 2
+	_position.row = ( _origin.x - _position.x + ( 2 * _position.y ) - _origin.y ) / 2
+	
+	_position.column = floor( ( _position.column / _map.tilewidth ) )
+	_position.row = floor( ( _position.row / _map.tilewidth ) )
+	
+	return _position
+
+end
+
+---Converts a grid position into an isometric world position.
+-- @param map The current Map.
+-- @param position The grid position.
+-- @param origin The map origin.
+-- @returns The world position.
+function gridToWorldPositionIso(map, position, origin)
+
+	local _map = map
+	local _position = position
+	local _origin = origin
+	
+	_origin = _origin or {}
+	
+	_origin.x = _origin.x or 0
+	_origin.y = _origin.y or 0
+	
+	local orthPosition = {}
+	
+	orthPosition.x = _map.tilewidth * _position.column
+	orthPosition.y = _map.tilewidth * _position.row
+	
+	local isoPosition = {x = orthPosition, y = orthPosition}
+	
+	isoPosition.x = isoPosition.x + ( orthPosition.x - orthPosition.y )
+	isoPosition.y = isoPosition.y + ( ( orthPosition.y + orthPosition.y ) / 2 )
+	
+	isoPosition.x = isoPosition.x + 0.1
+	isoPosition.y = isoPosition.y + 0.1
+	
+	return isoPosition
+	
+end
+
+---Converts a screen position into a tile (grid) position
 -- @param map The current Map.
 -- @param position The world position.
 -- @returns The grid position.
 function worldToGridPosition(map, position)
 
-	position.column = math.ceil(position.x / map.tilewidth)
-	position.row = math.ceil(position.y / map.tileheight)
+	local _map = map
+	local _position = position
+	
+	_position.column = ceil(_position.x / _map.tilewidth)
+	_position.row = ceil(_position.y / _map.tileheight)
 
-	return position
+	return _position
 end
 
 --- Converts a screen position into a tile (grid) position.
@@ -77,7 +187,11 @@ end
 -- @param position The screen position.
 -- @return The grid position.
 function screenToGridPosition(map, position)
-	return worldToGridPosition(map, {x=position.x - map.world.x, y=position.y - map.world.y})
+
+	local _map = map
+	local _position = position
+	
+	return worldToGridPosition(_map, {x=_position.x - _map.world.x, y=_position.y - _map.world.y})
 end
 
 --- Converts a screen position into a world position
@@ -86,12 +200,42 @@ end
 -- @return The world position.
 function screenToWorldPosition(map, position)
 
-	if map.world then
-		position.x = position.x + map.world.x * -1
-		position.y = position.y + map.world.y * -1
+	local _map = map
+	local _position = position
+	
+	local newPosition = {}
+	
+	if _map.world then
+
+		newPosition.x = _position.x + _map.world.x * -1
+		newPosition.y = _position.y + _map.world.y * -1
+		
+		if _map.ParallaxEnabled then
+			newPosition.x = newPosition.x + _map.world.x * -1
+			newPosition.y = newPosition.y + _map.world.y * -1
+		end
 	end
 	
-	return position
+	return newPosition
+end
+
+--- Converts a world position into a screen position
+-- @param map The current Map.
+-- @param position The world position.
+-- @return The screen position.
+function worldToScreenPosition(map, position)
+
+	local _map = map
+	local _position = position
+	
+	local newPosition = {}
+	
+	if _map.world then
+		newPosition.x = _position.x - _map.world.x
+		newPosition.y = _position.y - _map.world.y
+	end
+	
+	return newPosition
 end
 
 --- Reads the entire contents of a file into a String.
@@ -99,7 +243,9 @@ end
 -- @return A string containing the read in contents.
 function readInFileContents(path)
 		
-	local handle = io.open( path, "r" )
+	local _path = path
+	
+	local handle = io.open( _path, "r" )
 
 	if(handle) then
 		local contents = handle:read( "*a" )
@@ -114,7 +260,10 @@ end
 -- @param path The complete path to the file.
 -- @return A table of lines with the read in contents.
 function readLines(path)
-	local handle = io.open( path, "r" )
+
+	local _path = path
+	
+	local handle = io.open( _path, "r" )
 	local lines = {}
 	
 	while true do
@@ -129,34 +278,50 @@ function readLines(path)
 	return lines
 end
 
---- Split a String.
--- @param s The String to split.
--- @param delimiter The value to split the String on.
--- @returns A table consiting of all the split elements.
-function splitString(s, delimiter)
+--- Split a string str in maximum maxNb parts given a delimiter delim.
+-- from http://lua-users.org/wiki/SplitJoin - 
+-- added  case "" for delim to split the str in array of chars.
+--@param str String to split.
+--@param delim Delimiter to split on.
+--@param maxNb Maximum number of split parts. Optional.
+--@return - Array of string-parts that were found during the split.
+function splitString(str, delim, maxNb)
 	
-	-- Swapped to the new function for the addSuffixToFileName function.
-	--[[
-  	local result = { }
-  	local from  = 1
-  	local delim_from, delim_to = string.find( s, delimiter, from  )
-  	
-	while delim_from do
-    	table.insert( result, string.sub( s, from , delim_from-1 ) )
-    	from  = delim_to + 1
-    	delim_from, delim_to = string.find( s, delimiter, from  )
-  	end
-
-  	table.insert( result, string.sub( s, from  ) )
- 	return result
-	--]]
-
-	local fields = {}
-	local pattern = string.format("([^%s]+)", delimiter)
-	s:gsub(pattern, function(c) fields[#fields+1] = c end)
+	local _str = str
+	local _delim = delim
+	local _maxNb = maxNb
 	
-	return fields
-
+	local result = {}
+	if _maxNb == nil or _maxNb < 1 then
+			_maxNb = 0    -- No limit
+	end
+	if(_delim == "")then
+			local nb = 0
+			for c in _str:gmatch"." do
+					nb = nb+1
+					result[nb] = c
+					if(nb==_maxNb)then return result end
+			end
+			return result
+	end
+	if(string.find(_str, _delim) == nil) then
+			-- eliminate bad case
+			return { _str }
+	end
+	local pat = "(.-)" .. _delim .. "()"
+	local nb = 0
+	local lastPos
+	for part, pos in string.gfind(_str, pat) do
+			nb = nb + 1
+			result[nb] = part
+			lastPos = pos
+			if nb == _maxNb then break end
+	end
+	-- Handle the last field
+	if nb ~= _maxNb then
+			result[nb + 1] = string.sub(_str, lastPos)
+	end
+	return result
 end
 
 --- Converts a string of either "true" or "false" to a boolean value. 
@@ -164,22 +329,28 @@ end
 -- @param s The string to convert.
 -- @return True or False based on the input string.
 function stringToBool(s)
-	if(s) then
-		if(string.lower(s) == "true") then
+
+	local _s = s
+	
+	if(_s and type(_s) == "string") then
+		if(string.lower(_s) == "true") then
 			return true
-		else
+		elseif(string.lower(_s) == "false") then
 			return false
 		end
 	end
 	
-	return false
+	return nil
 end
 
 --- Converts a boolean value into a string.
 -- @param bool The boolean to convert.
 -- @return "true" or "false".
 function boolToString(bool)
-	if(bool) then
+	
+	local _bool = bool
+	
+	if(_bool) then
 		return "true"
 	else
 		return "false"
@@ -192,17 +363,20 @@ end
 -- @return The displayObject
 function addObjectToGroup(displayObject, group)
 	
-	if displayObject then
+	local _displayObject = displayObject
+	local _group = group
+	
+	if _displayObject then
 		
-		if group then
+		if _group then
 		
-			group:insert(displayObject)
+			_group:insert(_displayObject)
 			
 		end
 		
 	end
 	
-	return displayObject
+	return _displayObject
 	
 end
 
@@ -213,16 +387,20 @@ end
 -- @param y The amount to move the object along the Y axis.
 function moveObject(object, x, y)
 	
-	if not object then
+	local _object = object
+	local _x = x
+	local _y = y
+	
+	if not _object then
 		return 
 	end
 	
-	if not object.x or not object.y then
+	if not _object.x or not _object.y then
 		return
 	end
 	
-	object.x = (object.x + (x or 0) * -1)
-	object.y = object.y + (y or 0)	
+	_object.x = round( (_object.x + (_x or 0) * -1) )
+	_object.y = round( _object.y + (_y or 0) )
 	
 end
 
@@ -232,33 +410,211 @@ end
 -- @param event The Touch event.
 function dragObject(object, event)
 
-	if not object then
+	local _object = object
+	local _event = event
+	
+	if not _object then
 		return 
 	end
 	
-	if not object.x or not object.y then
+	if not _object.x or not _object.y then
 		return
 	end
 	
-	if(event.phase=="began") then
+	if(_event.phase=="began") then
 
-		object.touchPosition = {}
-    	object.touchPosition.x = event.x - object.x
-        object.touchPosition.y = event.y - object.y
+		_object.touchPosition = {}
+    	_object.touchPosition.x = _event.x - _object.x
+        _object.touchPosition.y = _event.y - _object.y
 
-    elseif(event.phase=="moved") then
+    elseif(_event.phase=="moved") then
 
-		if not object.touchPosition then
-			object.touchPosition = {}
-	    	object.touchPosition.x = event.x - object.x
-	        object.touchPosition.y = event.y - object.y
+		if not _object.touchPosition then
+			_object.touchPosition = {}
+	    	_object.touchPosition.x = _event.x - _object.x
+	        _object.touchPosition.y = _event.y - _object.y
 		end
 		
-   		object.x = event.x - object.touchPosition.x
-        object.y = event.y - object.touchPosition.y
+   		_object.x = _event.x - _object.touchPosition.x
+        _object.y = _event.y - _object.touchPosition.y
 
     end
 
+end
+
+--- Fades the object to a new position.
+-- @param object The Object to move - Tile, Map, TileLayer etc
+-- @param visual The visual to move - tile.sprite, map.world, tileLayer.group etc
+-- @param x The new X position of the object.
+-- @param y The new Y position of the object.
+-- @param fadeTime The time it will take to fade the object out or in. Optional, default is 1000.
+-- @param moveDelay The time inbetween both fades. Optional, default is 0.
+-- @param onCompleteHandler Event handler to be called on movement completion. Optional.
+function fadeObjectToPosition(object, visual, x, y, fadeTime, moveDelay, onCompleteHandler)
+	
+	local _object = object
+	local _visual = visual
+	local _x = x
+	local _y = y
+	local _fadeTime = fadeTime
+	local _moveDelay = moveDelay
+	local _onCompleteHandler = onCompleteHandler
+	
+	if not _object or not _visual then
+		return 
+	end
+	
+	if not _visual.x or not _visual.y then
+		return
+	end
+	
+	local beginFadeIn = function(event)
+	
+		if _object.moveDelayTimer then
+			timer.cancel(_object.moveDelayTimer)
+		end
+		
+		transition.to(_visual, {alpha = 1, time=_fadeTime or 1000, onComplete=_onCompleteHandler})
+	end
+	
+	local onFadeOut = function(event)
+		_object:setPosition(x, y)
+		
+		if moveDelay then
+			_object.moveDelayTimer = timer.performWithDelay(_moveDelay, beginFadeIn, 1)
+		else
+			beginFadeIn()
+		end
+	end
+
+	if(_object.fadeTransition) then
+		transition.cancel(_object.fadeTransition)
+	end
+	
+	_object.fadeTransition = transition.to(_visual, {alpha = 0, time=_fadeTime or 1000, onComplete=onFadeOut})
+end
+
+--- Slides the Object to a new position.
+-- @param object The Object to move - Tile, Map, TileLayer etc
+-- @param visual The visual to move - tile.sprite, map.world, tileLayer.group etc
+-- @param x The new X position of the Object.
+-- @param y The new Y position of the Object.
+-- @param slideTime The time it will take to slide the Object to the new position.
+-- @param onCompleteHandler Event handler to be called on movement completion. Optional.
+function slideObjectToPosition(object, visual, x, y, slideTime, onCompleteHandler)
+	
+	local _object = object
+	local _visual = visual
+	local _x = x
+	local _y = y
+	local _slideTime = slideTime
+	local _onCompleteHandler = onCompleteHandler
+	
+	if not _object or not _visual then
+		return 
+	end
+	
+	if not _visual.x or not _visual.y then
+		return
+	end
+	
+	_object.onSlideTransitionUpdate = function(event)
+		
+		_visual.x = round( _object._xPos )
+		_visual.y = round( _object._yPos )
+		
+		-- Special case for moving the map
+		if _object.ParallaxEnabled and _object["setParallaxPosition"] then
+			_object:setParallaxPosition{x = _visual.x, y = _visual.y }
+		end
+		
+		-- Special case for moving tiles
+		if _object["updateGridPosition"] then
+			_object:updateGridPosition()
+		end
+		
+	end
+	
+	local onSlideComplete = function(event)
+	
+		if _onCompleteHandler then
+			_onCompleteHandler(event)
+		end
+		
+		Runtime:removeEventListener("enterFrame", _object.onSlideTransitionUpdate)
+	end
+	
+	if(_object.slideTransition) then
+		transition.cancel(_object.slideTransition)
+		Runtime:removeEventListener("enterFrame", _object.onSlideTransitionUpdate)
+	end
+	
+	_object._xPos = _visual.x
+	_object._yPos = _visual.y
+	
+	Runtime:addEventListener("enterFrame", _object.onSlideTransitionUpdate)
+	
+	_object.slideTransition = transition.to( _object, {time=_slideTime or 1000, _xPos=_x, _yPos=_y, onComplete=onSlideComplete})
+end
+
+--- Slides an object along a path of points.
+-- @param object The Object to move.
+-- @param visual The visual attached to the Object.
+-- @param path List of points to move the Object along. Must be a list of tables that have an X and Y value.
+-- @param slideTime The time it will take to slide the Object to the next point.
+-- @param cycles The amount of times to loop through the path. Optional. Default is unlimited.
+function slideObjectAlongPath(object, visual, path, slideTime, cycles)
+
+	local _object = object
+	local _visual = visual
+	local _path = path
+	local _slideTime = slideTime
+	local _cycles = cycles
+	
+	local onCompleteHandler
+	local currentPointIndex = 1
+	local totalCycles = 0
+	
+	if not _object or not _visual then
+		return 
+	end
+	
+	if not _visual.x or not _visual.y then
+		return
+	end
+	
+	if not _path then
+		return
+	end
+	
+	if #_path < 1 then
+		return
+	end
+
+	onCompleteHandler = function( event )
+		
+		currentPointIndex = currentPointIndex + 1
+	
+		if currentPointIndex > #_path then
+			currentPointIndex = 1
+			totalCycles = totalCycles + 1
+		end
+		
+		local point = _path[ currentPointIndex ]
+		
+		if point and point.x and point.y then
+		
+			if _cycles and ( totalCycles >= _cycles ) then
+				return
+			end
+					
+			slideObjectToPosition(_object, _visual, _path[ currentPointIndex ].x, _path[ currentPointIndex ].y, _slideTime, onCompleteHandler )	
+		end
+		
+	end
+
+	slideObjectToPosition(_object, _visual, _path[1].x, _path[1].y, _slideTime, onCompleteHandler )
+	
 end
 
 --- Converts a 6 digit Hex value into its RGB elements.
@@ -266,14 +622,30 @@ end
 -- @returns A table with the r, g and b values.
 function hexToRGB(hex)
 	
+	local _hex = hex 
+	
 	local colour = {}
 	
-	colour.r = tonumber(hex:sub(1, 2), 16)
-	colour.g = tonumber(hex:sub(3, 4), 16)
-	colour.b = tonumber(hex:sub(5, 6), 16)
+	colour.r = tonumber(_hex:sub(1, 2), 16)
+	colour.g = tonumber(_hex:sub(3, 4), 16)
+	colour.b = tonumber(_hex:sub(5, 6), 16)
 	
 	return colour
 	
+end
+
+--- Extracts an extension from a filename.
+-- @param filename The filename to use.
+-- @returns The extracted extension.
+function getExtensionFromFilename(filename)
+
+	local _filename = filename
+	
+	local splitFilename = {}
+	local pattern = string.format("([^%s]+)", ".")
+	_filename:gsub(pattern, function(c) splitFilename[#splitFilename+1] = c end)
+		
+	return splitFilename[2]
 end
 
 --- Extracts a filename from a path.
@@ -281,7 +653,9 @@ end
 -- @returns The extracted filename.
 function getFilenameFromPath(path)
 
-	local splitPath = splitString(path, "/")
+	local _path = path
+	
+	local splitPath = splitString(_path, "/")
 		
 	return splitPath[#splitPath]
 end
@@ -290,16 +664,18 @@ end
 -- @param path The path to use.
 -- @return The stripped path.
 function stripFilenameFromPath(path)
-
-	local splitPath = splitString(path, "/")
 	
-	local path = ""
+	local _path = path
+	
+	local splitPath = splitString(_path, "/")
+	
+	_path = ""
 	
 	for i=1, #splitPath - 1, 1 do
-		path = path .. splitPath[i] .. "/"
+		_path = _path .. splitPath[i] .. "/"
 	end
 	
-	return path
+	return _path
 	
 end
 
@@ -308,11 +684,16 @@ end
 -- @param suffix The suffix to use.
 -- @return The new filename.
 function addSuffixToFileName(filename, suffix)
-
-	local splitFilename = splitString(filename, ".")
-
+	
+	local _filename = filename
+	local _suffix = suffix
+	
+	local splitFilename = {}
+	local pattern = string.format("([^%s]+)", ".")
+	_filename:gsub(pattern, function(c) splitFilename[#splitFilename+1] = c end)
+	
 	if #splitFilename == 2 then
-		splitFilename[1] = splitFilename[1] .. suffix
+		splitFilename[1] = splitFilename[1] .. _suffix
 	end
 	
 	return table.concat(splitFilename, ".")
@@ -324,7 +705,9 @@ end
 -- @return The last directory.
 function getLastDirectoryInPath(path)
 
-	local strippedPath = stripFilenameFromPath(path)
+	local _path = path
+	
+	local strippedPath = stripFilenameFromPath(_path)
 	
 	local splitPath = splitString(strippedPath, "/")
 	
@@ -337,10 +720,13 @@ end
 -- @param objectB The object that will have the Properties coped to it. Must have an "addProperty" function.
 function copyProperties(objectA, objectB)
 	
-	local properties = objectA:getProperties()
+	local _objectA = objectA
+	local _objectB = objectV
+	
+	local properties = _objectA:getProperties()
 	
 	for _k, value in pairs(properties) do
-		objectB:addProperty(value)
+		_objectB:addProperty(value)
 	end
 	
 end
@@ -349,9 +735,11 @@ end
 -- @param item The item to add the collision filter to.
 function addCollisionFilterToBody(item)
 
-	local categoryBits = item:getPropertyValue("categoryBits")
-	local maskBits = item:getPropertyValue("maskBits")
-	local groupIndex = item:getPropertyValue("groupIndex")
+	local _item = item
+	
+	local categoryBits = _item:getPropertyValue("categoryBits")
+	local maskBits = _item:getPropertyValue("maskBits")
+	local groupIndex = _item:getPropertyValue("groupIndex")
 	
 	if(categoryBits or maskBits or groupIndex) then
 		
@@ -361,7 +749,7 @@ function addCollisionFilterToBody(item)
 		collisionFilter.maskBits = maskBits
 		collisionFilter.groupIndex = groupIndex
 		
-		item.filter = collisionFilter
+		_item.filter = collisionFilter
 	end
 end
 
@@ -369,17 +757,21 @@ end
 -- @param body The body to apply the properties to.
 -- @param params The physical properties.
 function applyPhysicalParametersToBody(body, params)
-	if(body) then
 
-		body.isAwake = stringToBool(params.isAwake)
-		body.isBodyActive = stringToBool(params.isBodyActive) or true
-		body.isBullet = stringToBool(params.isBullet)
-		body.isSleepingAllowed = stringToBool(params.isSleepingAllowed)
-		body.isFixedRotation = stringToBool(params.isFixedRotation)
-		body.angularVelocity = params.angularVelocity
-		body.linearDamping = params.linearDamping
-		body.angularDamping = params.angularDamping
-		body.bodyType = params.bodyType
+	local _body = body
+	local _params = params
+	
+	if(_body) then
+
+		_body.isAwake = stringToBool(_params.isAwake)
+		_body.isBodyActive = stringToBool(_params.isBodyActive) or true
+		_body.isBullet = stringToBool(_params.isBullet)
+		_body.isSleepingAllowed = stringToBool(_params.isSleepingAllowed)
+		_body.isFixedRotation = stringToBool(_params.isFixedRotation)
+		_body.angularVelocity = _params.angularVelocity
+		_body.linearDamping = _params.linearDamping
+		_body.angularDamping = _params.angularDamping
+		_body.bodyType = _params.bodyType
 	end
 end
 
@@ -388,7 +780,10 @@ end
 -- @param object The object that has the properties.
 function addPropertiesToBody(body, object)
 
-	local properties = object:getProperties()
+	local _body = body
+	local _object = object
+	
+	local properties = _object:getProperties()
 	local property = {}
 	local propertyName = ""
 	
@@ -414,7 +809,7 @@ function addPropertiesToBody(body, object)
 				propertyName ~= "density" and
 				propertyName ~= "points" then
 	
-				body[propertyName] = property:getValue()
+				_body[propertyName] = property:getValue()
 			end
 		end	
 	end
@@ -427,16 +822,20 @@ end
 -- @param propertiesToIgnore A list of properties to not add if they exist. Optional.
 function copyPropertiesToObject(objectA, objectB, propertiesToIgnore)
 
-	local properties = objectA:getProperties()
+	local _objectA = objectA
+	local _objectB = objectB
+	local _propertiesToIgnore = propertiesToIgnore
+	
+	local properties = _objectA:getProperties()
 	
 	for key, property in pairs(properties) do
 		
 		local copyProperty = true
 		
-		if propertiesToIgnore then
+		if _propertiesToIgnore then
 			
-			for i = 1, #propertiesToIgnore, 1 do
-				if propertiesToIgnore[i] == key then
+			for i = 1, #_propertiesToIgnore, 1 do
+				if _propertiesToIgnore[i] == key then
 					copyProperty = false
 					break	
 				end			
@@ -445,7 +844,7 @@ function copyPropertiesToObject(objectA, objectB, propertiesToIgnore)
 		end
 		
 		if copyProperty then
-			objectB[key] = property:getValue()		
+			_objectB[key] = property:getValue()		
 		end
 
 	end
@@ -460,19 +859,23 @@ end
 -- @return The clamped Y position.
 function clampPosition(x, y, bounds)
 
-	if math.abs(x) > bounds.width - display.contentWidth then
-		x = - ( bounds.width - display.contentWidth) 
-	elseif x > bounds.x then
-		x = bounds.x
+	local _x = x
+	local _y = y
+	local _bounds = bounds
+	
+	if abs(_x) > _bounds.width - display.contentWidth then
+		_x = - ( _bounds.width - display.contentWidth) 
+	elseif _x > _bounds.x then
+		_x = _bounds.x
 	end
 	
-	if math.abs(y) > bounds.height - display.contentHeight then
-		y = - ( bounds.height - display.contentHeight )
-	elseif y > bounds.y then
-		y = bounds.y
+	if abs(_y) > _bounds.height - display.contentHeight then
+		_y = - ( _bounds.height - display.contentHeight )
+	elseif y > _bounds.y then
+		_y = _bounds.y
 	end
 	
-	return x, y
+	return _x, _y
 end
 
 --- Calculates a viewpoint for a given position.
@@ -481,11 +884,16 @@ end
 -- @param y The Y position for the viewpoint.
 -- @return The calculated viewpoint.
 function calculateViewpoint(group, x, y)
-	local xPos = x or (group.x + group.width / 2) -- Don't like this
-	local yPos = y or (group.y + group.height / 2) -- Don't like this
+
+	local _group = group
+	local _x = x
+	local _y = y
+	
+	local xPos = _x or (_group.x + ( _group.width * 0.5 ) ) -- Don't like this
+	local yPos = _y or (_group.y + ( _group.height * 0.5 ) ) -- Don't like this
 
 	local actualPosition = { x = xPos, y = yPos }
-	local centreOfView = { x = display.contentWidth / 2, y = display.contentHeight / 2}
+	local centreOfView = { x = display.contentWidth * 0.5 , y = display.contentHeight * 0.5 }
 	
 	local viewPoint = { x = centreOfView.x - actualPosition.x, y = centreOfView.y - actualPosition.y }
          
@@ -498,9 +906,12 @@ end
 -- @return The rounded number.
 function round(number, fudge)
 	
-	local fudgeValue = fudge or 0
+	local _number = number
+	local _fudge = fudge 
 	
-	return (math.floor(number + fudgeValue))
+	local fudgeValue = _fudge or 0
+	
+	return (floor(_number + fudgeValue))
 end
 
 --- Encodes a table into a JSON object and writes it out to a file in the documents directory.
@@ -508,12 +919,15 @@ end
 -- @param table The table to save.
 function saveOutTable(path, table)
 	
-	if Json then
+	local _path = path
+	local _table = table
 	
-		local path = system.pathForFile( path, system.DocumentsDirectory )
+	if Json and _table then
+	
+		_path = system.pathForFile( _path, system.DocumentsDirectory )
 
-		file = io.open( path, "w" )
-    	file:write( Json.Encode(table) )
+		file = io.open( _path, "w" )
+    	file:write( Json.Encode(_table) )
    		io.close( file )
    		
    	end
@@ -526,11 +940,14 @@ end
 -- @return If successful returns a table with the data from the file. Otherwise returns nil.
 function readInTable(path, baseDirectory)
 
+	local _path = path
+	local _baseDirectory = baseDirectory
+	
 	if Json then
 		
-		local path = system.pathForFile( path, baseDirectory or system.DocumentsDirectory )
+		_path = system.pathForFile( _path, _baseDirectory or system.DocumentsDirectory )
 
-		file = io.open( path, "r" )
+		file = io.open( _path, "r" )
 		
 		if file then
 	
@@ -553,9 +970,12 @@ end
 -- @return table The converted table.
 function stringToIntTable(string, delimiter)
 
-	if string then
+	local _string = string
+	local _delimiter = delimiter
 	
-    	local table = splitString(string, delimiter or " ")
+	if _string then
+	
+    	local table = splitString(_string, _delimiter or " ")
         
         for i,v in ipairs(table) do 
         	table[i] = tonumber(table[i]) 
@@ -570,32 +990,36 @@ end
 -- @param indent Indentation amount. Used for recursive calls.
 -- @return string The converted string.
 function tableToString(table, indent) 
+
+	local _table = table
+	local _indent = indent
+	
     local str = "" 
 
-    if(indent == nil) then 
-        indent = 0 
+    if(_indent == nil) then 
+        _indent = 0 
     end 
 
     -- Check the type 
-    if(type(table) == "string") then 
-        str = str .. (" "):rep(indent) .. table .. "\n" 
-    elseif(type(table) == "number") then 
-        str = str .. (" "):rep(indent) .. table .. "\n" 
-    elseif(type(table) == "boolean") then 
-        if(table == true) then 
+    if(type(_table) == "string") then 
+        str = str .. (" "):rep(_indent) .. _table .. "\n" 
+    elseif(type(_table) == "number") then 
+        str = str .. (" "):rep(_indent) .. _table .. "\n" 
+    elseif(type(_table) == "boolean") then 
+        if(_table == true) then 
             str = str .. "true" 
         else 
             str = str .. "false" 
         end 
-    elseif(type(table) == "table") then 
+    elseif(type(_table) == "table") then 
         local i, v 
-        for i, v in pairs(table) do 
+        for i, v in pairs(_table) do 
             -- Check for a table in a table 
             if(type(v) == "table") then 
-                str = str .. (" "):rep(indent) .. i .. ":\n" 
-                str = str .. tableToString(v, indent + 2) 
+                str = str .. (" "):rep(_indent) .. i .. ":\n" 
+                str = str .. tableToString(v, _indent + 2) 
             else 
-                str = str .. (" "):rep(indent) .. i .. ": " .. tableToString(v, 0) 
+                str = str .. (" "):rep(_indent) .. i .. ": " .. tableToString(v, 0) 
             end 
         end 
     else 
@@ -609,7 +1033,9 @@ end
 -- @param table The table to print.
 -- @param indent Indentation amount. Used for recursive calls.
 function printTable(table, indent)
-	print(tableToString(table, indent))
+	local _table = table
+	local _indent = indent
+	print(tableToString(_table, _indent))
 end
 
 --- Loads in a config file and copies all the stored properties over to an object.
@@ -617,12 +1043,15 @@ end
 -- @param object The object to set the properties on. Must have a setProperty function!
 function readInConfigFile(definition, object)
 	
-	if definition and object then
-		local splitDefinition = splitString(definition, "|")
+	local _definition = definition
+	local _object = object
+	
+	if _definition and _object then
+		local splitDefinition = splitString(_definition, "|")
 
 		-- Set the default path and directory assuming definition is just a single string
 		local baseDirectory = system.ResourceDirectory
-		local path = definition
+		local path = _definition
 		
 		if #splitDefinition == 2 then
 			
@@ -645,16 +1074,27 @@ function readInConfigFile(definition, object)
 		if configData then
 			
 			-- Set all the lovely new properties on the object
+			-- First deal with the configFiles before the "normal" props
+			if configData["configFiles"] then
+			
+				value = configData["configFiles"]
+				
+				for i=0, #value, 1 do
+					readInConfigFile(value[i], object)
+				end
+			end
+			
+			-- Now deal with a single configFile value. If Specified.
+			if configData["configFile"] then
+				
+				value = configData["configFile"]
+				
+				readInConfigFile(value, object)
+				
+			end
+			
 			for key, value in pairs(configData) do 
-				
-				
-				if key == "configFiles" then
-				
-					for i=0, #value, 1 do
-						readInConfigFile(value[i], object)
-					end
-					
-				else 
+				if key ~= "configFiles" then
 					object:setProperty(key, value)
 				end
 			end
@@ -674,25 +1114,27 @@ end
 -- @param map The current Map.
 function showScreenSpaceTiles(map)
 	
+	local _map = map
+	
 	-- Use 1,1 to get top left corner as 0,0 returns nil
 	local screenPos = {x = 1, y = 1}
 
-	local gridPos = screenToGridPosition(map, screenPos)
+	local gridPos = screenToGridPosition(_map, screenPos)
 	
 	-- Find out how many tiles fit on screen width / height
-	local numTilesScreenWidth  = display.contentWidth / map.tilewidth
-	local numTilesScreenHeight = display.contentHeight / map.tileheight
+	local numTilesScreenWidth  = display.contentWidth / _map.tilewidth
+	local numTilesScreenHeight = display.contentHeight / _map.tileheight
 	
 	local tempTile  = 0
 	
 	-- Loop through tile layers
-	for i = 1, #map.tileLayers, 1 do
+	for i = 1, #_map.tileLayers, 1 do
 		-- Loop through tile columns
 		for j = (gridPos.column - 1), (gridPos.column + numTilesScreenWidth + 1), 1 do
 			-- Loop through tile rows
 			for k = (gridPos.row - 1), (gridPos.row + numTilesScreenHeight + 1), 1 do
 				-- Grab the tile at the current row / column
-				tempTile = map.tileLayers[i]:getTileAt{row = k, column = j}
+				tempTile = _map.tileLayers[i]:getTileAt{row = k, column = j}
 				
 				-- Check if there was a tile
 				if tempTile then
@@ -723,10 +1165,238 @@ end
 -- @return The loaded module or nil if none found.
 function loadModuleSafely(moduleName)
 
-	local path = system.pathForFile(moduleName .. ".lua", system.ResourceDirectory)
+	local _moduleName = moduleName
+	
+	local path = system.pathForFile(_moduleName .. ".lua", system.ResourceDirectory)
 	
 	if path then
-		return require(moduleName)
+		return require(_moduleName)
 	end
 
+end
+
+--- Converts a string into a number safely.
+-- @param string The string to convert.
+-- @return The number value or the original string if not numeric.
+function convertStringToNumberSafely(string)
+
+	local _string = string
+	
+	local numberValue = tonumber(_string)
+	
+	if numberValue then
+		return numberValue
+	end
+	
+	return _string
+
+end
+
+--- Converts a string into a boolean safely.
+-- @param string The string to convert.
+-- @return The boolean value or the original string if not a boolean.
+function convertStringToBoolSafely(string)
+
+	local _string = string
+	
+	if type(_string) ~= "string" then
+		return _string
+	end
+	
+	local boolValue = stringToBool(_string)
+	
+	if boolValue ~= nil then
+		return boolValue
+	end
+	
+	return _string
+
+end
+
+--- Decodes a Json string safely.
+-- @param string The string to decode.
+-- @param strict If true the string will be decoded without any regard to error checking.
+-- @return The decoded value for all proper Json. If there is an error it will append quotes to the string and return the decoded result along with the error.
+function decodeJsonSafely(string, strict)
+
+	local _string = string
+	local _strict = strict
+	
+	if _strict then
+		return Json.Decode(_string)
+	else
+		
+		local success, value = pcall(Json.Decode, _string)
+		
+		if success then
+			return value
+		else
+			if type( _string ) == "boolean" then
+				return _string
+			else
+				return Json.Decode("\"".. _string .."\""), value
+			end
+		end		
+	
+	end
+
+end
+
+--- Checks if a property is a Seed.
+-- @param The value string from Tiled.
+-- @return True if it is, false otherwise.
+function isPropertyASeed(value)
+	
+	local _value = value
+	
+	if _value then
+	
+		if type(_value) == "string" then
+			
+			local splitValue = splitString(_value, ":")
+			
+			if #splitValue > 1 then
+				
+				if splitValue[1] == "seed" then
+					return true
+				end
+				
+			end
+			
+		end
+		
+	end
+	
+	return false
+
+end
+
+--- Returns a value from a seed if it exists.
+-- @param The value string from Tiled. Should be "seed:seedName".
+-- @return The seed value or the passed in value if it is not a seed.
+function getValueFromSeed(value)
+	
+	local _value = value
+	
+	if _value and type(_value) == "string" then
+	
+		local splitValue = splitString(_value, ":")
+			
+		if #splitValue > 1 then
+			
+			if splitValue[1] == "seed" then
+				
+				local seed = loadModuleSafely("lime-seed-" .. splitValue[2])
+				
+				if seed then
+					
+					local params = nil
+					
+					if splitValue[3] then
+						params = splitString(splitValue[3], ",")
+					end
+
+					return seed.main(params)
+					
+				end
+				
+			end
+			
+		end
+		
+	end
+	
+	-- Not a seed property so just return whatever it is
+	return _value
+	
+end
+
+---Converts a frame count into minutes, seconds and tenths.
+-- Can be used to display a timer like this -- minutes .. ":" .. seconds .. ":" .. tenths
+-- @param frameCount The count of the frames
+-- @param fps The current fps. Either 30 or 60, will default to 30.
+-- @return minutes Minute value.
+-- @return seconds Second value.
+-- @return tenths Tenths of second value.
+function convertFramesToTime(frameCount, fps)
+		
+	local _frameCount = frameCount
+	local _fps = fps
+	
+	local decimalSeconds = _frameCount / (_fps or 30)
+	local minutes = round(decimalSeconds / 60)
+	decimalSeconds = decimalSeconds - (minutes * 60)
+	seconds = round(decimalSeconds)
+	local tenths = round((decimalSeconds - seconds) * 10)
+		
+	return minutes, seconds, tenths
+end
+
+--- Gets the distance between two positions.
+-- @param pos1 First position. Table containing X and Y values.
+-- @param pos2 Second position. Table containing X and Y values.
+-- @return distance The distance between the two positions.
+function getDistanceBetween( pos1, pos2 )
+
+	local _pos1 = pos1
+	local _pos2 = pos2
+	
+	if not _pos1 or not _pos2 then
+		return
+	end
+	
+	if not _pos1.x or not _pos1.y or not _pos2.x or not _pos2.y then
+		return
+	end
+	 
+	local factor = { x = _pos2.x - _pos1.x, y = _pos2.y - _pos1.y }
+
+	return sqrt( ( factor.x * factor.x ) + ( factor.y * factor.y ) )
+
+end
+
+--- Gets the angle between two positions.
+-- @param pos1 First position. Table containing X and Y values.
+-- @param pos2 Second position. Table containing X and Y values.
+-- @param radians If true then convert the angle to radians.
+-- @return angle The angle between the two positions.
+function getAngleBetween( pos1, pos2, radians )
+	
+	local _pos1 = pos1
+	local _pos2 = pos2
+	local _radians = raidans
+	
+	if not _pos1 or not _pos2 then
+		return
+	end
+	
+	if not _pos1.x or not _pos1.y or not _pos2.x or not _pos2.y then
+		return
+	end
+
+	local distance = { x = _pos2.x - _pos1.x, y = _pos2.y - _pos1.y }
+
+	if distance then
+
+		local angleBetween = atan( distance.y / distance.x ) --+ rad( 90 )
+	
+	     if ( _pos1.x < _pos2.x ) then 
+			angleBetween = angleBetween + rad( 90 ) 
+		else 
+			angleBetween = angleBetween + rad( 270 ) 
+		end		
+		
+		if angleBetween == pi or angleBetween == pi2 then
+  			angleBetween = angleBetween - rad( 180 )
+		end
+
+		if not _radians then
+			angleBetween = deg( angleBetween )
+		end
+		
+		return angleBetween
+	
+	end
+
+	return nil
 end

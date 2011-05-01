@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-tile.lua
 --
@@ -52,7 +52,7 @@ Tile_mt = { __index = Tile }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-Tile.version = 2.8
+Tile.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
@@ -61,6 +61,9 @@ Tile.version = 2.8
 local utils = lime.utils
 local moveObject = utils.moveObject
 local dragObject = utils.dragObject
+local fadeObjectToPosition = utils.fadeObjectToPosition
+local slideObjectToPosition = utils.slideObjectToPosition
+local slideObjectAlongPath = utils.slideObjectAlongPath
 local readInConfigFile = utils.readInConfigFile
 
 local contentWidth = display.contentWidth
@@ -72,10 +75,16 @@ local newSprite = sprite.newSprite
 local stringToBool = utils.stringToBool
 local splitString = utils.splitString
 
+local decodeJsonSafely = utils.decodeJsonSafely
+
 local copyPropertiesToObject = utils.copyPropertiesToObject
 local addPropertiesToBody = utils.addPropertiesToBody
 local addCollisionFilterToBody = utils.addCollisionFilterToBody
 local applyPhysicalParametersToBody = utils.applyPhysicalParametersToBody
+
+local abs = math.abs
+local floor = math.floor
+local ceil = math.ceil
 
 ----------------------------------------------------------------------------------------------------
 ----									PRIVATE METHODS											----
@@ -119,13 +128,38 @@ function Tile:new(data, map, layer)
     self.map = map
     self.layer = layer
     
-   	-- Pull out all the details off this tile, currently it just seems to be the GID however Tiled may add more later.
-	for key, value in pairs(data['Attributes']) do 
-		if key == "gid" then
-			self[key] = value
-		else
-			self:setProperty(key, value)
+    self.mapTileWidth = self.map.tilewidth
+    self.mapTileHeight = self.map.tileheight
+    
+    -- This means it has been manually created. Currently just used in the TileLayer:createTile() function but may be useful for other situations.
+    if data.isGenerated then
+    	
+    	local name = ""
+    	local value = ""
+    	
+    	for i = 1, #data.properties, 1 do
+    	
+    		name = data.properties[i].name
+    		value = data.properties[i].value
+    		
+    		if name == "gid" then
+				self[name] = decodeJsonSafely(value)
+			else
+				self:setProperty(name, value)
+			end
+    	end
+    	
+	else
+		
+		-- Pull out all the details off this tile, currently it just seems to be the GID however Tiled may add more later.
+		for key, value in pairs(data['Attributes']) do 
+			if key == "gid" then
+				self[key] = decodeJsonSafely(value)
+			else
+				self:setProperty(key, value)
+			end
 		end
+	
 	end
 	
     return self
@@ -137,8 +171,10 @@ end
 -- @usage Originally created by Mattguest - http://developer.anscamobile.com/forum/2011/02/02/settile-function
 function Tile:setImage(gid)	
 
-	-- Make sure there is a sprite
-	if self.sprite then
+	local visual = self:getVisual()
+	
+	-- Make sure there is a visual
+	if visual then
 		
 		-- Calculate the tile index
 		--local index = self.map.width * ( tile.row - 1 ) + tile.column
@@ -187,7 +223,7 @@ function Tile:setProperty(name, value)
 		self:addProperty(Property:new(name, value))
 	end
 	
-	self[name] = value
+	self[name] = self:getPropertyValue(name)
 end
 
 --- Gets a Property of the Tile.
@@ -272,16 +308,168 @@ function Tile:removeProperty(name)
 	self.properties[name] = nil
 end
 
+--- Moves the Tile.
+-- @param x The amount to move the Tile along the X axis.
+-- @param y The amount to move the Tile along the Y axis.
+function Tile:move(x, y)
+	moveObject( self:getVisual(), x, y)
+	self:updateGridPosition()
+end
+
+--- Drags the Tile.
+-- @param The Touch event.
+function Tile:drag(event)
+	dragObject( self:getVisual(), event)
+	self:updateGridPosition()
+end
+
+--- Updates the grid position of the Tile. Called automatically, nothing to see here.
+function Tile:updateGridPosition()
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		self.column = floor( visual.x / self.mapTileWidth ) + 1
+		self.row = floor( visual.y / self.mapTileHeight ) + 1
+	end
+end
+
+--- Sets the position of the Tile.
+-- @param x The new X position.
+-- @param y The new Y position.
+function Tile:setPosition(x, y)
+
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.x = x
+		visual.y = y
+	end
+	
+	if self.body then
+		self.body.x = x
+		self.body.y = y
+	end
+	
+	self:updateGridPosition()
+end
+
+--- Slides the Tile to a new position.
+-- @param x The new X position of the Tile.
+-- @param y The new Y position of the Tile.
+-- @param slideTime The time it will take to slide the Tile to the new position.
+-- @param onCompleteHandler Event handler to be called on movement completion. Optional.
+function Tile:slideToPosition(x, y, slideTime, onCompleteHandler)
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		slideObjectToPosition(self, visual, x, y, slideTime, onCompleteHandler)
+	end
+	
+end
+
+--- Fades the Tile to a new position.
+-- @param x The new X position of the Tile.
+-- @param y The new Y position of the Tile.
+-- @param fadeTime The time it will take to fade the Tile out or in. Optional, default is 1000.
+-- @param moveDelay The time inbetween both fades. Optional, default is 0.
+-- @param onCompleteHandler Event handler to be called on movement completion. Optional.
+function Tile:fadeToPosition(x, y, fadeTime, moveDelay, onCompleteHandler)
+	
+	local visual = self:getVisual()
+	
+	if visual then
+		fadeObjectToPosition(self, visual, x, y, fadeTime, moveDelay, onCompleteHandler)
+	end
+	
+end
+
+--- Slides the Tile along a path of points.
+-- @param path List of points to move the Object along. Must be a list of tables that have an X and Y value.
+-- @param slideTime The time it will take to slide the Object to the next point.
+-- @param cycles The amount of times to loop through the path. Optional. Default is unlimited.
+function Tile:slideAlongPath(path, slideTime, cycles)
+
+	local visual = self:getVisual()
+	
+	if visual then
+		slideObjectAlongPath(self, visual, path, slideTime, cycles)
+	end
+	
+end
+
+--- Sets the rotation of the Tile.
+-- @param The new rotation.
+function Tile:setRotation(angle)
+
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.rotation = angle
+	end
+	
+	if self.body then
+		self.body.rotation = angle
+	end
+	
+end
+
+--- Rotates the Tile.
+-- @param The angle to rotate by
+function Tile:rotate(angle)
+
+	local visual = self:getVisual()
+
+	if visual then
+		visual.rotation = visual.rotation + angle
+	end
+	
+	if self.body then
+		self.body.rotation = self.body.rotation + angle
+	end
+	
+end
+
+--- Shows the Tile.
+function Tile:show()
+
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = true
+	end
+	
+end
+
+--- Hides the Tile.
+function Tile:hide()
+
+	local visual = self:getVisual()
+	
+	if visual then
+		visual.isVisible = false
+	end
+	
+end
+
+--- Gets the Tiles visual.
+function Tile:getVisual()
+	return self.sprite
+end
+
 --- Gets the world position of the Tile. 
 -- @return The X position of the Tile or nil if there is no sprite
 -- @return The Y position of the Tile or nil if there is no sprite
 function Tile:getWorldPosition()
 
+	local visual = self:getVisual()
+	
 	-- Extra checks suggested by Pavel Nakaznenko
-	if(self.sprite and self.sprite.parent and self.sprite.isVisible) then
+	if(visual and visual.parent and visual.isVisible) then
 					
-		local x = self.sprite.x + self.map.world.x
-		local y = self.sprite.y + self.map.world.y
+		local x = visual.x + self.map:getVisual().x
+		local y = visual.y + self.map:getVisual().y
 	
 		return x, y
 		
@@ -294,14 +482,16 @@ end
 -- @return True if the Tile is on screen, false if not.
 function Tile:isOnScreen()
 
-	if self.sprite then
+	local visual = self:getVisual()
+	
+	if visual then
 	
 		local worldX, worldY = self:getWorldPosition()
 		
-		if(worldX and worldY) then
-			if((worldX + self.sprite.width) < 0 or (worldX - self.sprite.width) > contentWidth) then
+		if worldX and worldY then
+			if ( ( worldX + visual.width ) < 0 or ( worldX - visual.width ) > contentWidth ) then
 				return false
-			elseif((worldY + self.sprite.height) < 0 or (worldY - self.sprite.height) > contentHeight) then
+			elseif ( ( worldY + visual.height ) < 0 or ( worldY - visual.height ) > contentHeight ) then
 				return false
 			end	
 		
@@ -320,9 +510,7 @@ function Tile:create(index)
 	self.index = index
 	
 	if(self.gid) then
-	
-		self.gid = tonumber(self.gid)
-	
+
 		if(self.gid ~= 0) then -- If it is 0 then there is no tile in this spot
 			local tileSetIndex = 1
 			local tileSet = self.map:getTileSet(tileSetIndex)
@@ -399,7 +587,7 @@ function Tile:create(index)
 				end
 								
 				-- Calculate and set the row position of this tile in the map
-				self.row = math.floor((index + self.layer.width - 1) / self.layer.width)
+				self.row = floor((index + self.layer.width - 1) / self.layer.width)
 				
 				-- Calculate and set the column position of this tile in the map
 				self.column = index - (self.row - 1) * self.layer.width
@@ -410,7 +598,14 @@ function Tile:create(index)
 				if(self.map.orientation == "orthogonal" ) then
 	
 					-- Place this tile in the right X position
-					self.sprite.x = ( ( self.column - 1) * self.map.tilewidth ) + self.sprite.width  * 0.5
+					--self.sprite.x = ( ( self.column - 1) * self.map.tilewidth ) + self.sprite.width  * 0.5
+					--self.sprite.x = ( ( self.column - (1 / display.contentScaleX) ) * self.map.tilewidth ) + self.sprite.width  * 0.5                    
+
+					if self.tileSet.usingHDSource then
+						self.sprite.x = ( ( self.column - (1 / display.contentScaleX)) * self.map.tilewidth ) + self.sprite.width  * 0.5
+					else
+						self.sprite.x = ( ( self.column - 1 ) * self.map.tilewidth ) + self.sprite.width  * 0.5
+					end 
 
 					-- Place this tile in the right Y position
 					self.sprite.y = ( self.row * self.map.tileheight ) - self.sprite.height * 0.5
@@ -515,8 +710,40 @@ end
 
 --- Builds the physical representation of the Tile.
 function Tile:build()
-
-	if(self.HasBody and self.sprite) then
+	
+	local visual = self:getVisual()
+	
+	if(self.HasBody and visual) then
+		
+		local body = visual
+		
+		if(self.shape) then	
+	
+			if type(self.shape) == "table" then
+			
+			elseif type(self.shape) == "string" or type(self.shape) == "number" then
+				
+				local jsonVersion = "[0,-37,37,-10,23,34,-23,34,-37,-10]"			
+				print("Lime-Banana: Using strings to define the shapes of Tile bodies is currently depreceated as Lime 3.0 and beyond is moving over to Json values for properties. Instead, define it similar to this - " .. jsonVersion)
+				
+				--[[
+				local splitShape = splitString(self.shape, ",")
+				
+				if #splitShape > 1 then
+	   
+					local shape = {}
+					
+					for i = 1, #splitShape, 1 do
+						shape[#shape + 1] = tonumber(splitShape[i])
+					end
+				   
+					self.shape = shape
+					
+				end
+				
+				--]]
+			end		
+		end
 		
 		-- Now that tiles can be set at runtime it is important to make sure physics is loaded as it may not have been at load time
 		if not physics then
@@ -526,14 +753,29 @@ function Tile:build()
 		
 		self.isSensor = stringToBool(self.isSensor)
 		
+		-- If using Retina, half the tile size so the physics body is correct
+		if self.tileSet.tileXScale ~= 1 or self.tileSet.tileXScale ~= 1 then
+			
+			visual.width = visual.width / self.tileSet.tileXScale
+			visual.height = visual.height / self.tileSet.tileYScale
+
+		end
+
 		addCollisionFilterToBody( self )
 		
-		physics.addBody( self.sprite, self ) 
+		physics.addBody( body, self ) 
 		
-		applyPhysicalParametersToBody(self.sprite, self)
+		applyPhysicalParametersToBody(body, self)
 		
-		addPropertiesToBody(self.sprite, self)
+		addPropertiesToBody(body, self)
 		
+		-- If using Retina, set the size back to original
+		if  self.tileSet.tileXScale ~= 1 or self.tileSet.tileXScale ~= 1 then	
+		
+			visual.width = visual.width * self.tileSet.tileXScale
+			visual.height = visual.height * self.tileSet.tileYScale
+
+		end
 	end
 end
 
@@ -545,10 +787,13 @@ function Tile:destroy()
  		self.properties = nil
     end
  
- 	-- Destroy the sprite object
-	if self.sprite then
-		self.sprite:removeSelf()
-		self.sprite = nil
+ 	-- Destroy the visual object
+ 	
+ 	local visual = self:getVisual()
+ 	
+	if visual then
+		visual:removeSelf()
+		visual = nil
 	end
 	
 end
