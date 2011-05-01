@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-atlas.lua
 --
@@ -50,7 +50,7 @@ Atlas_mt = { __index = Atlas }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-Atlas.version = 2.8
+Atlas.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
@@ -62,15 +62,16 @@ local calculateViewpoint = utils.calculateViewpoint
 local round = utils.round
 local clampPosition = utils.clampPosition
 local dragObject = utils.dragObject
+local moveObject = utils.moveObject
+local abs = math.abs
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
 ----------------------------------------------------------------------------------------------------
 
 --- Create a new instance of an Atlas object.
--- @param maps A list of maps used to create the new Atlas.
 -- @return The newly created Atlas instance.
-function Atlas:new(maps)
+function Atlas:new()
 
     local self = {}    -- the new instance
     
@@ -156,7 +157,7 @@ function Atlas:addMap(map, positionOffset)
 		
 		-- Adjust the X position of the bounds to the lowest required
 		if map.world.x < self.previousBounds.x then
-			self.bounds.x = math.abs(map.world.x)
+			self.bounds.x = abs(map.world.x)
 		end
 	
 		-- Adjust the Y position of the bounds to the lowest required

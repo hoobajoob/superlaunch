@@ -2,7 +2,7 @@
 --
 -- Date: 09-Feb-2011
 --
--- Version: 2.8
+-- Version: 3.2
 --
 -- File name: lime-object.lua
 --
@@ -50,7 +50,7 @@ Object_mt = { __index = Object }
 ----									CLASS VARIABLES											----
 ----------------------------------------------------------------------------------------------------
 
-Object.version = 2.8
+Object.version = 3.2
 
 ----------------------------------------------------------------------------------------------------
 ----									LOCALISED VARIABLES										----
@@ -69,6 +69,7 @@ local stringToBool = utils.stringToBool
 local addPropertiesToBody = utils.addPropertiesToBody
 local addCollisionFilterToBody = utils.addCollisionFilterToBody
 local applyPhysicalParametersToBody = utils.applyPhysicalParametersToBody
+local splitString = utils.splitString
 
 ----------------------------------------------------------------------------------------------------
 ----									PUBLIC METHODS											----
@@ -132,8 +133,20 @@ end
 -- @param x The new X position of the Object.
 -- @param y The new Y position of the Object.
 function Object:setPosition(x, y)
+
 	self.x = x
 	self.y = y
+
+	if self.sprite then
+		self.sprite.x = x
+		self.sprite.y = y
+	end
+	
+	if self.debugImage then
+		self.debugImage.x = x
+		self.debugImage.y = y
+	end
+
 end
 
 --- Gets the position of the Object.
@@ -150,14 +163,14 @@ end
 function Object:setProperty(name, value)
 		
 	local property = self:getProperty(name)
-	
+
 	if property then
 		return property:setValue(value)
 	else
 		self:addProperty(Property:new(name, value))
 	end
 	
-	self[name] = value
+	self[name] = self:getPropertyValue(name)
 end
 
 --- Gets a Property of the Object.
@@ -184,6 +197,27 @@ end
 -- @return The list of Properties.
 function Object:getProperties()
 	return self.properties
+end
+
+--- Gets the value of a property on a tile object.
+--	Originally created by FrankS - http://developer.anscamobile.com/forum/2011/02/19/additional-convenience-functions-navigate-lime-world-tree
+-- @param name The name of the property to look for.
+-- @return The value of the property. Nil if none found.
+function Object:getObjectTilePropertyValue(name)
+
+	if name then
+	
+		if self[name] then -- local object property
+		
+			return self[name]
+			
+		else  -- return the associated tile property value (if it exists)
+		
+			return self.map:getTilePropertyValueForGID(self.gid, name)
+			
+		end
+	end
+	
 end
 
 --- Gets a count of how many properties the Object has.
@@ -228,12 +262,77 @@ end
 -- @param y The amount to move the Object along the Y axis.
 function Object:move(x, y)
 	moveObject(self, x, y)
+	
+	if self.body then moveObject(self.body, x, y) end
+	if self.debugImage then moveObject(self.debugImage, x, y) end	
 end
 
 --- Drags the Object.
 -- @param The Touch event.
 function Object:drag(event)
 	dragObject(self, event)
+	
+	if self.body then dragObject(self.body, event) end
+	if self.debugImage then dragObject(self.debugImage, event) end
+end
+
+--- Shows the Object.
+function Object:show()
+
+	if self.debugImage then
+		self.debugImage.isVisible = true
+	end
+	
+	if self.sprite then
+		self.sprite.isVisible = true
+	end
+	
+end
+
+--- Hides the Object.
+function Object:hide()
+	
+	if self.debugImage then
+		self.debugImage.isVisible = false
+	end
+	
+	if self.sprite then
+		self.sprite.isVisible = false
+	end
+	
+end
+
+--- Gets the Object visual.
+function Object:getVisual()
+	return self.group
+end
+
+--- Sets the rotation of the Object.
+-- @param The new rotation.
+function Object:setRotation(angle)
+
+	if self.debugImage then
+		self.debugImage.rotation = angle
+	end
+	
+	if self.body then
+		self.body.rotation = angle
+	end
+	
+end
+
+--- Rotates the Object.
+-- @param The angle to rotate by
+function Object:rotate(angle)
+
+	if self.debugImage then
+		self.debugImage.rotation = self.debugImage.rotation + angle
+	end
+	
+	if self.body then
+		self.body.rotation = self.body.rotation + angle
+	end
+	
 end
 
 --- Shows the debug image of this Object.
@@ -282,12 +381,6 @@ end
 --- Creates the visual debug representation of the Object.
 function Object:create()
 
-	self.map:fireObjectListener(self)
-		
-	for key, value in pairs(self.properties) do
-		self.map:firePropertyListener(self.properties[key], "object", self)
-	end
-	
 	-- If an object has a GID then it is one of the new TileObjects brought into Tiled version 0.6.0
 	if self:hasProperty("gid") then
 		
@@ -323,6 +416,18 @@ function Object:create()
 		end
 					
 	else
+	
+		if self.image then
+		
+			if self["imageWidth"] and self["imageHeight"] then
+				
+				self.sprite = display.newImageRect(self.objectLayer.group, self.image, self["imageWidth"], self["imageHeight"])
+			else
+				self.sprite = display.newImage(self.objectLayer.group, self.image)
+			end
+			
+		end
+		
 		if self.width and self.height then -- Create a rounded rectangle for the debug image
 			self.debugImage = display.newRoundedRect(self.objectLayer.group, self.x, self.y, self.width, self.height, 5)
 		else -- Create a circle
@@ -341,6 +446,12 @@ function Object:create()
 		end
 	end
 	
+	self.map:fireObjectListener(self)
+		
+	for key, value in pairs(self.properties) do
+		self.map:firePropertyListener(self.properties[key], "object", self)
+	end
+	
 end
 
 --- Builds the physical representation of the Object.
@@ -352,20 +463,39 @@ function Object:build()
 		self.map.world = display.newGroup()
 	end
 	
-	if (self.sprite) then
+	if not self.objectLayer.group then
+		self.objectLayer.group = display.newGroup()
+	end
+	
+	if self.sprite then
 		
 		body = self.sprite
 
 	elseif(self.radius) then
 	
-		body = display.newCircle( self.map.world, self.x, self.y, self.radius )
+		body = display.newCircle( self.objectLayer.group, self.x, self.y, self.radius )
 	
 	elseif(self.points) then			
 		
 		local pointObjectNames = nil
 		
 		if type(self.points) == "string" then
-			pointObjectNames = utils.splitString(self.points, ",")
+			pointObjectNames = splitString(self.points, ",")
+			
+			local jsonVersion = "[ "
+			
+			for i = 1, #pointObjectNames, 1 do
+				jsonVersion = jsonVersion .. "\"" .. pointObjectNames[i] .. "\""
+				
+				if i < #pointObjectNames then
+					jsonVersion = jsonVersion .. ", "
+				end
+			end
+			
+			jsonVersion = jsonVersion .. " ]"
+			
+			print("Lime-Banana: Using strings to define the points of Object bodies is currently depreceated as Lime 3.0 and beyond is moving over to Json values for properties. The Json equivalent for this property is - " .. jsonVersion)
+			
 		elseif type(self.points) == "table" then
 			pointObjectNames = self.points
 		end
@@ -386,7 +516,7 @@ function Object:build()
 			-- Make sure there are enough points (2 entries for each point)
 			if(#objects > 1) then
 	
-				body = display.newLine( self.map.world, objects[1].x, objects[1].y, objects[2].x, objects[2].y )
+				body = display.newLine( self.objectLayer.group, objects[1].x, objects[1].y, objects[2].x, objects[2].y )
 	
 				if(body) then
 					for i=3, #objects, 1 do
@@ -419,19 +549,43 @@ function Object:build()
 		end
 	
 	elseif(self.shape) then	
-		
-		--body = createBodyFromShape( map.physical, object.x, object.y, object.shape ) 
-		
-		--if(isDebug) then
-		--	print("Banana: Building polygon body from shape at x|y: " .. object.x .. "|" .. object.y)
-		--end
 	
+		if type(self.shape) == "table" then
+		
+			body = display.newRect( self.objectLayer.group, self.x, self.y, self.width or 1, self.height or 1 ) 
+			
+		elseif type(self.shape) == "string" or type(self.shape) == "number" then
+			
+			local jsonVersion = "[0,-37,37,-10,23,34,-23,34,-37,-10]"			
+			print("Lime-Banana: Using strings to define the shapes of Object bodies is currently depreceated as Lime 3.0 and beyond is moving over to Json values for properties. Instead, define it similar to this - " .. jsonVersion)
+			
+			
+			--[[
+            local splitShape = splitString(self.shape, ",")
+            
+            
+            if #splitShape > 1 then
+   
+                local shape = {}
+                
+                for i = 1, #splitShape, 1 do
+                	shape[#shape + 1] = tonumber(splitShape[i])
+                end
+               
+               	body = display.newRect( self.map.world, self.x, self.y, self.width or 1, self.height or 1 ) 
+              	
+              	self.shape = shape
+              	
+            end
+            --]]
+        end		
+        
 	else	
-		body = display.newRect( self.map.world, self.x, self.y, self.width or 1, self.height or 1 ) 
+		body = display.newRect( self.objectLayer.group, self.x, self.y, self.width or 1, self.height or 1 ) 
 	end
-	
+
 	if(body) then
-		
+
 		addPropertiesToBody(body, self)
 		
 		body.isVisible = false
@@ -442,7 +596,7 @@ function Object:build()
 		
 		self.isSensor = stringToBool(self.isSensor)
 					
-		addCollisionFilterToBody( self )
+		addCollisionFilterToBody( self )		
 				
 		physics.addBody( body, self )
 
@@ -460,7 +614,6 @@ function Object:build()
 		
 		self.body = body
 
-		self.map.world:insert(self.body)
 	end
 		
 end
@@ -468,12 +621,12 @@ end
 --- Completely removes all visual and physical objects associated with the Object.
 function Object:destroy()
 
-	if self.debugImage then
+	if self.debugImage and self.debugImage["removeSelf"] then
 		self.debugImage:removeSelf()
 		self.debugImage = nil
 	end
 	
-	if self.body then
+	if self.body and self.body["removeSelf"]  then
 		self.body:removeSelf()
 		self.body = nil
 	end
