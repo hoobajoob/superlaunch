@@ -5,6 +5,7 @@ function new( arguments )
 	require "sprite"
 	local physics = require( "physics" )
 	local ui = require( "ui" )
+	local tbaUI = require( "tbaUI" )
 	require('socket')
 	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
@@ -23,7 +24,7 @@ function new( arguments )
 	math.random()
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
-		timeBar = ui.newBar{
+		timeBar = tbaUI.newBar{
 			bounds = { 0, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = timeLeft,
@@ -244,7 +245,7 @@ function new( arguments )
 		-- Life display
 
 
-		local lifeBar = ui.newBar{
+		local lifeBar = tbaUI.newBar{
 			bounds = { 0, 10 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = life,
@@ -258,7 +259,7 @@ function new( arguments )
 		-- boost display
 
 
-		local boostBar = ui.newBar{
+		local boostBar = tbaUI.newBar{
 			bounds = { 400, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = boost,
