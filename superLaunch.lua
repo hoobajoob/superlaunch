@@ -16,8 +16,10 @@ function new( arguments )
 	local overlayDisplay
 	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
-	local bounceSound = audio.loadSound("boing.ogg")
+	local boingSound = audio.loadSound("boing.ogg")
 	local swooshSound = audio.loadSound("swoosh.mp3")	
+	local bounceSound = audio.loadSound("bounce.mp3")	
+	local owSound = audio.loadSound("ow.ogg")	
 	--]]------
 	local totalScore = {}
 	local timeLeft = 100
@@ -111,7 +113,7 @@ function new( arguments )
 
 		slingshot = display.newImage( "slingshot.png" )
 		slingshot.x = 170; slingshot.y = groundReferencePoint - 180
-		physics.addBody( slingshot, "static", { friction=0.5 } )
+		--physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
 
@@ -451,6 +453,7 @@ function new( arguments )
 				tLavaPrevious = event.time
 				life = life - 1
 				lifeBar:setSize( life )
+				local owChannel = audio.play( owSound, { channel=4 }  ) 
 			end
 		end	
 
@@ -600,11 +603,23 @@ function new( arguments )
 			-- destroy objects on collision, but only if the collision force is greater than some amount.
 			
 			---[[
+			bodyName = event.other.bodyName
 			if ( event.force > 20.0 ) then
 				--print( "postCollision force: " .. event.force .. ", friction: " .. event.friction )
 				life = life - ( string.format( "%i", event.force / 50  ) )
 				lifeBar:setSize( life )
-				local bounceChannel = audio.play( bounceSound, { channel=3 }  ) 
+				local impactChannel
+				if string.find(bodyName, "lava") ~= nil or string.find(bodyName, "grass") ~= nil then
+					impactChannel = audio.play( boingSound, { channel=3 }  ) 
+				elseif string.find(bodyName, "ramp") ~= nil then
+					impactChannel = audio.play( swooshSound, { channel=3 }  ) 
+				elseif string.find(bodyName, "trampoline") ~= nil then
+					impactChannel = audio.play( bounceSound, { channel=3 }  ) 
+				elseif string.find(bodyName, "keg") ~= nil then
+					impactChannel = audio.play( owSound, { channel=3 }  ) 
+				elseif string.find(bodyName, "spikeWall") ~= nil then
+					impactChannel = audio.play( owSound, { channel=3 }  ) 
+				end
 			end--]]
 		end
 
