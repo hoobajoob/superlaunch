@@ -4,6 +4,7 @@ function new( arguments )
 	local scene = {}
 	require "sprite"
 	local physics = require( "physics" )
+	require "sqlite3"
 	local ui = require( "ui" )
 	local tbaUI = require( "tbaUI" )
 	local worldFunctions = require( "superLaunchWorldFunctions" )
@@ -289,7 +290,7 @@ function new( arguments )
 					table.insert(totalScore, score)
 				end
 			
-			if timedModeMain and timeLeft <= 0 then
+			if timeMode and timeLeft <= 0 then
 				local aggregatedScore = 0
 				for i=1, #totalScore do
 					aggregatedScore = aggregatedScore + totalScore[i]
@@ -306,6 +307,40 @@ function new( arguments )
 					totalDisplay.bodyName = "totalDisplay"
 					overlayDisplay:insert( totalDisplay )
 					score = 0
+					
+					--Open GameData.sqlite.  If the file doesn't exist it will be created
+					local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
+					db = sqlite3.open( path )   
+					 
+					--Handle the applicationExit event to close the db
+					local function onSystemEvent( event )
+						if( event.type == "applicationExit" ) then              
+							db:close()
+						end
+					end
+					 
+					--setup the system listener to catch applicationExit
+					Runtime:addEventListener( "system", onSystemEvent )
+
+					--Setup the high score table if it doesn't exist
+					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, sName, dScore, dtCreated);]]
+					print(tablesetup)
+					db:exec( tablesetup )
+
+					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
+					local testvalue = {}
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', 123, 2011-05-13);]]
+					db:exec( tablefill )
+
+					--print the sqlite version to the terminal
+					print( "version " .. sqlite3.version() )
+					 
+					--print all the table contents
+					for row in db:nrows("SELECT * FROM tblHighScores") do
+					  local text = row.sName.." - "..row.dScore.." - "..row.dtCreated
+					  local t = display.newText(text, 20, 30 * row.ixHighScore, null, 16)
+					  t:setTextColor(255,0,255)
+					end
 			else
 				restartButton = ui.newButton{
 					default = "buttonRed.png",
