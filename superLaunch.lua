@@ -50,73 +50,26 @@ function new( arguments )
 		Runtime:addEventListener( "enterFrame", timeCheck )
 	end
 	
-	function AddSection()
-		worldLength = worldLength + 1
-		local addition = 160 + ( (worldLength - 1) * 960 )
-		
-		local dgrass
-		if worldLength > 1 and math.random(5) < 3 then
-			dgrass = display.newImage( "lava.png", true )
-			dgrass.bodyName = "lava"..worldLength
-			dgrass.x = addition; dgrass.y = groundReferencePoint
-			physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2 } )
-		else
-			dgrass = display.newImage( "grass.png", true )
-			dgrass.bodyName = "grass"..worldLength
-			dgrass.x = addition; dgrass.y = groundReferencePoint
-			physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25 } )
-		end
-		
-		game:insert( dgrass )
-
-		if worldLength > 2 then		
-			if math.random(5) < 4 then
-				if math.random(5) < 4 then
-					local trampoline = display.newImage( "ramp.png" )
-					trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
-					trampoline.bodyName = "trampoline"..worldLength
-					physics.addBody( trampoline, "static", { friction=0, bounce=6, shape={ 20,0, -20,0, -20,0, 20,0 } } )	
-					game:insert( trampoline )		
-				else						
-					local ramp = display.newImage( "ramp.png" )
-					ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
-					ramp.bodyName = "ramp"..worldLength
-					physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
-					game:insert( ramp )		
-				end
-			else 
-				if math.random(5) <4 then
-					local spikeWall = display.newImage( "spikewall.png" )
-					spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 80
-					spikeWall.bodyName = "spikeWall"..worldLength
-					physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
-					game:insert( spikeWall )
-				else
-					local keg = display.newImage( "keg.png" )
-					keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
-					keg.bodyName = "keg"..worldLength
-					physics.addBody( keg, "static", { friction=1, bounce=0 } )
-					game:insert( keg )
-				end
-			end
-				
-			local star = display.newImage( "star.png" )
-			star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
-			star.bodyName = "star"
-			physics.addBody( star, "static", { friction=0, bounce=0 } )
-			star.isSensor = true
-			game:insert( star )
-			
-			local bacon = display.newImage( "bacon.png" )
-			bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
-			bacon.bodyName = "bacon"
-			physics.addBody( bacon, "static", { friction=0, bounce=0 } )
-			bacon.isSensor = true
-			game:insert( bacon )
-		end
-	end
-	
-	function createFirstSection()
+	function start()
+		print("Starting Super Launch")
+		physics.start()
+		--physics.setDrawMode( "hybrid" )
+		worldLength = 0
+		local slingShot
+		local slingShotString
+		local life = 100
+		local explosion
+		local boost = 100
+		local worldLength = 0
+		mainContainerGroup = display.newGroup()
+		game = display.newGroup()
+		mainContainerGroup:insert( game )
+		game.x = 0
+		overlayDisplay = display.newGroup()
+		mainContainerGroup:insert( overlayDisplay )	
+						
+		-- Sky and ground graphics
+		local function createFirstSection()
 		
 			sky = display.newImage( "sky.png", true )
 			game:insert( sky )
@@ -158,31 +111,78 @@ function new( arguments )
 			grass.bodyName = "grass1"
 		end
 	
-	function start()
-		print("Starting Super Launch")
-		physics.start()
-		--physics.setDrawMode( "hybrid" )
-		worldLength = 0
-		local slingShot
-		local slingShotString
-		local life = 100
-		local explosion
-		local boost = 100
-		local worldLength = 0
-		mainContainerGroup = display.newGroup()
-		game = display.newGroup()
-		mainContainerGroup:insert( game )
-		game.x = 0
-		overlayDisplay = display.newGroup()
-		mainContainerGroup:insert( overlayDisplay )	
-						
+		local function AddSection()
+			worldLength = worldLength + 1
+			local addition = 160 + ( (worldLength - 1) * 960 )
+			
+			local dgrass
+			if worldLength > 1 and math.random(5) < 3 then
+				dgrass = display.newImage( "lava.png", true )
+				dgrass.bodyName = "lava"..worldLength
+				dgrass.x = addition; dgrass.y = groundReferencePoint
+				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2 } )
+			else
+				dgrass = display.newImage( "grass.png", true )
+				dgrass.bodyName = "grass"..worldLength
+				dgrass.x = addition; dgrass.y = groundReferencePoint
+				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25 } )
+			end
+			
+			game:insert( dgrass )
+
+			if worldLength > 2 then		
+				if math.random(5) < 4 then
+					if math.random(5) < 4 then
+						local trampoline = display.newImage( "ramp.png" )
+						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
+						trampoline.bodyName = "trampoline"..worldLength
+						physics.addBody( trampoline, "static", { friction=0, bounce=6, shape={ 20,0, -20,0, -20,0, 20,0 } } )	
+						game:insert( trampoline )		
+					else						
+						local ramp = display.newImage( "ramp.png" )
+						ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
+						ramp.bodyName = "ramp"..worldLength
+						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+						game:insert( ramp )		
+					end
+				else 
+					if math.random(5) <4 then
+						local spikeWall = display.newImage( "spikewall.png" )
+						spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 80
+						spikeWall.bodyName = "spikeWall"..worldLength
+						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
+						game:insert( spikeWall )
+					else
+						local keg = display.newImage( "keg.png" )
+						keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
+						keg.bodyName = "keg"..worldLength
+						physics.addBody( keg, "static", { friction=1, bounce=0 } )
+						game:insert( keg )
+					end
+				end
+					
+				local star = display.newImage( "star.png" )
+				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
+				star.bodyName = "star"
+				physics.addBody( star, "static", { friction=0, bounce=0 } )
+				star.isSensor = true
+				game:insert( star )
+				
+				local bacon = display.newImage( "bacon.png" )
+				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
+				bacon.bodyName = "bacon"
+				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
+				bacon.isSensor = true
+				game:insert( bacon )
+			end
+		end
+		
 		createFirstSection()
 		for i=1,2 do
 			AddSection()
-		end		
+		end	
 		
 		local timeBar
-		local timeMode = false
 		
 		mainCharacterShape = { 16,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14, -20 }
 
@@ -304,7 +304,7 @@ function new( arguments )
 			
 			local menuButtonPress = function( event )
 				menuButton.isVisible = false
-				scoreDisplay.parent:remove( scoreDisplay )
+				--TODO/FIX--scoreDisplay.parent:remove( scoreDisplay )
 				print("Clearing All "..game.numChildren.."in Game")	
 				while game.numChildren > 0	do		
 						if game[1] ~= nil then
@@ -352,7 +352,7 @@ function new( arguments )
 			local restartButtonPress = function( event )
 				
 				restartButton.isVisible = false
-				scoreDisplay.parent:remove( scoreDisplay )				
+				--TODO: FIX--scoreDisplay.parent:remove( scoreDisplay )				
 				
 				while game.numChildren > 0	do		
 					print("Clearing All "..game.numChildren.."in Game")				
@@ -398,7 +398,11 @@ function new( arguments )
 				else
 					table.insert(totalScore, score)
 				end
-			
+			if timeMode then
+				print ("Time Mode is on")
+			else
+				print("Time Mode is off")
+			end
 			if timeMode and timeLeft <= 0 then
 				local aggregatedScore = 0
 				for i=1, #totalScore do
@@ -438,7 +442,7 @@ function new( arguments )
 
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
 					local testvalue = {}
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', 123, 2011-05-13);]]
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', ]]..aggregatedScore..[[, 2011-05-13);]]
 					db:exec( tablefill )
 
 					--print the sqlite version to the terminal
