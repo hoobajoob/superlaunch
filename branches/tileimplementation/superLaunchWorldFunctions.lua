@@ -1,5 +1,6 @@
 module(..., package.seeall)
 function AddSection(physics, worldLength, game)
+	print(worldLength)
 	worldLength = worldLength + 1
 	local addition = 160 + ( (worldLength - 1) * 960 )
 	

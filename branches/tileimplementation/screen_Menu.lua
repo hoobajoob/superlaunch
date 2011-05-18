@@ -12,10 +12,12 @@ function new()
 	
 	local onListItemRelease = function(event)
 		_G["map"] = event.target.data --"mainLevel.tmx"
-		if _G["map"].name == "Noah Launcher" then
-		local backgroundMusic = audio.loadStream("backgroundMusic.ogg")
-		local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
+		if _G["map"].name == "Super Launch" then
+			local backgroundMusic = audio.loadStream("backgroundMusic.ogg")
+			local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 			director:changeScene("timedModeMain", "moveFromRight")
+		elseif _G["map"].name == "High Scores" then
+			director:changeScene("HighScores", "moveFromTop")
 		else
 			director:changeScene("screen_Map", "moveFromRight")
 		end
