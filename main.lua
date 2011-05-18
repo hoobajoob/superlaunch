@@ -2,6 +2,7 @@ display.setStatusBar( display.HiddenStatusBar )
 
 local lime = require("lime")
 local director = require("director")
+local preloader = require("preloader")
 local fps = require("fps")
 
 performance = fps.PerformanceOutput.new()

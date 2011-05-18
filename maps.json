@@ -1,15 +1,23 @@
 [
 	{
-		"name":"Super Launch",
-		"description":"Super Launch Tile Test.",
+		"name":"Tile Test",
+		"description":"Tile Test.",
 		"link":"http://www.TeamBearAttack.com",
 		"file":"mainLevel.tmx",
 		"usesPhysics":true,
 		"useCulling":true
 	},
 	{
-		"name":"Noah Launcher",
-		"description":"Noah Launch Tile Test.",
+		"name":"Super Launch",
+		"description":"Super Launch Test.",
+		"link":"http://www.TeamBearAttack.com",
+		"file":"mainLevel.tmx",
+		"usesPhysics":true,
+		"useCulling":true
+	},
+	{
+		"name":"High Scores",
+		"description":"Display High Scores",
 		"link":"http://www.TeamBearAttack.com",
 		"file":"mainLevel.tmx",
 		"usesPhysics":true,
