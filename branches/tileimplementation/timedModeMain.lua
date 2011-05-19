@@ -1,20 +1,11 @@
 module(..., package.seeall)
 
-local ui = require("ui")
-local tableView = require("tableView")
-
 function new()
 
 	local self = display.newGroup()
-
-	self.back = display.newRect(self, 0, 0, display.contentWidth, display.contentHeight)
-	self.list = {}
 		
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
-	
-	function clean()
-	end
 	
 	local noahButton = nil
 	local babyButton = nil
@@ -24,21 +15,21 @@ function new()
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false		
-		director:changeScene("superlaunch", "moveFromRight", {"noah", true})
+		director:changeScene("testScene", "moveFromRight", {"noah", true})
 	end
 	
 	local function babyButtonPress()
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
-		director:changeScene("superlaunch", "moveFromRight", {"baby", true})
+		director:changeScene("testScene", "moveFromRight", {"baby", true})
 	end
 	
 	local function dogButtonPress()
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
-		director:changeScene("superlaunch", "moveFromRight", {"dog", true})
+		director:changeScene("testScene", "moveFromRight", {"dog", true})
 	end
 
 	noahButton = ui.newButton{
@@ -66,6 +57,5 @@ function new()
 				}
 	self:insert(dogButton)
 	
-	return self
-	
+	return self	
 end

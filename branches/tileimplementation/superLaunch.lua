@@ -3,13 +3,9 @@ module(..., package.seeall)
 function new( arguments )
 	local scene = {}
 	require "sprite"
-	local physics = require( "physics" )
-	require "sqlite3"
-	local ui = require( "ui" )
 	local tbaUI = require( "tbaUI" )
-	local worldFunctions = require( "superLaunchWorldFunctions" )
 	require('socket')
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local mainContainerGroup
@@ -132,11 +128,11 @@ function new( arguments )
 
 			if worldLength > 2 then		
 				if math.random(5) < 4 then
-					if math.random(5) < 4 then
+					if math.random(5) < 6 then
 						local trampoline = display.newImage( "ramp.png" )
 						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
 						trampoline.bodyName = "trampoline"..worldLength
-						physics.addBody( trampoline, "static", { friction=0, bounce=6, shape={ 20,0, -20,0, -20,0, 20,0 } } )	
+						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,1, -20,1, -20,-1, 20,-1 } } )	
 						game:insert( trampoline )		
 					else						
 						local ramp = display.newImage( "ramp.png" )

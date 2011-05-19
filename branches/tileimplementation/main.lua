@@ -1,14 +1,11 @@
 display.setStatusBar( display.HiddenStatusBar )
 
-local lime = require("lime")
 local director = require("director")
-local preloader = require("preloader")
-local fps = require("fps")
-
-performance = fps.PerformanceOutput.new()
-performance.group.x, performance.group.y = display.contentWidth / 2 - (performance.group.width / 5),  0;
-performance.group.alpha = 0.7; -- So it doesn't get in the way of the rest of the scene
-performance.group.isVisible = false
+--local preloader = require("preloader")
+local ui = require("ui")
+local physics = require("physics")
+local tableView = require("tableView")
+require "sqlite3"
 
 isSimulator = "simulator" == system.getInfo("environment")
 	
@@ -22,7 +19,7 @@ local mainGroup = display.newGroup()
 mainGroup:insert(director.directorView)
 
 -- Change scene without effects
-director:changeScene("screen_Menu")
+director:changeScene("mainMenu")
 
 
 
