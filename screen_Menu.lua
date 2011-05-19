@@ -1,7 +1,7 @@
 module(..., package.seeall)
 
-local ui = require("ui")
 local tableView = require("tableView")
+local lime = require("lime")
 
 function new()
 
