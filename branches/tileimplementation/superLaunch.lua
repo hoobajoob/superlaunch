@@ -17,11 +17,17 @@ function new( arguments )
 	local swooshSound = audio.loadSound("swoosh.mp3")	
 	local bounceSound = audio.loadSound("bounce.mp3")	
 	local owSound = audio.loadSound("ow.ogg")	
+	local jetSound = audio.loadSound("jetFuel.mp3")	
+	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
 	local timeLeft = 100
+	local startingSkyX1 = -45
+	local startingSkyX2 = 515
+	timeBar = nil
 	math.randomseed( os.time() )
 	math.random()
+	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
 		timeBar = tbaUI.newBar{
@@ -41,17 +47,21 @@ function new( arguments )
 				tTimeLeft = event.time;
 				timeLeft = timeLeft - 1
 				timeBar:setSize( timeLeft )
+			end			
+			if timeLeft <=0 then
+				Runtime:removeEventListener( "enterFrame", timeCheck )
+				if timebar ~= nil then timeBar:removeSelf() end
 			end
 		end
 		Runtime:addEventListener( "enterFrame", timeCheck )
 	end
-	
+	--]]
 	function start()
 		print("Starting Super Launch")
 		physics.start()
 		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
-		local slingShot
+		--local slingShot
 		local slingShotString
 		local life = 100
 		local explosion
@@ -70,35 +80,35 @@ function new( arguments )
 			sky = display.newImage( "sky.png", true )
 			game:insert( sky )
 			sky:setReferencePoint( display.CenterLeftReferencePoint )
-			sky.x = -60; sky.y = 140
+			sky.x = startingSkyX1; sky.y = 140
 			msky = display.newImage( "skymiddle.png", true )
 			game:insert( msky )
 			msky:setReferencePoint( display.CenterLeftReferencePoint )
-			msky.x = -60; msky.y = -180
+			msky.x = startingSkyX1; msky.y = -180
 			tsky = display.newImage( "skytop.png", true )
 			game:insert( tsky )
 			tsky:setReferencePoint( display.CenterLeftReferencePoint )
-			tsky.x = -60; tsky.y = -500
+			tsky.x = startingSkyX1; tsky.y = -500
 			ttsky = display.newImage( "skytransition.png", true )
 			game:insert( ttsky )
 			ttsky:setReferencePoint( display.CenterLeftReferencePoint )
-			ttsky.x = -60; ttsky.y = -820
+			ttsky.x = startingSkyX1; ttsky.y = -820
 			sky2 = display.newImage( "sky.png", true )
 			game:insert( sky2 )
 			sky2:setReferencePoint( display.CenterLeftReferencePoint )
-			sky2.x = 420; sky2.y = 140
+			sky2.x = startingSkyX2; sky2.y = 140
 			msky2 = display.newImage( "skymiddle.png", true )
 			game:insert( msky2 )
 			msky2:setReferencePoint( display.CenterLeftReferencePoint )
-			msky2.x = 420; msky2.y = -180
+			msky2.x = startingSkyX2; msky2.y = -180
 			tsky2 = display.newImage( "skytop.png", true )
 			game:insert( tsky2 )
 			tsky2:setReferencePoint( display.CenterLeftReferencePoint )
-			tsky2.x = 420; tsky2.y = -500
+			tsky2.x = startingSkyX2; tsky2.y = -500
 			ttsky2 = display.newImage( "skytransition.png", true )
 			game:insert( ttsky2 )
 			ttsky2:setReferencePoint( display.CenterLeftReferencePoint )
-			ttsky2.x = 420; ttsky2.y = -820
+			ttsky2.x = startingSkyX2; ttsky2.y = -820
 
 			local grass = display.newImage( "grass.png", true )
 			game:insert( grass )
@@ -127,8 +137,8 @@ function new( arguments )
 			game:insert( dgrass )
 
 			if worldLength > 2 then		
-				if math.random(5) < 4 then
-					if math.random(5) < 6 then
+				if math.random(100) < 83 then
+					if math.random(5) < 3 then
 						local trampoline = display.newImage( "ramp.png" )
 						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
 						trampoline.bodyName = "trampoline"..worldLength
@@ -180,29 +190,24 @@ function new( arguments )
 		
 		local timeBar
 		
-		mainCharacterShape = { 16,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14, -20 }
+		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
 		if arguments ~= nil then
 			print ("Number of Arguments = " .. #arguments)
 			local character = arguments[1]
 			print("Character is: "..character)
+			local sheet1
 			if character == "noah" then
-				local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
-				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
-				sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
-				mainCharacter = sprite.newSprite( spriteSet1 )		
+				sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )	
 			elseif character == "baby" then
-				local sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
-				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
-				sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
-				mainCharacter = sprite.newSprite( spriteSet1 )	
+				sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
 			elseif character == "dog" then
-				local sheet1 = sprite.newSpriteSheet( "dogSprite.png", 64, 80 )
-				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
-				sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
-				mainCharacter = sprite.newSprite( spriteSet1 )		
-				mainCharacter:rotate(90)
+				sheet1 = sprite.newSpriteSheet( "dogSprite.png", 64, 80 )
 			end
+			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
+			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
+			mainCharacter = sprite.newSprite( spriteSet1 )	
+			if character == "dog" then mainCharacter:rotate(90) end
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -216,13 +221,13 @@ function new( arguments )
 		slingshotString.bodyName = "slingShotString"
 		game:insert(slingshotString)
 		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 55, 220 )
-
+--[[
 		slingshot = display.newImage( "slingshot.png" )
 		slingshot.x = 170; slingshot.y = groundReferencePoint - 180
 		--physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
-
+--]]
 		------------------------------------------------------------
 		-- Simple score display
 
@@ -300,6 +305,9 @@ function new( arguments )
 			
 			local menuButtonPress = function( event )
 				menuButton.isVisible = false
+				timeLeft = 0
+				Runtime:removeEventListener( "enterFrame", timeCheck )
+				if timebar ~= nil then timeBar:removeSelf() end
 				--TODO/FIX--scoreDisplay.parent:remove( scoreDisplay )
 				print("Clearing All "..game.numChildren.."in Game")	
 				while game.numChildren > 0	do		
@@ -328,7 +336,7 @@ function new( arguments )
 				physics = nil
 				ui = nil
 				audio.stop( backgroundMusicChannel )
-				director:changeScene("screen_Menu", "moveFromLeft")
+				director:changeScene("mainMenu", "moveFromLeft")
 			end
 						
 			menuButton = ui.newButton{
@@ -447,8 +455,9 @@ function new( arguments )
 					--print all the table contents
 					for row in db:nrows("SELECT * FROM tblHighScores") do
 					  local text = row.sName.." - "..row.dScore.." - "..row.dtCreated
-					  local t = display.newText(text, 20, 30 * row.ixHighScore, null, 16)
+					  local t = display.newText(text, 0, 30 * row.ixHighScore, null, 16)
 					  t:setTextColor(255,0,255)
+					  overlayDisplay:insert( t )
 					end
 			else
 				restartButton = ui.newButton{
@@ -503,17 +512,17 @@ function new( arguments )
 				sky2:translate( -(sky2.contentWidth * 2), 0)
 			end
 			
-			if ( game.x + sky.x + sky.contentWidth) < 0 then
+			if ( game.x + sky.x + sky.contentWidth) < -40 then
 				sky:translate( sky.contentWidth * 2, 0)
 			end
-			if ( game.x + sky2.x + sky2.contentWidth) < 0 then
+			if ( game.x + sky2.x + sky2.contentWidth) < -40 then
 				sky2:translate( sky2.contentWidth * 2, 0)
 			end
 			
 			local mskyTotal = game.x + msky.x + msky.contentWidth
 			local msky2Total = game.x + msky2.x + msky2.contentWidth
 			
-			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 60 then
+			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 20 then
 				msky.x = sky.x
 				msky2.x = sky2.x
 			end			
@@ -532,13 +541,7 @@ function new( arguments )
 			if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
 				ttsky.x = sky.x
 				ttsky2.x = sky2.x
-			end
-			
-			--[[
-			if timeLeft <=0 then
-				life = 0
-			end
-			--]]
+			end			
 			
 			if life <= 0 then	
 				print("removing event Listeners")
@@ -550,6 +553,7 @@ function new( arguments )
 		end
 		
 		local jetpackButton
+		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
 		local function applyJetpackBoost( event )
 			local tDelta = (event.time - tJetpack)
@@ -571,12 +575,20 @@ function new( arguments )
 				
 			end
 		end
-			
-		local function startJets()		
+		local jetChannel
+		--[[
+		local function playJetContinuousSound()
+			jetChannel = audio.play( jetContinuousSound, ({ channel=4 }, onComplete=playJetContinuousSound) )
+		end
+		--]]
+		local function startJets()
+			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
+			jetChannel = audio.play( jetSound,{ channel=4 })
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		local function endJets()
+			audio.stop( jetChannel )
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
@@ -595,7 +607,8 @@ function new( arguments )
 		local tLava = system.getTimer()
 		local function removeLifeLava( event )
 			local tDelta = (event.time - tLava)
-			if tDelta > 250 then	
+			print ( "lava Delta = "..tDelta)
+			if tDelta > 25 then	
 				tLavaPrevious = event.time
 				life = life - 1
 				lifeBar:setSize( life )
@@ -630,22 +643,22 @@ function new( arguments )
 				elseif "ended" == phase or "cancelled" == phase then
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
-					slingshot:removeSelf()
+					--slingshot:removeSelf()
 					slingshotString:removeSelf()
 					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
 					t:prepare("mainCharacterSprite")
 					t:play()
-					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					game:insert(t)
-					t.bodyName = "mainCharacterDynamic"
-					t.isFixedRotation = true
-					--t.angularDamping = 10
 					if t.x<1 then
 						t.x = 1
 					end
 					if t.y>295 then
 						t.y = 295
 					end
+					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					game:insert(t)
+					t.bodyName = "mainCharacterDynamic"
+					t.isFixedRotation = true
+					--t.angularDamping = 10
 					t:removeEventListener( "touch", onTouch )
 					t:applyLinearImpulse( 2 * (170 - t.x) , 1 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
@@ -672,6 +685,7 @@ function new( arguments )
 				if self.bodyName == "lava" or event.other.bodyName == "lava" then
 					life = life - 1
 					lifeBar:setSize( life )
+					print("adding lava removal listener")
 					Runtime:addEventListener( "enterFrame", removeLifeLava )
 				elseif event.other.bodyName == "star" then
 					mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
