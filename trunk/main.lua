@@ -1,3 +1,54 @@
+display.setStatusBar( display.HiddenStatusBar )
+
+local director = require("director")
+--local preloader = require("preloader")
+local ui = require("ui")
+local physics = require("physics")
+local tableView = require("tableView")
+require "sqlite3"
+
+isSimulator = "simulator" == system.getInfo("environment")
+	
+-- Import director class
+local director = require("director")
+
+-- Create a main group
+local mainGroup = display.newGroup()
+
+-- Add the group from director class
+mainGroup:insert(director.directorView)
+
+-- Change scene without effects
+director:changeScene("mainMenu")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--[[
 local adSpace
 local tableView = require("tableView")
 local scrollView = require("scrollView")
@@ -193,3 +244,4 @@ function displayMenu()
 end
 
 displayMenu()
+--]]
