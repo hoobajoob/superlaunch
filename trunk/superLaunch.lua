@@ -180,6 +180,15 @@ function new( arguments )
 				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
 				bacon.isSensor = true
 				game:insert( bacon )
+				
+				if math.random(100) > 83 then
+					local bomb = display.newImage( "bomb.png" )
+					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
+					bomb.bodyName = "bomb"
+					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
+					bomb.isSensor = true
+					game:insert( bomb )
+				end
 			end
 		end
 		
@@ -455,7 +464,7 @@ function new( arguments )
 					--print all the table contents
 					for row in db:nrows("SELECT * FROM tblHighScores") do
 					  local text = row.sName.." - "..row.dScore.." - "..row.dtCreated
-					  local t = display.newText(text, 0, 30 * row.ixHighScore, null, 16)
+					  local t = display.newText(text, 0, 50 + (40 * row.ixHighScore), null, 16)
 					  t:setTextColor(255,0,255)
 					  overlayDisplay:insert( t )
 					end
@@ -697,6 +706,14 @@ function new( arguments )
 					end			
 					lifeBar:setSize( life )
 					mainCharacter:applyLinearImpulse( -10, -75, mainCharacter.x + 9, mainCharacter.y )
+				elseif event.other.bodyName == "bomb" then
+					if life < 10 then
+						life = 0
+					else
+						life = life - 10
+					end
+					lifeBar:setSize( life )
+					mainCharacter:applyLinearImpulse( 15, -5, mainCharacter.x, mainCharacter.y )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
