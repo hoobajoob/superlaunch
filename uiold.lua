@@ -67,18 +67,7 @@ local function newButtonHandler( self, event )
                         buttonEvent.phase = "press"
                         result = onEvent( buttonEvent )
                 elseif onPress then
-					if self.arguments ~= nil then
-						print ("Running on press event with arguments")
-						print ("arguments = ")
-						for i=1, table.getn(self.arguments) do
-							if self.arguments[i] ~= nil then
-								print(self.arguments[i])
-							end
-						end
-						result = onPress( event, self.arguments )
-					else
                         result = onPress( event )
-					end
                 end
  
                 -- Subsequent touch events will target button even if they are outside the contentBounds of button
@@ -130,7 +119,7 @@ end
 -- Button class
  
 function newButton( params )
-        local button, default, over, size, font, textColor, offset, arguments
+        local button, default, over, size, font, textColor, offset
         
         if params.default then
                 button = display.newGroup()
@@ -156,12 +145,6 @@ function newButton( params )
                 over.isVisible = false
                 button:insert( over, true )
         end
-		
-		if params.arguments then
-			button.arguments = params.arguments
-		else
-			button.arguments = nil
-		end
         
         -- Public methods
         function button:setText( newText )
