@@ -11,10 +11,24 @@ function new( arguments )
 	local babyButton = nil
 	local dogButton = nil
 	
+		
+	-- Back Key listener
+	local function onKeyEventChar( event )
+		local phase = event.phase
+		local keyName = event.keyName
+		
+		if (phase == "up" and keyName == "back") then 
+			Runtime:removeEventListener( "key", onKeyEventChar );
+				timer.performWithDelay(100, moveBack("mainMenu", "moveFromLeft", {}), 1)
+		end
+		return true
+	end
+	
 	local function noahButtonPress()
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false		
+		Runtime:removeEventListener( "back", onKeyEventChar );
 		director:changeScene(arguments[1], "moveFromRight", {"noah", true})
 	end
 	
@@ -22,6 +36,7 @@ function new( arguments )
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
+		Runtime:removeEventListener( "back", onKeyEventChar );
 		director:changeScene(arguments[1], "moveFromRight", {"baby", true})
 	end
 	
@@ -29,6 +44,7 @@ function new( arguments )
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
+		Runtime:removeEventListener( "back", onKeyEventChar );
 		director:changeScene(arguments[1], "moveFromRight", {"dog", true})
 	end
 
@@ -56,6 +72,12 @@ function new( arguments )
 					y = 100
 				}
 	self:insert(dogButton)
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onKeyEventChar );
+	
+	function clean()
+	end
 	
 	return self	
 end
