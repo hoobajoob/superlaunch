@@ -5,7 +5,7 @@ function new( arguments )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local mainContainerGroup
@@ -113,7 +113,7 @@ function new( arguments )
 			local grass = display.newImage( "grass.png", true )
 			game:insert( grass )
 			grass.x = 160; grass.y = groundReferencePoint
-			physics.addBody( grass, "static", { friction=0.1, bounce=0.25 } )
+			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-20, 480,-20 } } )
 			grass.bodyName = "grass1"
 		end
 	
@@ -125,13 +125,13 @@ function new( arguments )
 			if worldLength > 1 and math.random(5) < 3 then
 				dgrass = display.newImage( "lava.png", true )
 				dgrass.bodyName = "lava"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint
-				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2 } )
+				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-20, 480,-20 } } )
 			else
 				dgrass = display.newImage( "grass.png", true )
 				dgrass.bodyName = "grass"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint
-				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25 } )
+				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-20, 480,-20 } } )
 			end
 			
 			game:insert( dgrass )
@@ -139,17 +139,19 @@ function new( arguments )
 			if worldLength > 2 then		
 				if math.random(100) < 83 then
 					if math.random(5) < 3 then
-						local trampoline = display.newImage( "ramp.png" )
+						local trampoline = display.newImage( "trampoline.png" )
 						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
 						trampoline.bodyName = "trampoline"..worldLength
 						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,1, -20,1, -20,-1, 20,-1 } } )	
-						game:insert( trampoline )		
+						game:insert( trampoline )	
+						trampoline:toFront()
 					else						
 						local ramp = display.newImage( "ramp.png" )
 						ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
 						ramp.bodyName = "ramp"..worldLength
 						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
-						game:insert( ramp )		
+						game:insert( ramp )	
+						ramp:toFront()	
 					end
 				else 
 					if math.random(5) <4 then
@@ -158,12 +160,14 @@ function new( arguments )
 						spikeWall.bodyName = "spikeWall"..worldLength
 						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
 						game:insert( spikeWall )
+						spikeWall:toFront()	
 					else
 						local keg = display.newImage( "keg.png" )
 						keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
 						keg.bodyName = "keg"..worldLength
 						physics.addBody( keg, "static", { friction=1, bounce=0 } )
 						game:insert( keg )
+						keg:toFront()	
 					end
 				end
 					
@@ -173,6 +177,7 @@ function new( arguments )
 				physics.addBody( star, "static", { friction=0, bounce=0 } )
 				star.isSensor = true
 				game:insert( star )
+				 star:toFront()	
 				
 				local bacon = display.newImage( "bacon.png" )
 				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
@@ -180,6 +185,7 @@ function new( arguments )
 				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
 				bacon.isSensor = true
 				game:insert( bacon )
+				bacon:toFront()	
 				
 				if math.random(100) > 83 then
 					local bomb = display.newImage( "bomb.png" )
@@ -188,6 +194,7 @@ function new( arguments )
 					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
 					bomb.isSensor = true
 					game:insert( bomb )
+					bomb:toFront()	
 				end
 			end
 		end
@@ -807,6 +814,20 @@ function new( arguments )
 		
 		return game
 	end
+	
+	-- Back Key listener
+	local function onKeyEventSuperLaunch( event )
+		local phase = event.phase
+		local keyName = event.keyName
+
+		if (phase == "up" and keyName == "back") then 
+			Runtime:removeEventListener( "key", onKeyEvent );
+			timer.performWithDelay(100, moveBack("characterSelect", "moveFromLeft", {"superLaunch"}), 1)
+		end
+	end
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onKeyEventSuperLaunch );	
 	
 	return start()
 end

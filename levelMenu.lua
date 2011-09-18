@@ -4,6 +4,18 @@ function new( arguments )
 	
 
 	local self = display.newGroup()
+		
+	-- Back Key listener
+	local function onKeyEventLevelMenu( event )
+		local phase = event.phase
+		local keyName = event.keyName
+		
+		if (phase == "up" and keyName == "back") then 
+			Runtime:removeEventListener( "key", onKeyEventLevelMenu );
+			timer.performWithDelay(100, moveBack("characterSelect", "moveFromLeft", {"levelMenu"}), 1)
+		end
+		return true
+	end
 	
 	local levelButtonPress = function(event, localArguments)
 		print ("running function"..localArguments[1])
@@ -15,6 +27,7 @@ function new( arguments )
 				end
 			end
 		end
+		Runtime:removeEventListener( "key", onKeyEventLevelMenu );
 		director:changeScene("levelLaunch", "moveFromRight", {arguments[1], localArguments[1]})
 	end
 	
@@ -39,5 +52,9 @@ function new( arguments )
 		if level % 6 == 0 then row = row + 1; col = 1 end
     end
 	--]]
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onKeyEventLevelMenu );
+	
 	return self
 end
