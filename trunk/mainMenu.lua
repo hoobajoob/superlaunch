@@ -34,10 +34,12 @@ function new()
 	end
 	
 	local levelButtonPress = function( event )
+		--[[
 		Runtime:removeEventListener( "key", onKeyEvent );
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 		director:changeScene("characterSelect", "moveFromRight", {"levelMenu"})
+		--]]
 	end
 	
 	local highScoresButtonPress = function( event )
@@ -90,7 +92,7 @@ function new()
 			if "clicked" == event.action then
 					local i = event.index
 					if 1 == i then							
-						os.exit()
+						native.requestExit()
 					elseif 2 == i then
 						-- Do nothing; dialog will simply dismiss
 					end
@@ -109,7 +111,7 @@ function new()
 
 		elseif event.type == "applicationExit" then
 			if system.getInfo( "environment" ) == "device" then
-					os.exit()
+					native.requestExit()
 			end
 		end
 	end
