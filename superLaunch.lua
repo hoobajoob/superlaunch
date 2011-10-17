@@ -112,8 +112,8 @@ function new( arguments )
 
 			local grass = display.newImage( "grass.png", true )
 			game:insert( grass )
-			grass.x = 160; grass.y = groundReferencePoint
-			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-20, 480,-20 } } )
+			grass.x = 160; grass.y = groundReferencePoint - 20
+			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			grass.bodyName = "grass1"
 		end
 	
@@ -126,12 +126,12 @@ function new( arguments )
 				dgrass = display.newImage( "lava.png", true )
 				dgrass.bodyName = "lava"..worldLength
 				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-20, 480,-20 } } )
+				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			else
 				dgrass = display.newImage( "grass.png", true )
 				dgrass.bodyName = "grass"..worldLength
 				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-20, 480,-20 } } )
+				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			end
 			
 			game:insert( dgrass )
@@ -140,14 +140,14 @@ function new( arguments )
 				if math.random(100) < 83 then
 					if math.random(5) < 3 then
 						local trampoline = display.newImage( "trampoline.png" )
-						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
+						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 50
 						trampoline.bodyName = "trampoline"..worldLength
 						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,1, -20,1, -20,-1, 20,-1 } } )	
 						game:insert( trampoline )	
 						trampoline:toFront()
 					else						
 						local ramp = display.newImage( "ramp.png" )
-						ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
+						ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 75
 						ramp.bodyName = "ramp"..worldLength
 						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
 						game:insert( ramp )	
@@ -156,14 +156,14 @@ function new( arguments )
 				else 
 					if math.random(5) <4 then
 						local spikeWall = display.newImage( "spikewall.png" )
-						spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 80
+						spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 90
 						spikeWall.bodyName = "spikeWall"..worldLength
 						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
 						game:insert( spikeWall )
 						spikeWall:toFront()	
 					else
 						local keg = display.newImage( "keg.png" )
-						keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
+						keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 75
 						keg.bodyName = "keg"..worldLength
 						physics.addBody( keg, "static", { friction=1, bounce=0 } )
 						game:insert( keg )
