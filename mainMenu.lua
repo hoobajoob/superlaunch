@@ -2,16 +2,31 @@ module(..., package.seeall)
 function new()
 	local self = display.newGroup()
 		
-	 	
+
+	-- Handler that gets notified when the alert closes
+	local function onQuitComplete( event )
+			if "clicked" == event.action then
+					local i = event.index
+					if 1 == i then							
+						native.requestExit()
+					elseif 2 == i then
+						-- Do nothing; dialog will simply dismiss
+					end
+			end
+	end
+		
 	-- Back Key listener
 	local function onKeyEvent( event )
 		local phase = event.phase
 		local keyName = event.keyName
 		
 		-- Show alert with five buttons
-		if (phase == "up" and keyName == "back") then 
-			local alert = native.showAlert( "Corona", "Are you sure you want to exit?", 
+		if (keyName == "back") then 
+			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
 										{ "YES", "NO" }, onQuitComplete )
+		else			
+			local alert = native.showAlert( "SuperLaunch", "You pressed the "..keyName.." button.", 
+										{ "YES", "NO" } )
 		end
 		return true
 	end
@@ -27,18 +42,19 @@ function new()
 	end
 	
 	local classicButtonPress = function( event )
+			
 		Runtime:removeEventListener( "key", onKeyEvent );
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		director:changeScene("characterSelect", "moveFromRight", {"superlaunch"})
+		director:changeScene("timedModeMain", "moveFromRight")
 	end
 	
 	local levelButtonPress = function( event )
-		--[[
+		---[[
 		Runtime:removeEventListener( "key", onKeyEvent );
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		director:changeScene("characterSelect", "moveFromRight", {"levelMenu"})
+		director:changeScene("levelModeMain", "moveFromRight")
 		--]]
 	end
 	
@@ -85,18 +101,6 @@ function new()
 	
 	function moveBack(where, how, arguments)
 		director:changeScene( where, how, arguments)
-	end
-
-	-- Handler that gets notified when the alert closes
-	local function onQuitComplete( event )
-			if "clicked" == event.action then
-					local i = event.index
-					if 1 == i then							
-						native.requestExit()
-					elseif 2 == i then
-						-- Do nothing; dialog will simply dismiss
-					end
-			end
 	end
 	
 	-- Add the back key callback
