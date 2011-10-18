@@ -667,8 +667,8 @@ function new( arguments )
 					if t.x<1 then
 						t.x = 1
 					end
-					if t.y>295 then
-						t.y = 295
+					if t.y>185 then
+						t.y = 184
 					end
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
 					game:insert(t)
