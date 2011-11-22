@@ -77,6 +77,88 @@ function new( arguments )
 		-- Sky and ground graphics
 		local function createFirstSection()
 		
+			--Create Backwards Crap
+			---[[
+				borderBodyElement = { friction=0.5, bounce=0.3 }
+				local borderBottom = display.newRect( -820, 775, 480, 20 )
+				borderBottom:setFillColor( 0, 100, 100)		-- make invisible
+				physics.addBody( borderBottom, "static", borderBodyElement )
+				game:insert( borderBottom )
+
+				local borderLeft = display.newRect( -820, -200, 20, 975 )
+				borderLeft:setFillColor( 0, 100, 100)		-- make invisible
+				physics.addBody( borderLeft, "static", borderBodyElement )
+				game:insert( borderLeft )
+---[[
+				local borderRight = display.newRect( -360, 300, 20, 800 )
+				borderRight:setFillColor( 0, 100, 100)		-- make invisible
+				physics.addBody( borderRight, "static", borderBodyElement )
+				game:insert( borderRight )
+				--]]
+				local triangle = display.newImage("triangle.png")
+				triangle.x = -600; triangle.y = 160
+				
+				local triangle2 = display.newImage("triangle.png")
+				triangle2.x = -510; triangle2.y = 160
+
+				local pentagon = display.newImage("pentagon.png")
+				pentagon.x = -600; pentagon.y = 70
+
+				local pentagon2 = display.newImage("pentagon.png")
+				pentagon2.x = -510; pentagon2.y = 70
+
+				local crate = display.newImage("crate.png")
+				crate.x = -530; crate.y = 250
+
+				local crateB = display.newImage("crateB.png")
+				crateB.x = -430; crateB.y = 250
+
+				local crateC = display.newImage("crateC.png")
+				crateC.x = -420; crateC.y = 50
+
+				local soccerball = display.newImage("soccer_ball.png")
+				soccerball.x = -600; soccerball.y = 320
+
+				local superball = display.newImage("super_ball.png")
+				superball.x = -420; superball.y = 340
+
+				local superball2 = display.newImage("super_ball.png")
+				superball2.x = -440; superball2.y = 130
+
+				local superball3 = display.newImage("super_ball.png")
+				superball3.x = -430; superball3.y = 180
+
+
+				triangleShape = { 0,-35, 37,30, -37,30 }
+				pentagonShape = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
+
+				physics.addBody( crate, { density=2, friction=0.5, bounce=0.4 } )
+				physics.addBody( crateB, { density=4, friction=0.5, bounce=0.4 } )
+				physics.addBody( crateC, { density=1, friction=0.5, bounce=0.4 } )
+				game:insert( crate )
+				game:insert( crateB )
+				game:insert( crateC )
+
+				physics.addBody( triangle, { density=0.9, friction=0.5, bounce=0.3, shape=triangleShape } )
+				physics.addBody( triangle2, { density=0.9, friction=0.5, bounce=0.3, shape=triangleShape } )
+				game:insert( triangle )
+				game:insert( triangle2 )
+
+				physics.addBody( pentagon, { density=0.9, friction=0.5, bounce=0.4, shape=pentagonShape } )
+				physics.addBody( pentagon2, { density=0.9, friction=0.5, bounce=0.4, shape=pentagonShape } )
+				game:insert( pentagon )
+				game:insert( pentagon2 )
+
+				physics.addBody( soccerball, { density=0.9, friction=0.5, bounce=0.6, radius=38 } )
+				physics.addBody( superball, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				physics.addBody( superball2, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				physics.addBody( superball3, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				game:insert( soccerball )
+				game:insert( superball )
+				game:insert( superball2 )
+				game:insert( superball3 )
+			--]]
+		
 			sky = display.newImage( "sky.png", true )
 			game:insert( sky )
 			sky:setReferencePoint( display.CenterLeftReferencePoint )
@@ -135,14 +217,17 @@ function new( arguments )
 			end
 			
 			game:insert( dgrass )
+			dgrass:toBack()
+			sky:toBack()
+			sky2:toBack()
 
 			if worldLength > 2 then		
 				if math.random(100) < 83 then
 					if math.random(5) < 3 then
 						local trampoline = display.newImage( "trampoline.png" )
-						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 50
+						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 60
 						trampoline.bodyName = "trampoline"..worldLength
-						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,1, -20,1, -20,-1, 20,-1 } } )	
+						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,11, -20,11, -20,9, 20,9 } } )	
 						game:insert( trampoline )	
 						trampoline:toFront()
 					else						
@@ -497,7 +582,7 @@ function new( arguments )
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
-			if mainCharacter.x > ( worldLength - 2 ) * 960 then
+			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
 				AddSection()
 			mainCharacter:toFront();
 			end
@@ -505,10 +590,10 @@ function new( arguments )
 				score = mainCharacter.x
 				scoreDisplay:setText( string.format( "%i", score ) )
 			end
-			if (mainCharacter.x > 100) then
+			if (mainCharacter.x > -800) then
 				game.x = math.ceil(-mainCharacter.x) + 120
 			end
-			if (mainCharacter.y < 220) then
+			if (mainCharacter.x < -100 or mainCharacter.y < 220) then
 				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 220
 			end
 			if mainCharacter ~= nil then
@@ -520,44 +605,45 @@ function new( arguments )
 				end
 			end
 			
-			
-			if ( game.x + sky.x ) > sky.contentWidth then
-				sky:translate( -(sky.contentWidth * 2), 0)
+			if (mainCharacter.x > 0) then
+				if ( game.x + sky.x ) > sky.contentWidth then
+					sky:translate( -(sky.contentWidth * 2), 0)
+				end
+				if ( game.x + sky2.x ) > sky.contentWidth then
+					sky2:translate( -(sky2.contentWidth * 2), 0)
+				end
+				
+				if ( game.x + sky.x + sky.contentWidth) < -40 then
+					sky:translate( sky.contentWidth * 2, 0)
+				end
+				if ( game.x + sky2.x + sky2.contentWidth) < -40 then
+					sky2:translate( sky2.contentWidth * 2, 0)
+				end
+				
+				local mskyTotal = game.x + msky.x + msky.contentWidth
+				local msky2Total = game.x + msky2.x + msky2.contentWidth
+				
+				if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 20 then
+					msky.x = sky.x
+					msky2.x = sky2.x
+				end			
+				
+				local tskyTotal = game.x + tsky.x + tsky.contentWidth
+				local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
+						
+				if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 220 then
+					tsky.x = sky.x
+					tsky2.x = sky2.x
+				end
+				
+				local ttskyTotal = game.x + ttsky.x + ttsky.contentWidth
+				local ttsky2Total = game.x + ttsky2.x + ttsky2.contentWidth
+						
+				if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
+					ttsky.x = sky.x
+					ttsky2.x = sky2.x
+				end	
 			end
-			if ( game.x + sky2.x ) > sky.contentWidth then
-				sky2:translate( -(sky2.contentWidth * 2), 0)
-			end
-			
-			if ( game.x + sky.x + sky.contentWidth) < -40 then
-				sky:translate( sky.contentWidth * 2, 0)
-			end
-			if ( game.x + sky2.x + sky2.contentWidth) < -40 then
-				sky2:translate( sky2.contentWidth * 2, 0)
-			end
-			
-			local mskyTotal = game.x + msky.x + msky.contentWidth
-			local msky2Total = game.x + msky2.x + msky2.contentWidth
-			
-			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 20 then
-				msky.x = sky.x
-				msky2.x = sky2.x
-			end			
-			
-			local tskyTotal = game.x + tsky.x + tsky.contentWidth
-			local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
-					
-			if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 220 then
-				tsky.x = sky.x
-				tsky2.x = sky2.x
-			end
-			
-			local ttskyTotal = game.x + ttsky.x + ttsky.contentWidth
-			local ttsky2Total = game.x + ttsky2.x + ttsky2.contentWidth
-					
-			if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
-				ttsky.x = sky.x
-				ttsky2.x = sky2.x
-			end			
 			
 			if life <= 0 then	
 				print("removing event Listeners")

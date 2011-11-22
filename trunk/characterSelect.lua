@@ -1,49 +1,51 @@
 module(..., package.seeall)
 
-function new()
+function new( arguments )
 
 	local self = display.newGroup()
+	local nextScene = arguments[1]
 		
-	local bg = display.newImage( "background.png", true )
-	self:insert( bg )
-	
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
 	
 	local noahButton = nil
 	local babyButton = nil
 	local dogButton = nil
-	
-	local mainLabel = ui.newLabel{
-			bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
-			text = "High Scores",
-			--font = "Trebuchet-BoldItalic",
-			textColor = { 255, 200, 100, 255 },
-			size = 33,
-			align = "center"
-		}
-	self:insert( mainLabel )
-	mainLabel:setText( "Select a Character" )
-	
+		
+	--[[ Back Key listener
+	local function onKeyEventChar( event )
+		local phase = event.phase
+		local keyName = event.keyName
+		
+		if (phase == "up" and keyName == "back") then 
+			Runtime:removeEventListener( "key", onKeyEventChar );
+				timer.performWithDelay(100, moveBack("mainMenu", "moveFromLeft", {}), 1)
+		end
+		return true
+	end
+	--]]
 	local function noahButtonPress()
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false		
-		director:changeScene("superLaunch", "moveFromRight", {"noah", true})
+		--Runtime:removeEventListener( "back", onKeyEventChar );
+		director:changeScene(nextScene, "moveFromRight", {"noah", true})
 	end
 	
 	local function babyButtonPress()
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
-		director:changeScene("superLaunch", "moveFromRight", {"baby", true})
+		--Runtime:removeEventListener( "back", onKeyEventChar );
+		director:changeScene(nextScene, "moveFromRight", {"baby", true})
 	end
 	
 	local function dogButtonPress()
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
-		director:changeScene("superLaunch", "moveFromRight", {"dog", true})
+		--Runtime:removeEventListener( "back", onKeyEventChar );
+		director:changeScene(nextScene, "moveFromRight", {"dog", true})
 	end
 
 	noahButton = ui.newButton{
@@ -71,5 +73,10 @@ function new()
 				}
 	self:insert(dogButton)
 	
+	-- Add the back key callback
+	--Runtime:addEventListener( "key", onKeyEventChar );
+		
+	
+	local alert = native.showAlert("Superlaunch", "Argument passed is "..nextScene, { "OK" } )
 	return self	
 end
