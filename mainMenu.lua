@@ -1,7 +1,9 @@
 module(..., package.seeall)
 function new()
 	local self = display.newGroup()
-		
+	
+	local bg = display.newImage( "background.png", true )
+	self:insert( bg )
 
 	-- Handler that gets notified when the alert closes
 	local function onQuitComplete( event )
