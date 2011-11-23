@@ -557,20 +557,17 @@ function new( arguments )
 
 					--Setup the high score table if it doesn't exist
 					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, sName, dScore, dtCreated);]]
-					print(tablesetup)
 					db:exec( tablesetup )
 
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
 					local testvalue = {}
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', ]]..aggregatedScore..[[, 2011-05-13);]]
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
+					print (tablefill)
 					db:exec( tablefill )
-
-					--print the sqlite version to the terminal
-					print( "version " .. sqlite3.version() )
 					 
 					--print all the table contents
 					for row in db:nrows("SELECT * FROM tblHighScores") do
-					  local text = row.sName.." - "..row.dScore.." - "..row.dtCreated
+					  local text = row.sName.." - "..string.format( "%i", row.dScore).." - "..row.dtCreated
 					  local t = display.newText(text, 0, 50 + (40 * row.ixHighScore), null, 16)
 					  t:setTextColor(255,0,255)
 					  overlayDisplay:insert( t )
