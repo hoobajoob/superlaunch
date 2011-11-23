@@ -201,14 +201,26 @@ function new( arguments )
 	
 		local function AddSection()
 			worldLength = worldLength + 1
-			local addition = 160 + ( (worldLength - 1) * 960 )
-			
+			local addition = (worldLength* 960 )
+			local newToys = true
 			local dgrass
 			if worldLength > 1 and math.random(5) < 3 then
-				dgrass = display.newImage( "lava.png", true )
-				dgrass.bodyName = "lava"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+				if math.random(5) < 3 then
+					dgrass = display.newImage( "lava.png", true )
+					dgrass.bodyName = "lava"..worldLength
+					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+				else
+					newToys = false
+					dgrass = display.newImage( "quickSand.png", true )
+					dgrass.bodyName = "quickSand"..worldLength
+					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+					physics.addBody( dgrass, "static",
+									  { friction=0.9, bounce=0, shape={ -360,60, -480,60, -480,-30, -360,0 }},
+									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
+									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
+									)
+				end
 			else
 				dgrass = display.newImage( "grass.png", true )
 				dgrass.bodyName = "grass"..worldLength
@@ -221,41 +233,44 @@ function new( arguments )
 			sky:toBack()
 			sky2:toBack()
 
-			if worldLength > 2 then		
-				if math.random(100) < 83 then
-					if math.random(5) < 3 then
-						local trampoline = display.newImage( "trampoline.png" )
-						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 60
-						trampoline.bodyName = "trampoline"..worldLength
-						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,11, -20,11, -20,9, 20,9 } } )	
-						game:insert( trampoline )	
-						trampoline:toFront()
-					else						
-						local ramp = display.newImage( "ramp.png" )
-						ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 75
-						ramp.bodyName = "ramp"..worldLength
-						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
-						game:insert( ramp )	
-						ramp:toFront()	
-					end
-				else 
-					if math.random(5) <4 then
-						local spikeWall = display.newImage( "spikewall.png" )
-						spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 90
-						spikeWall.bodyName = "spikeWall"..worldLength
-						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
-						game:insert( spikeWall )
-						spikeWall:toFront()	
-					else
-						local keg = display.newImage( "keg.png" )
-						keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 75
-						keg.bodyName = "keg"..worldLength
-						physics.addBody( keg, "static", { friction=1, bounce=0 } )
-						game:insert( keg )
-						keg:toFront()	
+			if worldLength > 2 then					
+				if newToys == true then
+					toyX = addition + math.random( 10, 480 )
+					if math.random(100) < 83 then
+						if math.random(5) < 3 then
+							local trampoline = display.newImage( "trampoline.png" )
+							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
+							trampoline.bodyName = "trampoline"..worldLength
+							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,11, -20,11, -20,9, 20,9 } } )	
+							game:insert( trampoline )	
+							trampoline:toFront()
+						else						
+							local ramp = display.newImage( "ramp.png" )
+							ramp.x = toyX; ramp.y = groundReferencePoint - 75
+							ramp.bodyName = "ramp"..worldLength
+							physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+							game:insert( ramp )	
+							ramp:toFront()	
+						end
+					else 
+						if math.random(5) <4 then
+							local spikeWall = display.newImage( "spikewall.png" )
+							spikeWall.x = toyX; spikeWall.y = groundReferencePoint - 90
+							spikeWall.bodyName = "spikeWall"..worldLength
+							physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
+							game:insert( spikeWall )
+							spikeWall:toFront()	
+						else
+							local keg = display.newImage( "keg.png" )
+							keg.x = toyX; keg.y = groundReferencePoint - 75
+							keg.bodyName = "keg"..worldLength
+							physics.addBody( keg, "static", { friction=1, bounce=0 } )
+							game:insert( keg )
+							keg:toFront()	
+						end
 					end
 				end
-					
+				
 				local star = display.newImage( "star.png" )
 				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
 				star.bodyName = "star"
@@ -315,10 +330,10 @@ function new( arguments )
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 		end
-		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 200
+		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250
 
 		slingshotString = display.newImage( "string.png" )
-		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 180
+		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 230
 		slingshotString.bodyName = "slingShotString"
 		game:insert(slingshotString)
 		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 55, 220 )
@@ -740,8 +755,16 @@ function new( arguments )
 				if "moved" == phase then
 					-- Make object move (we subtract t.x0,t.y0 so that moves are
 					-- relative to initial grab point, rather than object "snapping").
-					t.x = event.x - t.x0
-					t.y = event.y - t.y0
+					if event.x>1 then
+						t.x = event.x - t.x0
+					else
+						t.x = 1
+					end					
+					if event.y< 245 then
+						t.y = event.y - t.y0
+					else
+						t.y = 245
+					end
 				elseif "ended" == phase or "cancelled" == phase then
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
@@ -750,19 +773,13 @@ function new( arguments )
 					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
 					t:prepare("mainCharacterSprite")
 					t:play()
-					if t.x<1 then
-						t.x = 1
-					end
-					if t.y>185 then
-						t.y = 184
-					end
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
 					game:insert(t)
 					t.bodyName = "mainCharacterDynamic"
 					t.isFixedRotation = true
 					--t.angularDamping = 10
 					t:removeEventListener( "touch", onTouch )
-					t:applyLinearImpulse( 2 * (170 - t.x) , 1 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
+					t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
 			end
