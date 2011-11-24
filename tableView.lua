@@ -233,12 +233,9 @@ function newList(params)
                                                 
                 local viewPortH = screenH - self.top - self.bottom 
                 local scrollH = viewPortH*self.height/(self.height*2 - viewPortH)               
-                local scrollBar = display.newRoundedRect(display.screenOriginX + display.viewableContentWidth - 8 ,0,5,scrollH,2)
+                local scrollBar = display.newRoundedRect(display.screenOriginX + 46 + display.viewableContentWidth - 8 ,0,5,scrollH,2)
                 scrollBar:setFillColor(scrollColorR, scrollColorG, scrollColorB, scrollColorA)
 
-                print(display.screenOriginX)
-                print(display.contentWidth)
-                print(display.viewableContentWidth)
                 local yRatio = scrollH/self.height
                 self.yRatio = yRatio    
 
@@ -471,7 +468,6 @@ function newListItemHandler(self, event)
 
         local t = currentTarget --could use self.target.parent possibly
         local phase = event.phase
-        print("touch: ".. phase)
 
         local default = self.default
         local over = self.over
