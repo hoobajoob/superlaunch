@@ -1,19 +1,8 @@
 module(..., package.seeall)
 function new()
-	local self = display.newGroup()
-	bg = display.newRect(0,0,display.contentWidth,display.contentHeight)
-	bg:setFillColor(255,50,0)
+	local self = display.newGroup()	
+	local bg = display.newImage( "highScores.png", true )
 	self:insert( bg )
-	local mainLabel = ui.newLabel{
-			bounds = { display.contentWidth /2 - 45, 30 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
-			text = "High Scores",
-			--font = "Trebuchet-BoldItalic",
-			textColor = { 0, 0, 0, 255 },
-			size = 42,
-			align = "center"
-		}
-	self:insert( mainLabel )
-	mainLabel:setText( "High Scores" )
 	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
@@ -32,19 +21,12 @@ function new()
 	--Setup the high score table if it doesn't exist
 	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, sName, dScore, dtCreated);]]
 	db:exec( tablesetup )
-	 
-	--[[print all the table contents
-	for row in db:nrows("SELECT ixHighScore, sName, dScore, dtCreated FROM tblHighScores") do
-	  local text = row.sName.." - "..row.dScore.." - "..row.dtCreated
-	  local t = display.newText(text, 30, row.ixHighScore * 24 + 80, null, 20)
-	  t:setTextColor(255,255,100)
-	end
-	--]]
+	
 	local highScoreData = {}
 	curRow = 1
-	for row in db:nrows("SELECT ixHighScore, sName, dScore, dtCreated FROM tblHighScores") do
-	  highScoreData[curRow] = row
-	  curRow = curRow + 1
+	for row in db:nrows("SELECT ixHighScore, sName, dScore, dtCreated FROM tblHighScores ORDER BY dScore DESC") do
+		highScoreData[curRow] = row
+		curRow = curRow + 1
 	end
 	local onListItemRelease = function(event)
 		--Todo:Open High Score in OpenFeint or play replay
@@ -54,14 +36,14 @@ function new()
 		default="highScoreListItem.png",
 		over="highScoreListItem_Over.PNG",
 		onRelease=onListItemRelease,
-		top=80 + display.screenOriginY,
+		top=100 + display.screenOriginY,
 		bottom=bottomBoundary,
 		backgroundColor={ 0, 0, 0 },
 		callback=function(row) 
 		
 			local group = display.newGroup()
 			
-			group.nameText = display.newText(group, row.sName.." - "..row.dScore.." - "..row.dtCreated, 0, 0, native.systemFontBold, 20)
+			group.nameText = display.newText(group, row.sName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 20)
 			group.nameText:setTextColor(255, 255, 100)
 			group.nameText.x = math.floor( group.nameText.width / 2) + 10
 			group.nameText.y = 20
