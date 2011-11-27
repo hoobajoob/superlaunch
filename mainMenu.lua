@@ -43,6 +43,43 @@ function new()
 		end
 	end
 	
+	--Open GameData.sqlite.  If the file doesn't exist it will be created
+	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
+	db = sqlite3.open( path )   
+	 
+	--Handle the applicationExit event to close the db
+	local function onSystemEvent( event )
+		if( event.type == "applicationExit" ) then              
+			db:close()
+		end
+	end
+	 
+	--setup the system listener to catch applicationExit
+	Runtime:addEventListener( "system", onSystemEvent )
+	
+	--Setup the user table if it doesn't exist
+	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
+	db:exec( tablesetup )
+	
+	local inputBox
+	
+	-- TextField Listener
+	local function onInputBoxSubmit( getObj )
+				
+		-- Use Lua closure in order to access the TextField object	 
+		return function( event )			
+			userName = inputBox.text	
+			
+			for row in db:nrows("SELECT ixUser, sName FROM tlUsers") do
+				userIndex = row.ixUser break 
+			end
+			
+			if userIndex == 0 then
+			end
+		end     -- "return function()"
+	end
+	inputBox = native.newTextField(10, 70, 180, 30, onInputBoxSubmit( function() return inputBox end ) )
+		
 	local classicButtonPress = function( event )
 			
 		Runtime:removeEventListener( "key", onKeyEvent );

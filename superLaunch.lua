@@ -556,12 +556,11 @@ function new( arguments )
 					Runtime:addEventListener( "system", onSystemEvent )
 
 					--Setup the high score table if it doesn't exist
-					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, sName, dScore, dtCreated);]]
+					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
 					db:exec( tablesetup )
 
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
-					local testvalue = {}
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
 					print (tablefill)
 					db:exec( tablefill )
 					 
