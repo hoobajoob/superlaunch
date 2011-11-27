@@ -6,6 +6,9 @@ local ui = require("ui")
 local physics = require("physics")
 local tableView = require("tableView")
 require "sqlite3"
+	
+	userName = "Anonymous"
+	userIndex = 0
 
 isSimulator = "simulator" == system.getInfo("environment")
 	

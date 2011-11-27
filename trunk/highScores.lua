@@ -19,12 +19,13 @@ function new()
 	Runtime:addEventListener( "system", onSystemEvent )
 
 	--Setup the high score table if it doesn't exist
-	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, sName, dScore, dtCreated);]]
+	local poop = [[DROP TABLE IF NOT EXISTS tblHighScores;]]
+	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
 	db:exec( tablesetup )
 	
 	local highScoreData = {}
 	curRow = 1
-	for row in db:nrows("SELECT ixHighScore, sName, dScore, dtCreated FROM tblHighScores ORDER BY dScore DESC") do
+	for row in db:nrows("SELECT ixHighScore, u.sName, dScore, dtCreated FROM tblHighScores hs LEFT JOIN tblUsers u ON hs.ixUser = u.ixUser ORDER BY dScore DESC") do
 		highScoreData[curRow] = row
 		curRow = curRow + 1
 	end
@@ -42,8 +43,10 @@ function new()
 		callback=function(row) 
 		
 			local group = display.newGroup()
+			local curName = "New User"
+			if row.sName ~= nil then curName = row.sName end
 			
-			group.nameText = display.newText(group, row.sName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 20)
+			group.nameText = display.newText(group, curName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 20)
 			group.nameText:setTextColor(255, 255, 100)
 			group.nameText.x = math.floor( group.nameText.width / 2) + 10
 			group.nameText.y = 20
