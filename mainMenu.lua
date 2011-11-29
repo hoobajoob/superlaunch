@@ -76,9 +76,11 @@ function new()
 			
 			if userIndex == 0 then
 			end
+			inputBox:removeSelf()
+			inputBox = nil
 		end     -- "return function()"
 	end
-	inputBox = native.newTextField(10, 70, 180, 30, onInputBoxSubmit( function() return inputBox end ) )
+	inputBox = native.newTextField(120, 130, 240, 60, onInputBoxSubmit( function() return inputBox end ) )
 		
 	local classicButtonPress = function( event )
 			

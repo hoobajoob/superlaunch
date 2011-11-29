@@ -5,10 +5,12 @@ local director = require("director")
 local ui = require("ui")
 local physics = require("physics")
 local tableView = require("tableView")
+local gameNetwork = require "gameNetwork"
+gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI", "SuperLaunch", "405093" )
 require "sqlite3"
 	
-	userName = "Anonymous"
-	userIndex = 0
+userName = "Anonymous"
+userIndex = 0
 
 isSimulator = "simulator" == system.getInfo("environment")
 	

@@ -43,7 +43,7 @@ function new()
 		callback=function(row) 
 		
 			local group = display.newGroup()
-			local curName = "New User"
+			local curName = "Anonymous"
 			if row.sName ~= nil then curName = row.sName end
 			
 			group.nameText = display.newText(group, curName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 20)
