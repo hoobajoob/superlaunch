@@ -537,40 +537,13 @@ function new( arguments )
 						size = 32,
 						align = "center"
 					}
-					totalDisplay.bodyName = "totalDisplay"
-					overlayDisplay:insert( totalDisplay )
-					score = 0
+				totalDisplay.bodyName = "totalDisplay"
+				overlayDisplay:insert( totalDisplay )
+				score = 0
 					
-					--Open GameData.sqlite.  If the file doesn't exist it will be created
-					local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
-					db = sqlite3.open( path )   
+				--Insert in to OpenFeint high score
+				gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
 					 
-					--Handle the applicationExit event to close the db
-					local function onSystemEvent( event )
-						if( event.type == "applicationExit" ) then              
-							db:close()
-						end
-					end
-					 
-					--setup the system listener to catch applicationExit
-					Runtime:addEventListener( "system", onSystemEvent )
-
-					--Setup the high score table if it doesn't exist
-					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
-					db:exec( tablesetup )
-
-					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
-					print (tablefill)
-					db:exec( tablefill )
-					 
-					--print all the table contents
-					for row in db:nrows("SELECT * FROM tblHighScores") do
-					  local text = row.sName.." - "..string.format( "%i", row.dScore).." - "..row.dtCreated
-					  local t = display.newText(text, 0, 50 + (40 * row.ixHighScore), null, 16)
-					  t:setTextColor(255,0,255)
-					  overlayDisplay:insert( t )
-					end
 			else
 				restartButton = ui.newButton{
 					default = "buttonRed.png",

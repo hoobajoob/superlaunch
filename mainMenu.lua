@@ -57,31 +57,8 @@ function new()
 	--setup the system listener to catch applicationExit
 	Runtime:addEventListener( "system", onSystemEvent )
 	
-	--Setup the user table if it doesn't exist
-	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
-	db:exec( tablesetup )
 	
-	local inputBox
 	
-	-- TextField Listener
-	local function onInputBoxSubmit( getObj )
-				
-		-- Use Lua closure in order to access the TextField object	 
-		return function( event )			
-			userName = inputBox.text	
-			
-			for row in db:nrows("SELECT ixUser, sName FROM tlUsers") do
-				userIndex = row.ixUser break 
-			end
-			
-			if userIndex == 0 then
-			end
-			inputBox:removeSelf()
-			inputBox = nil
-		end     -- "return function()"
-	end
-	inputBox = native.newTextField(120, 130, 240, 60, onInputBoxSubmit( function() return inputBox end ) )
-		
 	local classicButtonPress = function( event )
 			
 		Runtime:removeEventListener( "key", onKeyEvent );
@@ -101,7 +78,8 @@ function new()
 	
 	local highScoresButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent );
-		director:changeScene("highScores", "moveFromTop")
+		--director:changeScene("highScores", "moveFromTop")
+		gameNetwork.show()
 	end
 	
 	local classicButton = ui.newButton{

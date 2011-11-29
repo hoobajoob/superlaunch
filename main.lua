@@ -8,6 +8,8 @@ local tableView = require("tableView")
 local gameNetwork = require "gameNetwork"
 gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI", "SuperLaunch", "405093" )
 require "sqlite3"
+
+highScoreLeaderboard = "1002786"
 	
 userName = "Anonymous"
 userIndex = 0
