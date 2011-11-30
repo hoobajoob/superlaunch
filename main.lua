@@ -5,8 +5,12 @@ local director = require("director")
 local ui = require("ui")
 local physics = require("physics")
 local tableView = require("tableView")
+
+local of_product_key = j6oZJXqa1ZMPXOFkezATA
+local of_product_secret = D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI
+local of_app_id = 405093
 local gameNetwork = require "gameNetwork"
-gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI", "SuperLaunch", "405093" )
+gameNetwork.init( "openfeint", of_product_key, of_product_secret, "SuperLaunch", of_app_id )
 require "sqlite3"
 
 highScoreLeaderboard = "1002786"
