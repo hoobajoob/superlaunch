@@ -769,7 +769,6 @@ function showHighlight(event)
     local timePassed = system.getTimer() - startTime
  
     if timePassed > 100 then 
-        print("highlight")
         currentDefault.isVisible = false
         currentOver.isVisible = true
         Runtime:removeEventListener( "enterFrame", showHighlight )

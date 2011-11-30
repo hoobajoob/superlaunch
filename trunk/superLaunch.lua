@@ -537,12 +537,24 @@ function new( arguments )
 						size = 32,
 						align = "center"
 					}
-				totalDisplay.bodyName = "totalDisplay"
-				overlayDisplay:insert( totalDisplay )
-				score = 0
+					totalDisplay.bodyName = "totalDisplay"
+					overlayDisplay:insert( totalDisplay )
+					score = 0
+					 
+					--setup the system listener to catch applicationExit
+					Runtime:addEventListener( "system", onSystemEvent )
+
+					--Setup the high score table if it doesn't exist
+					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
+					db:exec( tablesetup )
+
+					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
+					print (tablefill)
+					db:exec( tablefill )
 					
-				--Insert in to OpenFeint high score
-				gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
+					--Insert in to OpenFeint high score
+					gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
 					 
 			else
 				restartButton = ui.newButton{

@@ -48,16 +48,18 @@ function new()
 	db = sqlite3.open( path )   
 	 
 	--Handle the applicationExit event to close the db
-	local function onSystemEvent( event )
+	function onSystemEvent( event )
 		if( event.type == "applicationExit" ) then              
 			db:close()
 		end
 	end
 	 
 	--setup the system listener to catch applicationExit
-	Runtime:addEventListener( "system", onSystemEvent )
+	Runtime:addEventListener( "system", onSystemEvent )	
 	
-	
+	--Setup the user table if it doesn't exist
+	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
+	db:exec( tablesetup )
 	
 	local classicButtonPress = function( event )
 			
@@ -78,8 +80,7 @@ function new()
 	
 	local highScoresButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent );
-		--director:changeScene("highScores", "moveFromTop")
-		gameNetwork.show()
+		director:changeScene("highScores", "moveFromTop")
 	end
 	
 	local classicButton = ui.newButton{
@@ -98,7 +99,7 @@ function new()
 				default = "buttonRed.png",
 				over = "buttonRedOver.png",
 				onPress = levelButtonPress,
-				text = "LevelPlay",
+				text = "Level Play",
 				emboss = true,
 				x = 240,
 				y = 155
@@ -110,7 +111,7 @@ function new()
 				default = "buttonRed.png",
 				over = "buttonRedOver.png",
 				onPress = highScoresButtonPress,
-				text = "High Scores",
+				text = "High Scores and Achievements",
 				emboss = true,
 				x = 240,
 				y = 255

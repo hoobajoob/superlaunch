@@ -1,0 +1,103 @@
+<resources>
+<game_profile_page_info>
+  <is_owned_by_local_player>true</is_owned_by_local_player>
+  <has_chat_rooms>false</has_chat_rooms>
+  <has_challenges>false</has_challenges>
+  <suggestions_topic_id>1142724</suggestions_topic_id>
+  <has_achievements>true</has_achievements>
+  <has_featured_application>true</has_featured_application>
+  <has_leaderboards>true</has_leaderboards>
+  <short_name>SuperLaunch</short_name>
+  <name>SuperLaunch</name>
+  <has_ipurchase>false</has_ipurchase>
+  <id>405093</id>
+  <timestamp>2011-11-29 22:24:43</timestamp>
+</game_profile_page_info>
+<offline>
+<timestamp>2011-11-29 22:24:43</timestamp>
+<achievements>
+<achievement>
+<id>1395952</id>
+<title>20,000 League</title>
+<description>Score 20,000 points in Classic Mode</description>
+<gamerscore>20</gamerscore>
+<icon_url></icon_url>
+<is_secret>false</is_secret>
+<is_unlocked>false</is_unlocked>
+<percent_complete></percent_complete>
+<unlocked_date></unlocked_date>
+<position>3</position>
+<start_version>0000.00.00</start_version>
+<end_version>9999.99.99</end_version>
+<timestamp>2011-11-29 22:24:43</timestamp>
+</achievement>
+<achievement>
+<id>1395962</id>
+<title>Record Maker</title>
+<description>Score 50,000 points in Classic Mode</description>
+<gamerscore>100</gamerscore>
+<icon_url></icon_url>
+<is_secret>false</is_secret>
+<is_unlocked>false</is_unlocked>
+<percent_complete></percent_complete>
+<unlocked_date></unlocked_date>
+<position>2</position>
+<start_version>0000.00.00</start_version>
+<end_version>9999.99.99</end_version>
+<timestamp>2011-11-29 22:24:43</timestamp>
+</achievement>
+<achievement>
+<id>1395982</id>
+<title>Cheater</title>
+<description>Score 100,000 points or more in Classic Mode</description>
+<gamerscore>200</gamerscore>
+<icon_url></icon_url>
+<is_secret>true</is_secret>
+<is_unlocked>false</is_unlocked>
+<percent_complete></percent_complete>
+<unlocked_date></unlocked_date>
+<position>1</position>
+<start_version>0000.00.00</start_version>
+<end_version>9999.99.99</end_version>
+<timestamp>2011-11-29 22:24:43</timestamp>
+</achievement>
+<achievement>
+<id>1395992</id>
+<title>Shooting for the stars</title>
+<description>Have your character reach space in Classic Mode</description>
+<gamerscore>20</gamerscore>
+<icon_url></icon_url>
+<is_secret>false</is_secret>
+<is_unlocked>false</is_unlocked>
+<percent_complete></percent_complete>
+<unlocked_date></unlocked_date>
+<position>0</position>
+<start_version>0000.00.00</start_version>
+<end_version>9999.99.99</end_version>
+<timestamp>2011-11-29 22:24:43</timestamp>
+</achievement>
+</achievements>
+<leaderboards>
+<leaderboard>
+<id>1002786</id>
+<name>High Score Classic Mode</name>
+<active>true</active>
+<visible>true</visible>
+<allow_posting_lower_scores>false</allow_posting_lower_scores>
+<client_application_id>405093</client_application_id>
+<descending_sort_order>true</descending_sort_order>
+<created_at>2011-11-29 03:33:17 UTC</created_at>
+<updated_at>2011-11-29 20:26:32 UTC</updated_at>
+<start_version>0000.00.00</start_version>
+<end_version>9999.99.99</end_version>
+<position>0</position>
+<reached_at></reached_at>
+<display_text></display_text>
+<custom_data></custom_data>
+<score></score>
+<timestamp>2011-11-29 22:24:43</timestamp>
+</leaderboard>
+</leaderboards>
+</offline>
+
+</resources>
