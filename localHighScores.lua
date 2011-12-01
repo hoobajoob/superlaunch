@@ -19,7 +19,6 @@ function new()
 	Runtime:addEventListener( "system", onSystemEvent )
 
 	--Setup the high score table if it doesn't exist
-	local poop = [[DROP TABLE IF NOT EXISTS tblHighScores;]]
 	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
 	db:exec( tablesetup )
 	
@@ -76,6 +75,23 @@ function new()
 		end
 	}
 	self.list:addScrollBar(200, 200, 200)
+	
+	
+	local backButtonPress = function( event )
+		Runtime:removeEventListener( "key", onKeyEvent )
+		director:changeScene("highScores", "moveFromLeft")
+	end
+	
+	local backButton = ui.newButton{
+		default = "btn_back.png",
+		over = "btn_back.png",
+		onRelease = backButtonPress,
+		emboss = true,
+		x = 450,
+		y = 30
+	}
+	backButton.isVisible = true
+	self:insert(backButton)
 	
 	self:insert(self.list)
 	function clean()

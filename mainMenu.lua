@@ -69,6 +69,13 @@ function new()
 		director:changeScene("timedModeMain", "moveFromRight")
 	end
 	
+	local loginButtonPress = function( event )
+		---[[
+		Runtime:removeEventListener( "key", onKeyEvent );
+		director:changeScene("localLogin", "moveFromRight")
+		--]]
+	end
+	
 	local levelButtonPress = function( event )
 		---[[
 		Runtime:removeEventListener( "key", onKeyEvent );
@@ -80,7 +87,7 @@ function new()
 	
 	local highScoresButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent );
-		director:changeScene("highScores", "moveFromTop")
+		director:changeScene("highScores", "moveFromRight")
 	end
 	
 	local classicButton = ui.newButton{
@@ -90,10 +97,22 @@ function new()
 				text = "Classic Play",
 				emboss = true,
 				x = 240,
-				y = 55
+				y = 44
 			}
 	classicButton.isVisible = true	
 	self:insert(classicButton)
+	
+	local loginButton = ui.newButton{
+				default = "buttonRed.png",
+				over = "buttonRedOver.png",
+				onPress = loginButtonPress,
+				text = "Login",
+				emboss = true,
+				x = 240,
+				y = 118
+			}
+	loginButton.isVisible = true	
+	self:insert(loginButton)
 	
 	local levelButton = ui.newButton{
 				default = "buttonRed.png",
@@ -102,7 +121,7 @@ function new()
 				text = "Level Play",
 				emboss = true,
 				x = 240,
-				y = 155
+				y = 192
 			}
 	levelButton.isVisible = true
 	self:insert(levelButton)
@@ -114,7 +133,7 @@ function new()
 				text = "High Scores and Achievements",
 				emboss = true,
 				x = 240,
-				y = 255
+				y = 266
 			}
 	highScoresButton.isVisible = true
 	self:insert(highScoresButton)

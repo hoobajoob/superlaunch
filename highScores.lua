@@ -51,6 +51,22 @@ function new()
 	localButton.isVisible = true
 	self:insert(localButton)
 	
+	local backButtonPress = function( event )
+		Runtime:removeEventListener( "key", onKeyEvent )		
+		director:changeScene("mainMenu", "moveFromLeft")
+	end
+	
+	local backButton = ui.newButton{
+		default = "btn_back.png",
+		over = "btn_back.png",
+		onRelease = backButtonPress,
+		emboss = true,
+		x = 450,
+		y = 30
+	}
+	backButton.isVisible = true
+	self:insert(backButton)
+	
 	function clean()
 	end
 	
