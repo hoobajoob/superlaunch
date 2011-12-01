@@ -26,7 +26,22 @@ function new( arguments )
 	local startingSkyX2 = 515
 	timeBar = nil
 	math.randomseed( os.time() )
-	math.random()
+	math.random()	
+	
+	--Open GameData.sqlite.  If the file doesn't exist it will be created
+	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
+	db = sqlite3.open( path )   
+	 
+	--Handle the applicationExit event to close the db
+	function onSystemEvent( event )
+		if( event.type == "applicationExit" ) then              
+			db:close()
+		end
+	end
+	 
+	--setup the system listener to catch applicationExit
+	Runtime:addEventListener( "system", onSystemEvent )	
+	
 	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
@@ -540,9 +555,6 @@ function new( arguments )
 					totalDisplay.bodyName = "totalDisplay"
 					overlayDisplay:insert( totalDisplay )
 					score = 0
-					 
-					--setup the system listener to catch applicationExit
-					Runtime:addEventListener( "system", onSystemEvent )
 
 					--Setup the high score table if it doesn't exist
 					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]

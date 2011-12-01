@@ -6,10 +6,24 @@ function new()
 	self:insert( bg )
 	
 	local defaultField, numberField -- forward reference (needed for Lua closure)
+	
+	--Open GameData.sqlite.  If the file doesn't exist it will be created
+	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
+	db = sqlite3.open( path )   
+	 
+	--Handle the applicationExit event to close the db
+	function onSystemEvent( event )
+		if( event.type == "applicationExit" ) then              
+			db:close()
+		end
+	end
+	 
+	--setup the system listener to catch applicationExit
+	Runtime:addEventListener( "system", onSystemEvent )	
  
 	local function updateUser( stringName )
 		userName = stringName
-		for row in db:nrows("SELECT ixUser, sName FROM tlUsers WHERE sName = '"..userName.."'") do
+		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..userName.."'") do
 			userIndex = row.ixUser break 
 		end
 	end
@@ -53,7 +67,7 @@ function new()
 	local backButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		defaultField:removeSelf()
-		director:changeScene("main", "moveFromLeft")
+		director:changeScene("mainMenu", "moveFromLeft")
 	end
 	
 	local submitButtonPress = function( event )
@@ -64,12 +78,12 @@ function new()
 	end
 	
 	local backButton = ui.newButton{
-		default = "btn_leaderboard.png",
-		over = "btn_leaderboardA.png",
+		default = "btn_back.png",
+		over = "btn_back.png",
 		onRelease = backButtonPress,
 		emboss = true,
-		x = 80,
-		y = 280
+		x = 450,
+		y = 30
 	}
 	backButton.isVisible = true
 	self:insert(backButton)
