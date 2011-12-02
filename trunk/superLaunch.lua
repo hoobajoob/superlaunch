@@ -302,7 +302,7 @@ function new( arguments )
 				game:insert( bacon )
 				bacon:toFront()	
 				
-				if math.random(100) > 83 then
+				if math.random(100) > 4 then
 					local bomb = display.newImage( "bomb.png" )
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
@@ -816,7 +816,7 @@ function new( arguments )
 						life = life - 10
 					end
 					lifeBar:setSize( life )
-					mainCharacter:applyLinearImpulse( 15, -5, mainCharacter.x, mainCharacter.y )
+					mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
