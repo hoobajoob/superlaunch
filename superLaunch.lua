@@ -302,7 +302,7 @@ function new( arguments )
 				game:insert( bacon )
 				bacon:toFront()	
 				
-				if math.random(100) > 4 then
+				if math.random(100) > 85 then
 					local bomb = display.newImage( "bomb.png" )
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
