@@ -1,9 +1,38 @@
 module(..., package.seeall)
+
 function new()
 	local self = display.newGroup()	
 
 	local bg = display.newImage( "background.png", true )
-	self:insert( bg )
+	self:insert( bg )	
+
+	-- Handler that gets notified when the alert closes
+	local function onQuitComplete( event )
+			if "clicked" == event.action then
+					local i = event.index
+					if 1 == i then							
+						native.requestExit()
+					elseif 2 == i then
+						-- Do nothing; dialog will simply dismiss
+					end
+			end
+	end
+		
+	-- Back Key listener
+	local function onKeyEvent( event )
+		local phase = event.phase
+		local keyName = event.keyName
+		
+		-- Show alert with five buttons
+		if (keyName == "back") then 
+			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
+										{ "YES", "NO" }, onQuitComplete )
+		else			
+			local alert = native.showAlert( "SuperLaunch", "You pressed the "..keyName.." button.", 
+										{ "YES", "NO" } )
+		end
+		return true
+	end
 	
 	local openFeintButtonPress = function( event )
 		gameNetwork.show("leaderboards")
