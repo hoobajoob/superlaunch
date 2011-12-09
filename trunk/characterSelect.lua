@@ -29,7 +29,7 @@ function new( arguments )
 		babyButton.isVisible = false
 		dogButton.isVisible = false		
 		--Runtime:removeEventListener( "back", onKeyEventChar );
-		director:changeScene(nextScene, "moveFromRight", {"noah", true})
+		director:changeScene({"noah", true}, nextScene, "moveFromRight")
 	end
 	
 	local function babyButtonPress()
@@ -37,7 +37,7 @@ function new( arguments )
 		noahButton.isVisible = false
 		dogButton.isVisible = false
 		--Runtime:removeEventListener( "back", onKeyEventChar );
-		director:changeScene(nextScene, "moveFromRight", {"baby", true})
+		director:changeScene({"baby", true}, nextScene, "moveFromRight")
 	end
 	
 	local function dogButtonPress()
@@ -45,7 +45,7 @@ function new( arguments )
 		noahButton.isVisible = false
 		dogButton.isVisible = false
 		--Runtime:removeEventListener( "back", onKeyEventChar );
-		director:changeScene(nextScene, "moveFromRight", {"dog", true})
+		director:changeScene({"dog", true}, nextScene, "moveFromRight")
 	end
 
 	noahButton = ui.newButton{

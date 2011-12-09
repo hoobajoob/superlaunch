@@ -14,6 +14,8 @@ highScoreLeaderboard = "1002786"
 userName = "Anonymous"
 userIndex = 0
 
+playSounds = false
+
 isSimulator = "simulator" == system.getInfo("environment")
 	
 -- Import director class
