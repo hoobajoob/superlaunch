@@ -411,7 +411,7 @@ function new( arguments )
 			explosion = sprite.newSprite( explosionSpriteSet )
 			game:insert( explosion )
 			explosion.x = mainCharacter.x; explosion.y = 230
-			local explosionChannel = audio.play( explosionSound, { channel=2 }  )
+			if playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
 			explosion:play()
 		end
 
@@ -693,7 +693,7 @@ function new( arguments )
 		--]]
 		local function startJets()
 			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
-			jetChannel = audio.play( jetSound,{ channel=4 })
+			if playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
@@ -722,7 +722,7 @@ function new( arguments )
 				tLavaPrevious = event.time
 				life = life - 1
 				lifeBar:setSize( life )
-				local owChannel = audio.play( owSound, { channel=4 }  ) 
+				if playSounds then local owChannel = audio.play( owSound, { channel=4 }  ) end
 			end
 		end	
 
@@ -763,7 +763,7 @@ function new( arguments )
 					t.isFocus = false
 					--slingshot:removeSelf()
 					slingshotString:removeSelf()
-					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
+					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
@@ -890,15 +890,15 @@ function new( arguments )
 				lifeBar:setSize( life )
 				local impactChannel
 				if string.find(bodyName, "lava") ~= nil or string.find(bodyName, "grass") ~= nil then
-					impactChannel = audio.play( boingSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( boingSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "ramp") ~= nil then
-					impactChannel = audio.play( swooshSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( swooshSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "trampoline") ~= nil then
-					impactChannel = audio.play( bounceSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( bounceSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "keg") ~= nil then
-					impactChannel = audio.play( owSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "spikeWall") ~= nil then
-					impactChannel = audio.play( owSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 				end
 			end--]]
 		end

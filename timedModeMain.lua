@@ -29,21 +29,21 @@ function new()
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false		
-		director:changeScene("superLaunch", "moveFromRight", {"noah", true})
+		director:changeScene({"noah", true}, "superLaunch", "moveFromRight")
 	end
 	
 	local function babyButtonPress()
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
-		director:changeScene("superLaunch", "moveFromRight", {"baby", true})
+		director:changeScene({"baby", true}, "superLaunch", "moveFromRight")
 	end
 	
 	local function dogButtonPress()
 		babyButton.isVisible = false
 		noahButton.isVisible = false
 		dogButton.isVisible = false
-		director:changeScene("superLaunch", "moveFromRight", {"dog", true})
+		director:changeScene({"dog", true}, "superLaunch", "moveFromRight")
 	end
 
 	noahButton = ui.newButton{
