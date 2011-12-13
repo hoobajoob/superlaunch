@@ -1,4 +1,5 @@
 module(..., package.seeall)
+local ui = require("ui")
 
 function new()
 	local self = display.newGroup()	
@@ -48,8 +49,8 @@ function new()
 	end
 	
 	local openFeintButton = ui.newButton{
-		default = "btn_leaderboard.png",
-		over = "btn_leaderboardA.png",
+		defaultSrc = "btn_leaderboard.png",
+		overSrc = "btn_leaderboardA.png",
 		onRelease = openFeintButtonPress,
 		emboss = true,
 		x = 80,
@@ -59,8 +60,8 @@ function new()
 	self:insert(openFeintButton)
 
 	local achievementsButton = ui.newButton{
-		default = "btn_achievements.png",
-		over = "btn_achievementsA.png",
+		defaultSrc = "btn_achievements.png",
+		overSrc = "btn_achievementsA.png",
 		onRelease = achievementsButtonPress,
 		emboss = true,
 		x = 240,
@@ -70,8 +71,8 @@ function new()
 	self:insert(achievementsButton)
 	
 	local localButton = ui.newButton{
-				default = "btn_localHS.png",
-				over = "btn_localHSA.png",
+				defaultSrc = "btn_localHS.png",
+				overSrc = "btn_localHSA.png",
 				onPress = localButtonPress,
 				emboss = true,
 				x = 400,
@@ -86,8 +87,8 @@ function new()
 	end
 	
 	local backButton = ui.newButton{
-		default = "btn_back.png",
-		over = "btn_back.png",
+		defaultSrc = "btn_back.png",
+		overSrc = "btn_back.png",
 		onRelease = backButtonPress,
 		emboss = true,
 		x = 450,

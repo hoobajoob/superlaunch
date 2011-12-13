@@ -1,4 +1,5 @@
 module(..., package.seeall)
+local ui = require("ui")
 function new()
 	local self = display.newGroup()	
 	local bg = display.newImage( "highScores.png", true )
@@ -83,8 +84,8 @@ function new()
 	end
 	
 	local backButton = ui.newButton{
-		default = "btn_back.png",
-		over = "btn_back.png",
+		defaultSrc = "btn_back.png",
+		overSrc = "btn_back.png",
 		onRelease = backButtonPress,
 		emboss = true,
 		x = 450,

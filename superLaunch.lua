@@ -1,11 +1,12 @@
 module(..., package.seeall)
+local ui = require("ui")
 
 function new( arguments )
 	local scene = {}
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local mainContainerGroup
@@ -76,7 +77,7 @@ function new( arguments )
 		physics.start()
 		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
-		--local slingShot
+		local slingShot
 		local slingShotString
 		local life = 100
 		local explosion
@@ -349,21 +350,21 @@ function new( arguments )
 
 		slingshotString = display.newImage( "string.png" )
 		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 230
+		physics.addBody( slingshotString, "static", { friction=0.5 } )
 		slingshotString.bodyName = "slingShotString"
 		game:insert(slingshotString)
-		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 55, 220 )
---[[
+		
 		slingshot = display.newImage( "slingshot.png" )
-		slingshot.x = 170; slingshot.y = groundReferencePoint - 180
-		--physics.addBody( slingshot, "static", { friction=0.5 } )
+		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
+		physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
---]]
+		joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
 		------------------------------------------------------------
 		-- Simple score display
 
 		local scoreDisplay = ui.newLabel{
-			bounds = { display.contentWidth - 120, 10 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+			bounds = { display.contentWidth - 140, 10 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
 			text = "0",
 			--font = "Trebuchet-BoldItalic",
 			textColor = { 255, 225, 102, 255 },
@@ -421,6 +422,60 @@ function new( arguments )
 			blood .x = mainCharacter.x + 10; blood .y = mainCharacter.y
 		end
 		
+		local goToMenu = function ( event )
+			timeLeft = 0
+			Runtime:removeEventListener( "enterFrame", timeCheck )
+			if timebar ~= nil then timeBar:removeSelf() end
+			--TODO/FIX--scoreDisplay.parent:remove( scoreDisplay )
+			print("Clearing All "..game.numChildren.."in Game")	
+			while game.numChildren > 0	do		
+					if game[1] ~= nil then
+						if game[1].bodyName ~= nil then
+							print("Clearing "..game[1].bodyName)
+						end
+						game:remove( 1 )
+					end
+			end
+			while overlayDisplay.numChildren > 0	do	
+				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+				for i=1, overlayDisplay.numChildren do
+					if overlayDisplay[i] ~= nil then
+						if overlayDisplay[i].bodyName ~= nil then
+							print("Clearing "..overlayDisplay[i].bodyName)
+						end
+						overlayDisplay:remove( i )
+					end
+				end
+			end
+			game:removeSelf()
+			overlayDisplay:removeSelf()
+			mainContainerGroup:removeSelf()
+			if restartButton ~= nil then restartButton:removeSelf() end
+			physics = nil
+			ui = nil
+			audio.stop( backgroundMusicChannel )
+			director:changeScene("mainMenu", "moveFromLeft")
+		end
+	
+		local backButtonPress = function( event )
+			Runtime:removeEventListener( "key", onKeyEvent )	
+			Runtime:removeEventListener( "enterFrame", frameCheck )
+			Runtime:removeEventListener( "enterFrame", removeLifeLava )
+			Runtime:removeEventListener( "collision", onGlobalCollision )	
+			goToMenu()
+		end
+
+		local backButton = ui.newButton{
+			defaultSrc = "btn_back.png",
+			overSrc = "btn_back.png",
+			onRelease = backButtonPress,
+			emboss = true,
+			x = 470,
+			y = 30
+		}
+		backButton.isVisible = true
+		overlayDisplay:insert(backButton)
+		
 		local function showDeath( deathType )
 			lifeBar:setSize( 0 )
 			boostBar:setSize ( 0 )
@@ -434,46 +489,15 @@ function new( arguments )
 			local menuButton = nil
 			local restartButton = nil
 			
-			local menuButtonPress = function( event )
+			local menuButtonPress = function ( event )
 				menuButton.isVisible = false
-				timeLeft = 0
-				Runtime:removeEventListener( "enterFrame", timeCheck )
-				if timebar ~= nil then timeBar:removeSelf() end
-				--TODO/FIX--scoreDisplay.parent:remove( scoreDisplay )
-				print("Clearing All "..game.numChildren.."in Game")	
-				while game.numChildren > 0	do		
-						if game[1] ~= nil then
-							if game[1].bodyName ~= nil then
-								print("Clearing "..game[1].bodyName)
-							end
-							game:remove( 1 )
-						end
-				end
-				while overlayDisplay.numChildren > 0	do	
-					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren do
-						if overlayDisplay[i] ~= nil then
-							if overlayDisplay[i].bodyName ~= nil then
-								print("Clearing "..overlayDisplay[i].bodyName)
-							end
-							overlayDisplay:remove( i )
-						end
-					end
-				end
-				game:removeSelf()
-				overlayDisplay:removeSelf()
-				mainContainerGroup:removeSelf()
-				if restartButton ~= nil then restartButton:removeSelf() end
-				physics = nil
-				ui = nil
-				audio.stop( backgroundMusicChannel )
-				director:changeScene("mainMenu", "moveFromLeft")
+				goToMenu()
 			end
-						
+									
 			menuButton = ui.newButton{
-				default = "buttonRed.png",
+				defaultSrc = "buttonRed.png",
 				over = "buttonRedOver.png",
-				onPress = menuButtonPress,
+				onPress = goToMenu,
 				text = "Return To Menu",
 				emboss = true,
 				x = 240,
@@ -570,7 +594,7 @@ function new( arguments )
 					 
 			else
 				restartButton = ui.newButton{
-					default = "buttonRed.png",
+					defaultSrc = "buttonRed.png",
 					over = "buttonRedOver.png",
 					onPress = restartButtonPress,
 					text = "Restart",
@@ -654,7 +678,6 @@ function new( arguments )
 			end
 			
 			if life <= 0 then	
-				print("removing event Listeners")
 				Runtime:removeEventListener( "enterFrame", frameCheck )
 				Runtime:removeEventListener( "enterFrame", removeLifeLava )
 				Runtime:removeEventListener( "collision", onGlobalCollision )
@@ -703,7 +726,7 @@ function new( arguments )
 		end
 		
 		jetpackButton = ui.newButton{
-			default = "jetPack.png",
+			defaultSrc = "jetPack.png",
 			over = "jetPackOver.png",
 			onPress = startJets,
 			onRelease = endJets,
@@ -761,7 +784,7 @@ function new( arguments )
 				elseif "ended" == phase or "cancelled" == phase then
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
-					--slingshot:removeSelf()
+					slingshot:removeSelf()
 					slingshotString:removeSelf()
 					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")

@@ -211,6 +211,10 @@ end
  
 local function newButton( params )
         local button, defaultSrc , defaultX , defaultY , overSrc , overX , overY , overScale , overAlpha , size, font, textColor, offset
+		
+		-- KC Custom Code
+		local isRect = true
+		--
         
         local sizeDivide = 1
  	   local sizeMultiply = 1
@@ -225,7 +229,14 @@ local function newButton( params )
                 if isDisplayObject(params.defaultSrc) then
                         default = params.defaultSrc
                 else
+					-- KC Custom Code
+					if params.defaultX == nil or params.defaultY == nil then
+						default = display.newImage( params.defaultSrc )
+						isRect = false
+					else
+					--
                         default = display.newImageRect ( params.defaultSrc , params.defaultX , params.defaultY )
+					end
                 end             
                 button:insert( default, false )
         end
@@ -233,8 +244,14 @@ local function newButton( params )
         if params.overSrc then
                 if isDisplayObject(params.overSrc) then
                         over = params.overSrc
-                else
+                else				
+					-- KC Custom Code
+					if params.overX == nil or params.overY == nil then
+						over = display.newImage( params.defaultSrc )
+					else
+					--
                         over = display.newImageRect ( params.overSrc , params.overX , params.overY )
+					end
                 end
                 if params.overAlpha then
                         over.alpha = params.overAlpha
@@ -293,7 +310,16 @@ local function newButton( params )
                                 labelHighlight:setTextColor( 255, 255, 255, 140 )
                         end
                         button:insert( labelHighlight, true )
-                        labelHighlight.x = labelHighlight.x + 1.5; labelHighlight.y = labelHighlight.y + 1.5 + offset
+						
+						--KC Custom Code
+						if not isRect then
+							labelHighlight.x = labelHighlight.x + 1.5 +( default.width / 2 )
+							labelHighlight.y = labelHighlight.y + 1.5 + offset +( default.height / 2 )
+						else
+						--
+							labelHighlight.x = labelHighlight.x + 1.5; labelHighlight.y = labelHighlight.y + 1.5 + offset
+						end
+						
                         self.highlight = labelHighlight
  
                         labelShadow = display.newText( newText, 0, 0, font, size )
@@ -303,7 +329,15 @@ local function newButton( params )
                                 labelShadow:setTextColor( 0, 0, 0, 20 )
                         end
                         button:insert( labelShadow, true )
-                        labelShadow.x = labelShadow.x - 1; labelShadow.y = labelShadow.y - 1 + offset
+						
+						--KC Custom Code
+						if not isRect then
+							labelShadow.x = labelShadow.x - 1 +( default.width / 2 )
+							labelShadow.y = labelShadow.y - 1 + offset +( default.height / 2 )
+						else
+						--
+							labelShadow.x = labelShadow.x - 1; labelShadow.y = labelShadow.y - 1 + offset
+						end
                         self.shadow = labelShadow
                         
                         labelHighlight.xScale = sizeDivide; labelHighlight.yScale = sizeDivide
@@ -313,7 +347,17 @@ local function newButton( params )
                 labelText = display.newText( newText, 0, 0, font, size )
                 labelText:setTextColor( textColor[1], textColor[2], textColor[3], textColor[4] )
                 button:insert( labelText, true )
-                labelText.y = labelText.y + offset
+				
+				--KC Custom Code
+					if not isRect then
+						labelText.x = labelText.x +( default.width / 2 )
+						labelText.y = labelText.y + offset +( default.height / 2 )
+					else
+				--
+					labelText.y = labelText.y + offset
+					end
+				
+				
                 self.text = labelText
                 
                 labelText.xScale = sizeDivide; labelText.yScale = sizeDivide
@@ -342,10 +386,20 @@ local function newButton( params )
         button:addEventListener( "touch", button )
  
         if params.x then
+			--KC Custom Code
+				if not isRect then
+					params.x = params.x -( default.width / 2 )
+				end
+			--
                 button.x = params.x
         end
         
         if params.y then
+			--KC Custom Code
+				if not isRect then
+					params.y = params.y -( default.height / 2 )
+				end
+			--
                 button.y = params.y
         end
         
@@ -362,8 +416,10 @@ M.newButton = newButton
 
 local function newLabel( params )
         local labelText
-        local size, font, textColor, align
+        local size, font, textColor, align, labelHighlight, labelShadow
         local t = display.newGroup()
+		
+		
         
         local sizeDivide = 1
  	   local sizeMultiply = 1
@@ -380,7 +436,52 @@ local function newLabel( params )
                 if ( params.textColor ) then textColor=params.textColor else textColor={ 255, 255, 255, 255 } end
                 if ( params.offset and type(params.offset) == "number" ) then offset=params.offset else offset = 0 end
                 if ( params.align ) then align = params.align else align = "center" end
-                
+				-- KC Custom Code
+				if ( params.text and params.emboss ) then
+                        -- Make the label text look "embossed" (also adjusts effect for textColor brightness)
+                        local textBrightness = ( textColor[1] + textColor[2] + textColor[3] ) / 3
+                        
+                        labelHighlight = display.newText( params.text, 0, 0, font, size )
+						
+                        if ( textBrightness > 127) then
+                                labelHighlight:setTextColor( 255, 255, 255, 20 )
+                        else
+                                labelHighlight:setTextColor( 255, 255, 255, 140 )
+                        end
+                        t:insert( labelHighlight, true )
+							
+						if ( align == "left" ) then
+                                labelHighlight.x = left + labelHighlight.contentWidth * 0.5
+                        elseif ( align == "right" ) then
+                                labelHighlight.x = (left + width) - labelHighlight.contentWidth * 0.5
+                        else
+                                labelHighlight.x = ((2 * left) + width) * 0.5
+                        end
+						
+						labelHighlight.y = labelHighlight.y + 33.5
+ 
+                        labelShadow = display.newText( params.text, 0, 0, font, size )
+                        if ( textBrightness > 127) then
+                                labelShadow:setTextColor( 0, 0, 0, 128 )
+                        else
+                                labelShadow:setTextColor( 0, 0, 0, 20 )
+                        end
+                        t:insert( labelShadow, true )		
+						
+						if ( align == "left" ) then
+                                labelShadow.x = left + labelShadow.contentWidth * 0.5
+                        elseif ( align == "right" ) then
+                                labelShadow.x = (left + width) - labelShadow.contentWidth * 0.5
+                        else
+                                labelShadow.x = ((2 * left) + width) * 0.5
+                        end
+						
+						labelShadow.y = labelShadow.y + 32
+                        
+                        labelHighlight.xScale = sizeDivide; labelHighlight.yScale = sizeDivide
+                        labelShadow.xScale = sizeDivide; labelShadow.yScale = sizeDivide
+                end
+                --
                 if ( params.text ) then
                         labelText = display.newText( params.text, 0, 0, font, size * 2 )
                         labelText.xScale = 0.5; labelText.yScale = 0.5
@@ -412,6 +513,12 @@ local function newLabel( params )
                                         labelText.x = ((2 * left) + width) * 0.5
                                 end
                         end
+						--KC Custom Code
+						if (params.emboss) then
+							labelHighlight.text = newText
+							labelShadow.text = newText
+						end
+						
                 end
                 
                 function t:setTextColor( r, g, b, a )
