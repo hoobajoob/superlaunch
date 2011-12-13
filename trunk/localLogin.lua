@@ -1,4 +1,5 @@
 module(..., package.seeall)
+local ui = require("ui")
 function new()
 	local self = display.newGroup()	
 

@@ -1,4 +1,5 @@
 module(..., package.seeall)
+local ui = require("ui")
 function new()
 	local self = display.newGroup()
 	
@@ -91,9 +92,9 @@ function new()
 	end
 	
 	local classicButton = ui.newButton{
-				default = "buttonRed.png",
-				over = "buttonRedOver.png",
-				onPress = classicButtonPress,
+				defaultSrc = "buttonRed.png",
+				onEvent = classicButtonPress,
+				overSrc = "buttonRedOver.png",
 				text = "Classic Play",
 				emboss = true,
 				x = 240,
@@ -103,41 +104,41 @@ function new()
 	self:insert(classicButton)
 	
 	local loginButton = ui.newButton{
-				default = "buttonRed.png",
-				over = "buttonRedOver.png",
-				onPress = loginButtonPress,
-				text = "Login",
-				emboss = true,
+				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 118
+				y = 118,
+				overSrc = "buttonRedOver.png",
+				onEvent = loginButtonPress,
+				text = "Login",
+				emboss = true
 			}
 	loginButton.isVisible = true	
 	self:insert(loginButton)
 	
 	local levelButton = ui.newButton{
-				default = "buttonRed.png",
-				over = "buttonRedOver.png",
-				onPress = levelButtonPress,
-				text = "Level Play",
-				emboss = true,
+				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 192
+				y = 192,
+				overSrc = "buttonRedOver.png",
+				onEvent = levelButtonPress,
+				text = "Level Play",
+				emboss = true
 			}
 	levelButton.isVisible = true
 	self:insert(levelButton)
 	
 	local highScoresButton = ui.newButton{
-				default = "buttonRed.png",
-				over = "buttonRedOver.png",
-				onPress = highScoresButtonPress,
-				text = "High Scores and Achievements",
-				emboss = true,
+				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 266
+				y = 266,
+				overSrc = "buttonRedOver.png",
+				onEvent = highScoresButtonPress,
+				text = "High Scores and Achievements",
+				emboss = true
 			}
 	highScoresButton.isVisible = true
 	self:insert(highScoresButton)
-	
+
 	function moveBack(where, how, arguments)
 		director:changeScene( where, how, arguments)
 	end
