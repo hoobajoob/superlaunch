@@ -11,9 +11,12 @@ function new()
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
 	
+	local Character = "noah"
 	local noahButton = nil
 	local babyButton = nil
 	local dogButton = nil
+	local slingShotButton = nil
+	local hardLaunchButton = nil
 	
 	local mainLabel = ui.newLabel{
 			bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
@@ -42,25 +45,28 @@ function new()
 	backButton.isVisible = true
 	self:insert(backButton)
 	
-	local function noahButtonPress()
+	local function showLaunchType()
 		noahButton.isVisible = false
 		babyButton.isVisible = false
-		dogButton.isVisible = false		
-		director:changeScene({"noah", true}, "superLaunch", "moveFromRight")
+		dogButton.isVisible = false
+		mainLabel.setText("Select Launch Type")
+		slingShotButton.isVisible = true
+		hardLaunchButton.isVisible = true
+	end
+	
+	local function noahButtonPress()
+		character = "noah"	
+		showLaunchType()
 	end
 	
 	local function babyButtonPress()
-		babyButton.isVisible = false
-		noahButton.isVisible = false
-		dogButton.isVisible = false
-		director:changeScene({"baby", true}, "superLaunch", "moveFromRight")
+		character = "baby"
+		showLaunchType()
 	end
 	
 	local function dogButtonPress()
-		babyButton.isVisible = false
-		noahButton.isVisible = false
-		dogButton.isVisible = false
-		director:changeScene({"dog", true}, "superLaunch", "moveFromRight")
+		character = "dog"
+		showLaunchType()
 	end
 
 	noahButton = ui.newButton{
@@ -87,6 +93,36 @@ function new()
 					y = 100
 				}
 	self:insert(dogButton)
+		
+	local function slingShotButtonPress()
+		director:changeScene({character, true, "slingShot"}, "superLaunch", "moveFromRight")
+	end
+	local function hardLaunchButtonPress()
+		director:changeScene({character, true, "hardLaunch"}, "superLaunch", "moveFromRight")
+	end
+	
+	slingShotButton = ui.newButton{
+				defaultSrc = "buttonRed.png",
+				onEvent = slingShotButtonPress,
+				overSrc = "buttonRedOver.png",
+				text = "SlingShot Mode",
+				emboss = true,
+				x = 240,
+				y = 44
+			}
+	slingShotButton.isVisible = false	
+	self:insert(slingShotButton)	
+	hardLaunchButton = ui.newButton{
+				defaultSrc = "buttonRed.png",
+				onEvent = hardLaunchButtonPress,
+				overSrc = "buttonRedOver.png",
+				text = "Hard Launch Mode",
+				emboss = true,
+				x = 240,
+				y = 288
+			}
+	hardLaunchButton.isVisible = false	
+	self:insert(hardLaunchButton)
 	
 	return self	
 end

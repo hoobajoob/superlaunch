@@ -25,6 +25,7 @@ function new( arguments )
 	local timeLeft = 100
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
+	local launchType = "slingShot"
 	timeBar = nil
 	math.randomseed( os.time() )
 	math.random()	
@@ -340,6 +341,23 @@ function new( arguments )
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 			if character == "dog" then mainCharacter:rotate(90) end
+			
+			if #arguments > 2 then
+				launchType = arguments[3]
+				print ("Launch Type is: "..launchType)
+				if launchType == "hardLaunch" then	
+					local launchTypeLabel = ui.newLabel{
+							bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+							text = "Hard Launch Mode",
+							--font = "Trebuchet-BoldItalic",
+							textColor = { 255, 200, 100, 255 },
+							size = 33,
+							align = "center",
+							emboss = true
+						}
+					overlayDisplay:insert( launchTypeLabel )					
+				end
+			end
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -803,6 +821,52 @@ function new( arguments )
 			-- Important to return true. This tells the system that the event
 			-- should not be propagated to listeners of any objects underneath.
 			return true
+		end
+		
+		local launchHardMode = function()
+			angle = 50
+			power = 50
+			display.getCurrentStage():setFocus( nil )
+			local t = mainCharacter
+			slingshot:removeSelf()
+			slingshotString:removeSelf()
+			if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+			t:prepare("mainCharacterSprite")
+			t:play()
+			physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+			game:insert(t)
+			t.bodyName = "mainCharacterDynamic"
+			t.isFixedRotation = true
+			--t.angularDamping = 10
+			t:removeEventListener( "touch", onTouch )
+			--Angle of 0 = all y Force. Angle of 100 = all x Force.
+			print ( "Angle = "..angle.." and Power = "..power )
+			local xForce = power * angle
+			local yForce = power ( 100 - angle )
+			t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
+			Runtime:addEventListener( "enterFrame", frameCheck )
+		end
+	
+		if launchType == "hardLaunch" then
+			local launchReadyButton = nil
+					
+			local function launchReadyButtonPress()
+					local angle = 50
+					local power = 50
+					launchReadyButton:removeSelf()
+					director:openPopUp( "hardLaunch", launchHardMode )
+			end
+			
+			launchReadyButton = ui.newButton{
+						defaultSrc = "buttonRed.png",
+						onEvent = launchReadyButtonPress,
+						overSrc = "buttonRedOver.png",
+						text = "Ready",
+						emboss = true,
+						x = 240,
+						y = 140
+					}
+			game:insert(launchReadyButton)	
 		end
 
 		mainCharacter:addEventListener( "touch", onTouch )
