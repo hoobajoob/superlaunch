@@ -78,7 +78,7 @@ function new( arguments )
 		physics.start()
 		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
-		local slingShot
+		--local slingShot
 		local slingShotString
 		local life = 100
 		local explosion
@@ -389,12 +389,14 @@ function new( arguments )
 		slingshotString.bodyName = "slingShotString"
 		game:insert(slingshotString)
 		
+		--[[
 		slingshot = display.newImage( "slingshot.png" )
 		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
 		physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
 		joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
+		--]]
 		------------------------------------------------------------
 		-- Simple score display
 
@@ -712,58 +714,58 @@ function new( arguments )
 				end	
 				
 				if game.y < 320 then
-					mountain_big.x = mountain_big.x - vx
+					mountain_big.x = mountain_big.x - ( vx / 350 )
 					if mountain_big.x < -480 - mountain_big.width / 2 then
 					mountain_big:translate(480*2 , 0)
 					end
-					mountain_big2.x = mountain_big2.x - vx
+					mountain_big2.x = mountain_big2.x - ( vx / 350 )
 					if mountain_big2.x < -480 - mountain_big2.width / 2 then
 							mountain_big2:translate(480*2 , 0)
 					end
-					mountain_sma.x = mountain_sma.x - vx
+					mountain_sma.x = mountain_sma.x - ( vx / 350 )
 					if mountain_sma.x < -480 - mountain_sma.width / 2 then
 							mountain_sma:translate(480*2,0)
 					end
-					mountain_sma2.x = mountain_sma2.x - vx
+					mountain_sma2.x = mountain_sma2.x - ( vx / 350 )
 					if mountain_sma2.x < -480 - mountain_sma2.width / 2 then
 							mountain_sma2:translate(480*2,0)
 					end
 					
-					tree_s.x = tree_s.x - ( vx * 1.3 )
+					tree_s.x = tree_s.x - ( ( vx / 350 ) * 1.3 )
 					if tree_s.x < -480 - tree_s.width / 2 then
 							tree_s:translate(480*2 , 0)
 					end
-					tree_s2.x = tree_s2.x - ( vx * 1.3 )
+					tree_s2.x = tree_s2.x - ( ( vx / 350 ) * 1.3 )
 					if tree_s2.x < -480 - tree_s2.width / 2 then
 							tree_s2:translate(480*2 , 0)
 					end
-					tree_l.x = tree_l.x - ( vx * 1.3 )
+					tree_l.x = tree_l.x - ( ( vx / 350 ) * 1.3 )
 					if tree_l.x < -480 - tree_l.width / 2 then
 							tree_l:translate(480*2 , 0)
 					end
 					
-					tree_s3.x = tree_s3.x - ( vx * 1.6 )
+					tree_s3.x = tree_s3.x - ( ( vx / 350 ) * 1.6 )
 					if tree_s3.x < -480 - tree_s3.width / 2 then
 							tree_s3:translate(480*2 , 0)
 					end
-					tree_s4.x = tree_s4.x - ( vx * 1.6 )
+					tree_s4.x = tree_s4.x - ( ( vx / 350 ) * 1.6 )
 					if tree_s4.x < -480 - tree_s4.width / 2 then
 							tree_s4:translate(480*2 , 0)
 					end
-					tree_l2.x = tree_l2.x - ( vx * 1.6 )
+					tree_l2.x = tree_l2.x - ( ( vx / 350 ) * 1.6 )
 					if tree_l2.x < -480 - tree_l2.width / 2 then
 							tree_l2:translate(480*2 , 0)
 					end
 					
-					tree_s5.x = tree_s5.x - ( vx * 2 )
+					tree_s5.x = tree_s5.x - ( ( vx / 350 ) * 2 )
 					if tree_s5.x < -480 - tree_s5.width / 2 then
 							tree_s5:translate(480*2 , 0)
 					end
-					tree_s6.x = tree_s6.x - ( vx * 2 )
+					tree_s6.x = tree_s6.x - ( ( vx / 350 ) * 2 )
 					if tree_s6.x < -480 - tree_s6.width / 2 then
 							tree_s6:translate(480*2 , 0)
 					end
-					tree_l3.x = tree_l3.x - ( vx * 2 )
+					tree_l3.x = tree_l3.x - ( ( vx / 350 ) * 2 )
 					if tree_l3.x < -480 - tree_l3.width / 2 then
 							tree_l3:translate(480*2 , 0)
 					end
@@ -877,7 +879,7 @@ function new( arguments )
 				elseif "ended" == phase or "cancelled" == phase then
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
-					slingshot:removeSelf()
+					--slingshot:removeSelf()
 					slingshotString:removeSelf()
 					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
@@ -903,7 +905,7 @@ function new( arguments )
 			power = 50
 			display.getCurrentStage():setFocus( nil )
 			local t = mainCharacter
-			slingshot:removeSelf()
+			--slingshot:removeSelf()
 			slingshotString:removeSelf()
 			if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 			t:prepare("mainCharacterSprite")
