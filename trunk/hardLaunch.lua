@@ -1,10 +1,36 @@
 module(..., package.seeall)
-local ui = require("ui")
 
-function new()
+--====================================================================--
+-- POP UP: SCREEN 3
+--====================================================================--
 
-	local self = display.newGroup()
-		
+--[[
+
+ - Version: 1.3
+ - Made by Ricardo Rauber Pereira @ 2010
+ - Blog: http://rauberlabs.blogspot.com/
+ - Mail: ricardorauber@gmail.com
+
+******************
+ - INFORMATION
+******************
+
+  - Sample scene.
+
+--]]
+
+new = function ()
+	
+	------------------
+	-- Groups
+	------------------
+	
+	local localGroup = display.newGroup()
+	
+	------------------
+	-- Display Objects
+	------------------
+	
 	local w, h = display.contentWidth, display.contentHeight
 	local background = display.newImage( "background.png" )
 	background.xScale = 0.8
@@ -32,8 +58,8 @@ function new()
 		-- Inserts
 		------------------
 		
-		self:insert( background )
-		self:insert( title )
+		localGroup:insert( background )
+		localGroup:insert( title )
 		
 		------------------
 		-- Positions
@@ -62,5 +88,10 @@ function new()
 	
 	initVars()
 	
-	return self	
+	------------------
+	-- MUST return a display.newGroup()
+	------------------
+	
+	return localGroup
+	
 end

@@ -395,7 +395,7 @@ function new( arguments )
 		physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
-		joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
+		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
 		--]]
 		------------------------------------------------------------
 		-- Simple score display
@@ -899,10 +899,9 @@ function new( arguments )
 			-- should not be propagated to listeners of any objects underneath.
 			return true
 		end
-		
-		local launchHardMode = function()
+		local function launchCharacter()
 			angle = 50
-			power = 50
+			power = 1
 			display.getCurrentStage():setFocus( nil )
 			local t = mainCharacter
 			--slingshot:removeSelf()
@@ -918,25 +917,30 @@ function new( arguments )
 			t:removeEventListener( "touch", onTouch )
 			--Angle of 0 = all y Force. Angle of 100 = all x Force.
 			print ( "Angle = "..angle.." and Power = "..power )
-			local xForce = power * angle
-			local yForce = power ( 100 - angle )
-			t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
+			local xForce = power * angle * 200
+			local yForce = -( power * ( 100 - angle ) ) 
+			print ( "xForce = "..xForce.." and yForce = "..yForce )
+			t:applyLinearImpulse( -100 , -300 , t.x + 9, t.y)
 			Runtime:addEventListener( "enterFrame", frameCheck )
+		end
+		local launchHardMode = function()
+			timer.performWithDelay(2000, launchCharacter )
 		end
 	
 		if launchType == "hardLaunch" then
+		---[[
 			local launchReadyButton = nil
 					
 			local function launchReadyButtonPress()
 					local angle = 50
 					local power = 50
-					launchReadyButton:removeSelf()
+					launchReadyButton.isVisible = false
 					director:openPopUp( "hardLaunch", launchHardMode )
 			end
 			
 			launchReadyButton = ui.newButton{
 						defaultSrc = "buttonRed.png",
-						onEvent = launchReadyButtonPress,
+						onPress = launchReadyButtonPress,
 						overSrc = "buttonRedOver.png",
 						text = "Ready",
 						emboss = true,
@@ -944,6 +948,7 @@ function new( arguments )
 						y = 140
 					}
 			game:insert(launchReadyButton)	
+			--]]
 		end
 
 		mainCharacter:addEventListener( "touch", onTouch )
