@@ -91,6 +91,11 @@ function new()
 		director:changeScene("highScores", "moveFromRight")
 	end
 	
+	local helpButtonPress = function( event )
+		Runtime:removeEventListener( "key", onKeyEvent );
+		director:changeScene("help", "moveFromRight")
+	end
+	
 	local classicButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				onEvent = classicButtonPress,
@@ -98,7 +103,7 @@ function new()
 				text = "Classic Play",
 				emboss = true,
 				x = 240,
-				y = 44
+				y = 34
 			}
 	classicButton.isVisible = true	
 	self:insert(classicButton)
@@ -106,7 +111,7 @@ function new()
 	local loginButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 118,
+				y = 98,
 				overSrc = "buttonRedOver.png",
 				onEvent = loginButtonPress,
 				text = "Login",
@@ -118,7 +123,7 @@ function new()
 	local levelButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 192,
+				y = 162,
 				overSrc = "buttonRedOver.png",
 				onEvent = levelButtonPress,
 				text = "Level Play",
@@ -130,7 +135,7 @@ function new()
 	local highScoresButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 266,
+				y = 226,
 				overSrc = "buttonRedOver.png",
 				onEvent = highScoresButtonPress,
 				text = "High Scores and Achievements",
@@ -138,6 +143,18 @@ function new()
 			}
 	highScoresButton.isVisible = true
 	self:insert(highScoresButton)
+	
+	local helpButton = ui.newButton{
+				defaultSrc = "buttonRed.png",
+				x = 240,
+				y = 286,
+				overSrc = "buttonRedOver.png",
+				onEvent = helpButtonPress,
+				text = "Help",
+				emboss = true
+			}
+	helpButton.isVisible = true
+	self:insert(helpButton)
 
 	function moveBack(where, how, arguments)
 		director:changeScene( where, how, arguments)
