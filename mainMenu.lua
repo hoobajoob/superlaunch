@@ -167,6 +167,7 @@ end
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 	local group = self.view
+	storyboard.removeScene( "superLaunch" )
 	
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	
