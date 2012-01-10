@@ -6,13 +6,12 @@ function new( arguments )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local mainContainerGroup
 	local game
 	local overlayDisplay
-	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
 	local swooshSound = audio.loadSound("swoosh.mp3")	
@@ -20,7 +19,6 @@ function new( arguments )
 	local owSound = audio.loadSound("ow.ogg")	
 	local jetSound = audio.loadSound("jetFuel.mp3")	
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
-	--]]------
 	local totalScore = {}
 	local timeLeft = 100
 	local startingSkyX1 = -45
@@ -327,8 +325,6 @@ function new( arguments )
 			AddSection()
 		end	
 		
-		local timeBar
-		
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
 		if arguments ~= nil then
@@ -632,6 +628,8 @@ function new( arguments )
 				restartButton.bodyName = "restartButton"	
 			end
 		end
+		
+		local jetpackButton
 
 		local tPrevious = system.getTimer()
 		local tNotMovingPrevious = system.getTimer()
@@ -640,6 +638,13 @@ function new( arguments )
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
+			--Must Remove after you figure out why overlaydisplay does not stay focused.  Wastes processing power---
+			--boostBar:setSize( boost )
+			jetpackButton.x = 445
+			jetpackButton.y = 245
+			backButton.x = math.ceil(mainCharacter.x) + 320
+			backButton.y = mainCharacter.y - 200
+			------------------------------------------------
 			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
 				AddSection()
 			mainCharacter:toFront();
@@ -654,6 +659,8 @@ function new( arguments )
 			if (mainCharacter.x < -100 or mainCharacter.y < 220) then
 				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 220
 			end
+			overlayDisplay.x = game.x
+			overlayDisplay.y = game.y
 			if mainCharacter ~= nil then
 				vx, vy = mainCharacter:getLinearVelocity()
 				if vx < 35 and vy < 5 and tNotMovingDelta > 100 then
@@ -733,7 +740,6 @@ function new( arguments )
 			end
 		end
 		
-		local jetpackButton
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
 		local function applyJetpackBoost( event )
