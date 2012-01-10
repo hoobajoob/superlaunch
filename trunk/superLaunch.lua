@@ -15,6 +15,7 @@ function scene:createScene( event )
 	local mainContainerGroup
 	local game
 	local overlayDisplay
+	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
 	local swooshSound = audio.loadSound("swoosh.mp3")	
@@ -22,12 +23,17 @@ function scene:createScene( event )
 	local owSound = audio.loadSound("ow.ogg")	
 	local jetSound = audio.loadSound("jetFuel.mp3")	
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
+	--]]------
 	local totalScore = {}
-	local timeLeft = 100
+	local timeLeft = 10
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
-	timeBar = nil
+	local menuButton = nil
+	local restartButton = nil
+	local timeBar = nil
+	local lifeBar = nil
+	local boostBar = nil
 	math.randomseed( os.time() )
 	math.random()	
 	
@@ -212,10 +218,14 @@ function scene:createScene( event )
 			ttsky2.x = startingSkyX2; ttsky2.y = -820
 			
 			mountain_big = display.newImage("mountain_big.png", 132-240, 92) 
+			game:insert( mountain_big )
 			mountain_sma = display.newImage("mountain_small.png", 84, 111)
+			game:insert( mountain_sma )
 			 
 			tree_s = display.newImage("tree_s.png", 129-30, 151) 
+			game:insert( tree_s )
 			tree_l = display.newImage("tree_l.png", 145, 131) 
+			game:insert( tree_l )
 
 			local grass = display.newImage( "grass.png", true )
 			game:insert( grass )
@@ -329,6 +339,8 @@ function scene:createScene( event )
 			AddSection()
 		end	
 		
+		local timeBar
+		
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
 		if arguments ~= nil then
@@ -407,7 +419,7 @@ function scene:createScene( event )
 		-- Life display
 
 
-		local lifeBar = tbaUI.newBar{
+		lifeBar = tbaUI.newBar{
 			bounds = { 0, 10 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = life,
@@ -421,7 +433,7 @@ function scene:createScene( event )
 		-- boost display
 
 
-		local boostBar = tbaUI.newBar{
+		boostBar = tbaUI.newBar{
 			bounds = { 400, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = boost,
@@ -449,6 +461,7 @@ function scene:createScene( event )
 		end
 		
 		local goToMenu = function ( event )
+		--[[
 			timeLeft = 0
 			Runtime:removeEventListener( "enterFrame", timeCheck )
 			if timebar ~= nil then timeBar:removeSelf() end
@@ -477,10 +490,17 @@ function scene:createScene( event )
 			overlayDisplay:removeSelf()
 			mainContainerGroup:removeSelf()
 			if restartButton ~= nil then restartButton:removeSelf() end
+			if menuButton ~= nil then menuButton.isVisible = false end
+			print (mainCharacter)
+			if mainCharacter ~= nil then mainCharacter:removeSelf() end
+			if timeBar ~= nil then timeBar:removeSelf() end
+			if lifeBar ~= nil then lifeBar.isVisible = false end
+			if boostBar ~= nil then boostBar.isVisible = false end
 			physics = nil
 			ui = nil
 			audio.stop( backgroundMusicChannel )
-			director:changeScene("mainMenu", "moveFromLeft")
+			--]]
+			storyboard.gotoScene("mainMenu")
 		end
 	
 		local backButtonPress = function( event )
@@ -512,8 +532,6 @@ function scene:createScene( event )
 			end
 			mainCharacter:pause()
 			mainCharacter.bodyType = "static"
-			local menuButton = nil
-			local restartButton = nil
 			
 			local menuButtonPress = function ( event )
 				menuButton.isVisible = false
@@ -632,8 +650,6 @@ function scene:createScene( event )
 				restartButton.bodyName = "restartButton"	
 			end
 		end
-		
-		local jetpackButton
 
 		local tPrevious = system.getTimer()
 		local tNotMovingPrevious = system.getTimer()
@@ -642,13 +658,6 @@ function scene:createScene( event )
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
-			--Must Remove after you figure out why overlaydisplay does not stay focused.  Wastes processing power---
-			--boostBar:setSize( boost )
-			jetpackButton.x = 445
-			jetpackButton.y = 245
-			backButton.x = math.ceil(mainCharacter.x) + 320
-			backButton.y = mainCharacter.y - 200
-			------------------------------------------------
 			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
 				AddSection()
 			mainCharacter:toFront();
@@ -663,8 +672,6 @@ function scene:createScene( event )
 			if (mainCharacter.x < -100 or mainCharacter.y < 220) then
 				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 220
 			end
-			overlayDisplay.x = game.x
-			overlayDisplay.y = game.y
 			if mainCharacter ~= nil then
 				vx, vy = mainCharacter:getLinearVelocity()
 				if vx < 35 and vy < 5 and tNotMovingDelta > 100 then
@@ -744,6 +751,7 @@ function scene:createScene( event )
 			end
 		end
 		
+		local jetpackButton
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
 		local function applyJetpackBoost( event )
@@ -1057,7 +1065,7 @@ function scene:createScene( event )
 	-- Add the back key callback
 	Runtime:addEventListener( "key", onKeyEventSuperLaunch );	
 	
-	return start()
+	start()
 end
 
 function scene:enterScene( event )
@@ -1065,7 +1073,8 @@ function scene:enterScene( event )
 end
 
 function scene:exitScene( event )
-	local group = self.view
+	local group = self.view	
+	Runtime:removeEventListener( "enterFrame", timeCheck )
 end
 
 function scene:destroyScene( event )
