@@ -2,17 +2,19 @@ module(..., package.seeall)
 local ui = require("ui")
 local scrollView = require("scrollView")
 local util = require("util")
- 
-function new()
-	local self = display.newGroup()
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
+
+function scene:createScene( event )
+	local group = self.view
+	
 	local background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
-	self:insert( background )
+	
 	background:setFillColor(140, 140, 140)
 	-- Setup a scrollable content group
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
 	local scrollView = scrollView.new{ top=topBoundary, bottom=bottomBoundary }
-	self:insert( scrollView )
 	 
 	local myText = display.newText("Move Up to Scroll", 0, 0, native.systemFontBold, 16)
 	myText:setTextColor(0, 0, 0)
@@ -41,8 +43,8 @@ function new()
 	scrollView:addScrollBar()
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )		
-		director:changeScene("mainMenu", "moveFromLeft")
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("mainMenu")
 	end
 	
 	local backButton = ui.newButton{
@@ -54,10 +56,27 @@ function new()
 		y = 30
 	}
 	backButton.isVisible = true
-	self:insert(backButton)
 	
-	function clean()
-	end
-	
-	return self
+	group:insert( background )
+	group:insert( scrollView )
+	group:insert( backButton )
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene

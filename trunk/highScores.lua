@@ -1,39 +1,12 @@
 module(..., package.seeall)
 local ui = require("ui")
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
 
-function new()
-	local self = display.newGroup()	
+function scene:createScene( event )
+	local group = self.view
 
 	local bg = display.newImage( "background.png", true )
-	self:insert( bg )	
-
-	-- Handler that gets notified when the alert closes
-	local function onQuitComplete( event )
-			if "clicked" == event.action then
-					local i = event.index
-					if 1 == i then							
-						native.requestExit()
-					elseif 2 == i then
-						-- Do nothing; dialog will simply dismiss
-					end
-			end
-	end
-		
-	-- Back Key listener
-	local function onKeyEvent( event )
-		local phase = event.phase
-		local keyName = event.keyName
-		
-		-- Show alert with five buttons
-		if (keyName == "back") then 
-			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
-										{ "YES", "NO" }, onQuitComplete )
-		else			
-			local alert = native.showAlert( "SuperLaunch", "You pressed the "..keyName.." button.", 
-										{ "YES", "NO" } )
-		end
-		return true
-	end
 	
 	local openFeintButtonPress = function( event )
 		gameNetwork.show("leaderboards")
@@ -45,7 +18,7 @@ function new()
 	
 	local localButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent );
-		director:changeScene("localHighScores", "moveFromRight")
+		storyboard.gotoScene("localHighScores")
 	end
 	
 	local openFeintButton = ui.newButton{
@@ -57,7 +30,6 @@ function new()
 		y = 280
 	}
 	openFeintButton.isVisible = true
-	self:insert(openFeintButton)
 
 	local achievementsButton = ui.newButton{
 		defaultSrc = "btn_achievements.png",
@@ -68,7 +40,6 @@ function new()
 		y = 280
 	}
 	achievementsButton.isVisible = true
-	self:insert(achievementsButton)
 	
 	local localButton = ui.newButton{
 				defaultSrc = "btn_localHS.png",
@@ -79,11 +50,10 @@ function new()
 				y = 280
 			}			
 	localButton.isVisible = true
-	self:insert(localButton)
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )		
-		director:changeScene("mainMenu", "moveFromLeft")
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("mainMenu")
 	end
 	
 	local backButton = ui.newButton{
@@ -95,10 +65,29 @@ function new()
 		y = 30
 	}
 	backButton.isVisible = true
-	self:insert(backButton)
 	
-	function clean()
-	end
-	
-	return self
+	group:insert( bg )	
+	group:insert(openFeintButton)
+	group:insert(achievementsButton)
+	group:insert(localButton)
+	group:insert(backButton)
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene

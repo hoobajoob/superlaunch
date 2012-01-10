@@ -1,8 +1,11 @@
 module(..., package.seeall)
 local ui = require("ui")
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
 
-function new( arguments )
-	local scene = {}
+function scene:createScene( event )
+	local group = self.view
+	arguments = storyboard.arguments
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
@@ -83,6 +86,7 @@ function new( arguments )
 		local boost = 100
 		local worldLength = 0
 		mainContainerGroup = display.newGroup()
+		group:insert( mainContainerGroup )
 		game = display.newGroup()
 		mainContainerGroup:insert( game )
 		game.x = 0
@@ -1055,3 +1059,22 @@ function new( arguments )
 	
 	return start()
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene
