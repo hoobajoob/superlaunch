@@ -1,12 +1,12 @@
 module(..., package.seeall)
 local ui = require("ui")
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
 
-function new()
-
-	local self = display.newGroup()
+function scene:createScene( event )
+	local group = self.view
 		
 	local bg = display.newImage( "background.png", true )
-	self:insert( bg )
 	
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
@@ -27,11 +27,10 @@ function new()
 			align = "center",
 			emboss = true
 		}
-	self:insert( mainLabel )
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )		
-		director:changeScene("mainMenu", "moveFromLeft")
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("mainMenu")
 	end
 	
 	local backButton = ui.newButton{
@@ -43,7 +42,6 @@ function new()
 		y = 30
 	}
 	backButton.isVisible = true
-	self:insert(backButton)
 	
 	local function showLaunchType()
 		noahButton.isVisible = false
@@ -76,7 +74,6 @@ function new()
 					x = 180,
 					y = 200
 				}
-	self:insert(noahButton)
 	babyButton = ui.newButton{
 					defaultSrc = "baby.png",
 					onEvent = babyButtonPress,
@@ -84,7 +81,6 @@ function new()
 					x = 320,
 					y = 200
 				}
-	self:insert(babyButton)
 	dogButton = ui.newButton{
 					defaultSrc = "dog.png",
 					onEvent = dogButtonPress,
@@ -92,13 +88,14 @@ function new()
 					x = 250,
 					y = 100
 				}
-	self:insert(dogButton)
 		
 	local function slingShotButtonPress()
-		director:changeScene({character, true, "slingShot"}, "superLaunch", "moveFromRight")
+		storyboard.arguments = {character, true, "slingShot"}
+		storyboard.gotoScene("superLaunch")
 	end
 	local function hardLaunchButtonPress()
-		director:changeScene({character, true, "hardLaunch"}, "superLaunch", "moveFromRight")
+		storyboard.arguments = {character, true, "hardLaunch"}
+		storyboard.gotoScene("superLaunch")
 	end
 	
 	slingShotButton = ui.newButton{
@@ -111,7 +108,6 @@ function new()
 				y = 44
 			}
 	slingShotButton.isVisible = false	
-	self:insert(slingShotButton)	
 	hardLaunchButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				onEvent = hardLaunchButtonPress,
@@ -122,7 +118,33 @@ function new()
 				y = 288
 			}
 	hardLaunchButton.isVisible = false	
-	self:insert(hardLaunchButton)
 	
-	return self	
+	
+	group:insert( bg )
+	group:insert( mainLabel )
+	group:insert( backButton )
+	group:insert( noahButton )
+	group:insert( babyButton )
+	group:insert( dogButton )
+	group:insert( slingShotButton )	
+	group:insert( hardLaunchButton )
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene

@@ -1,10 +1,22 @@
 module(..., package.seeall)
 local ui = require("ui")
-function new()
-	local self = display.newGroup()
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
+
+-----------------------------------------------------------------------------------------
+-- BEGINNING OF YOUR IMPLEMENTATION
+-- 
+-- NOTE: Code outside of listener functions (below) will only be executed once,
+--		 unless storyboard.removeScene() is called.
+-- 
+-----------------------------------------------------------------------------------------
+
+-- Called when the scene's view does not exist:
+function scene:createScene( event )
+	local group = self.view
 	
 	local bg = display.newImage( "background.png", true )
-	self:insert( bg )
+	group:insert( bg )
 
 	-- Handler that gets notified when the alert closes
 	local function onQuitComplete( event )
@@ -34,16 +46,6 @@ function new()
 		return true
 	end
 	
-	function onVolumeEvent( event )
-		if (event.phase == "up") then
-			if event.keyName == "volumeUp" then
-			
-			elseif event.keyName == "volumeDown" then
-			
-			end
-		end
-	end
-	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
@@ -62,38 +64,33 @@ function new()
 	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
 	db:exec( tablesetup )
 	
-	local classicButtonPress = function( event )
-			
-		Runtime:removeEventListener( "key", onKeyEvent );
+	local classicButtonPress = function( event )			
+		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		director:changeScene("timedModeMain", "moveFromRight")
+		storyboard.gotoScene("timedModeMain")
 	end
 	
 	local loginButtonPress = function( event )
-		---[[
-		Runtime:removeEventListener( "key", onKeyEvent );
-		director:changeScene("localLogin", "moveFromRight")
-		--]]
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("localLogin")
 	end
 	
-	local levelButtonPress = function( event )
-		---[[
-		Runtime:removeEventListener( "key", onKeyEvent );
+	local levelButtonPress = function( event )		
+		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		director:changeScene("levelModeMain", "moveFromRight")
-		--]]
+		storyboard.gotoScene("levelModeMain")		
 	end
 	
 	local highScoresButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent );
-		director:changeScene("highScores", "moveFromRight")
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("highScores")
 	end
 	
 	local helpButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent );
-		director:changeScene("help", "moveFromRight")
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("help")
 	end
 	
 	local classicButton = ui.newButton{
@@ -105,8 +102,7 @@ function new()
 				x = 240,
 				y = 34
 			}
-	classicButton.isVisible = true	
-	self:insert(classicButton)
+	classicButton.isVisible = true
 	
 	local loginButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
@@ -118,7 +114,6 @@ function new()
 				emboss = true
 			}
 	loginButton.isVisible = true	
-	self:insert(loginButton)
 	
 	local levelButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
@@ -130,7 +125,6 @@ function new()
 				emboss = true
 			}
 	levelButton.isVisible = true
-	self:insert(levelButton)
 	
 	local highScoresButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
@@ -142,7 +136,6 @@ function new()
 				emboss = true
 			}
 	highScoresButton.isVisible = true
-	self:insert(highScoresButton)
 	
 	local helpButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
@@ -154,31 +147,62 @@ function new()
 				emboss = true
 			}
 	helpButton.isVisible = true
-	self:insert(helpButton)
 
 	function moveBack(where, how, arguments)
-		director:changeScene( where, how, arguments)
+		storyboard.arguments = arguments
+		storyboard.gotoScene(where, how)
 	end
 	
 	-- Add the back key callback
 	Runtime:addEventListener( "key", onKeyEvent );
 	
-	local onSystem = function( event )
-		if event.type == "applicationSuspend" then
-			if gameIsActive then
-					gameIsActive = false
-					physics.pause()
-			end
-
-		elseif event.type == "applicationExit" then
-			if system.getInfo( "environment" ) == "device" then
-					native.requestExit()
-			end
-		end
-	end
-	
-	function clean()
-	end
-	
-	return self
+	-- all display objects must be inserted into group
+	group:insert(classicButton)
+	group:insert(loginButton)
+	group:insert(levelButton)
+	group:insert(highScoresButton)
+	group:insert(helpButton)
 end
+
+-- Called immediately after scene has moved onscreen:
+function scene:enterScene( event )
+	local group = self.view
+	
+	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
+	
+end
+
+-- Called when scene is about to move offscreen:
+function scene:exitScene( event )
+	local group = self.view
+	
+	-- INSERT code here (e.g. stop timers, remove listenets, unload sounds, etc.)
+	
+end
+
+-- If scene's view is removed, scene:destroyScene() will be called just prior to:
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+-----------------------------------------------------------------------------------------
+-- END OF YOUR IMPLEMENTATION
+-----------------------------------------------------------------------------------------
+
+-- "createScene" event is dispatched if scene's view does not exist
+scene:addEventListener( "createScene", scene )
+
+-- "enterScene" event is dispatched whenever scene transition has finished
+scene:addEventListener( "enterScene", scene )
+
+-- "exitScene" event is dispatched whenever before next scene's transition begins
+scene:addEventListener( "exitScene", scene )
+
+-- "destroyScene" event is dispatched before view is unloaded, which can be
+-- automatically unloaded in low memory situations, or explicitly via a call to
+-- storyboard.purgeScene() or storyboard.removeScene().
+scene:addEventListener( "destroyScene", scene )
+
+-----------------------------------------------------------------------------------------
+
+return scene

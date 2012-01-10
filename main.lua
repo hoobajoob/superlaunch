@@ -1,6 +1,5 @@
 display.setStatusBar( display.HiddenStatusBar )
 
-local director = require("director")
 --local preloader = require("preloader")
 local ui = require("ui")
 local physics = require("physics")
@@ -15,20 +14,31 @@ userName = "Anonymous"
 userIndex = 0
 
 playSounds = false
+	
+local onSystem = function( event )
+	if event.type == "applicationSuspend" then
+		if gameIsActive then
+				gameIsActive = false
+				physics.pause()
+		end
+
+	elseif event.type == "applicationExit" then
+		if system.getInfo( "environment" ) == "device" then
+				native.requestExit()
+		end
+	end
+end
 
 isSimulator = "simulator" == system.getInfo("environment")
-	
--- Import director class
-local director = require("director")
 
--- Create a main group
-local mainGroup = display.newGroup()
+-- hide the status bar
+display.setStatusBar( display.HiddenStatusBar )
 
--- Add the group from director class
-mainGroup:insert(director.directorView)
+-- include the Corona "storyboard" module
+local storyboard = require "storyboard"
 
--- Change scene without effects
-director:changeScene("mainMenu")
+-- load menu screen
+storyboard.gotoScene("mainMenu")
 
 
 

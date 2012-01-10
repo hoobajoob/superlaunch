@@ -1,10 +1,12 @@
 module(..., package.seeall)
 local ui = require("ui")
-function new()
-	local self = display.newGroup()	
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
+
+function scene:createScene( event )
+	local group = self.view
 
 	local bg = display.newImage( "background.png", true )
-	self:insert( bg )
 	
 	local defaultField, numberField -- forward reference (needed for Lua closure)
 	
@@ -68,14 +70,14 @@ function new()
 	local backButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		defaultField:removeSelf()
-		director:changeScene("mainMenu", "moveFromLeft")
+		storyboard.gotoScene("mainMenu")
 	end
 	
 	local submitButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		if username ~= defaultField.text then updateUser(tostring( defaultField.text )) end		
 		defaultField:removeSelf()
-		director:changeScene("mainMenu", "moveFromLeft")
+		storyboard.gotoScene("mainMenu")
 	end
 	
 	local backButton = ui.newButton{
@@ -87,7 +89,6 @@ function new()
 		y = 30
 	}
 	backButton.isVisible = true
-	self:insert(backButton)
 
 	local submitButton = ui.newButton{
 		default = "btn_achievements.png",
@@ -98,10 +99,27 @@ function new()
 		y = 280
 	}
 	submitButton.isVisible = true
-	self:insert(submitButton)
-	
-	function clean()
-	end
-	
-	return self
+		
+	group:insert( bg )
+	group:insert(backButton)
+	group:insert(submitButton)
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene
