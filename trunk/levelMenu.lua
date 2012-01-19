@@ -1,34 +1,41 @@
 module(..., package.seeall)
+local ui = require("ui")
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
 
-function new( arguments )
+function scene:createScene( event )
+	local group = self.view
 	
-
-	local self = display.newGroup()
-		
-	-- Back Key listener
-	local function onKeyEventLevelMenu( event )
-		local phase = event.phase
-		local keyName = event.keyName
-		
-		if (phase == "up" and keyName == "back") then 
-			Runtime:removeEventListener( "key", onKeyEventLevelMenu );
-			timer.performWithDelay(100, moveBack("characterSelect", "moveFromLeft", {"levelMenu"}), 1)
-		end
-		return true
+	local backButtonPress = function( event )
+		Runtime:removeEventListener( "key", onKeyEvent )
+		storyboard.gotoScene("levelModeMain")
 	end
 	
-	local levelButtonPress = function(event, localArguments)
-		print ("running function"..localArguments[1])
-		while self.numChildren > 0	do	
-			print("Clearing All "..self.numChildren.."in self")	
-			for i=1, self.numChildren do
-				if self[i] ~= nil then
-					self:remove( i )
+	local backButton = ui.newButton{
+		defaultSrc = "btn_back.png",
+		overSrc = "btn_back.png",
+		onRelease = backButtonPress,
+		emboss = true,
+		x = 450,
+		y = 30
+	}
+	backButton.isVisible = true
+	
+	local levelButtonPress = function(self, event)
+		print ("running function"..self.text)
+		--[[
+		while group.numChildren > 0	do	
+			print("Clearing All "..group.numChildren.."in self")	
+			for i=1, group.numChildren do
+				if group[i] ~= nil then
+					group:remove( i )
 				end
 			end
 		end
+		--]]
 		Runtime:removeEventListener( "key", onKeyEventLevelMenu );
-		director:changeScene("levelLaunch", "moveFromRight", {arguments[1], localArguments[1]})
+		storyboard.arguments = {self.text}
+		storyboard.gotoScene("levelLaunch")
 	end
 	
 	---[[
@@ -36,25 +43,41 @@ function new( arguments )
 	local int col = 1
 	for level=1,30 do
 		print( "inserting button at " .. ( col * 68 ).."-".. ( row * 54 ))
-		local thisButton = ui.newButton{
-				default = "levelButton.png",
-				over = "levelButtonOver.png",
-				onPress = levelButtonPress,
+		local thisButton = ui.newButton{				
+				defaultSrc = "levelButton.png",
+				onEvent = levelButtonPress,
+				overSrc = "levelButtonOver.png",
+				text = "SlingShot Mode",
 				text = level,
 				emboss = true,
 				x = ( col * 68 ),
-				y = ( row * 58 ),
-				arguments = {level}
+				y = ( row * 58 )
 			}
 		thisButton.isVisible = true
-		self:insert( thisButton )
+		group:insert( thisButton )
 		col = col + 1
 		if level % 6 == 0 then row = row + 1; col = 1 end
     end
 	--]]
 	
-	-- Add the back key callback
-	Runtime:addEventListener( "key", onKeyEventLevelMenu );
-	
-	return self
+	group:insert( backButton )
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene
