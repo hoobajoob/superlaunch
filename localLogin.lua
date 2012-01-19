@@ -75,34 +75,40 @@ function scene:createScene( event )
 	
 	local submitButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
-		if username ~= defaultField.text then updateUser(tostring( defaultField.text )) end		
-		defaultField:removeSelf()
+		if defaultField ~= nil then
+			if username ~= defaultField.text then updateUser(tostring( defaultField.text )) end		
+			defaultField.isVisible = false
+			defaultField = nil
+		end
+		native.showAlert( "SuperLaunch", "User Index is "..userIndex.." and Username is "..userName, 
+									{ "OK" } )
 		storyboard.gotoScene("mainMenu")
 	end
 	
 	local backButton = ui.newButton{
-		default = "btn_back.png",
-		over = "btn_back.png",
+		defaultSrc = "btn_back.png",
+		overSrc = "btn_back.png",
 		onRelease = backButtonPress,
 		emboss = true,
 		x = 450,
 		y = 30
 	}
 	backButton.isVisible = true
-
+	
 	local submitButton = ui.newButton{
-		default = "btn_achievements.png",
-		over = "btn_achievementsA.png",
-		onRelease = submitButtonPress,
-		emboss = true,
+		defaultSrc = "btn_achievements.png",
 		x = 240,
-		y = 280
+		y = 280,
+		overSrc = "btn_achievementsA.png",
+		onEvent = submitButtonPress,
+		emboss = true
 	}
 	submitButton.isVisible = true
-		
+	
 	group:insert( bg )
 	group:insert(backButton)
 	group:insert(submitButton)
+	
 end
 
 function scene:enterScene( event )

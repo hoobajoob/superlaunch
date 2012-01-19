@@ -217,7 +217,7 @@ local function newButton( params )
 		--
         
         local sizeDivide = 1
- 	   local sizeMultiply = 1
+ 	    local sizeMultiply = 1
  
         if display.contentScaleX < 1.0 or display.contentScaleY < 1.0 then
                 sizeMultiply = 2

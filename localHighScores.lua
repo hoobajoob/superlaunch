@@ -1,9 +1,12 @@
 module(..., package.seeall)
 local ui = require("ui")
-function new()
-	local self = display.newGroup()	
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
+
+function scene:createScene( event )
+	local group = self.view
+	
 	local bg = display.newImage( "highScores.png", true )
-	self:insert( bg )
 	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
@@ -43,7 +46,7 @@ function new()
 	local onListItemRelease = function(event)
 		--Todo:Open High Score in OpenFeint or play replay
 	end
-	self.list = tableView.newList{
+	group.list = tableView.newList{
 		data=highScoreData, 
 		default="highScoreListItem.png",
 		over="highScoreListItem_Over.PNG",
@@ -75,12 +78,12 @@ function new()
 			return group
 		end
 	}
-	self.list:addScrollBar(200, 200, 200)
+	group.list:addScrollBar(200, 200, 200)
 	
 	
 	local backButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
-		director:changeScene("highScores", "moveFromLeft")
+		storyboard.gotoScene("highScores")
 	end
 	
 	local backButton = ui.newButton{
@@ -92,12 +95,27 @@ function new()
 		y = 30
 	}
 	backButton.isVisible = true
-	self:insert(backButton)
 	
-	self:insert(self.list)
-	function clean()
-		self.list:cleanUp()
-	end
-	
-	return self
+	group:insert( bg )
+	group:insert(backButton)
+	group:insert(group.list)
 end
+
+function scene:enterScene( event )
+	local group = self.view
+end
+
+function scene:exitScene( event )
+	local group = self.view
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene
