@@ -17,34 +17,6 @@ function scene:createScene( event )
 	
 	local bg = display.newImage( "background.png", true )
 	group:insert( bg )
-
-	-- Handler that gets notified when the alert closes
-	local function onQuitComplete( event )
-			if "clicked" == event.action then
-					local i = event.index
-					if 1 == i then							
-						native.requestExit()
-					elseif 2 == i then
-						-- Do nothing; dialog will simply dismiss
-					end
-			end
-	end
-		
-	-- Back Key listener
-	local function onKeyEvent( event )
-		local phase = event.phase
-		local keyName = event.keyName
-		
-		-- Show alert with five buttons
-		if (keyName == "back") then 
-			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
-										{ "YES", "NO" }, onQuitComplete )
-		else			
-			local alert = native.showAlert( "SuperLaunch", "You pressed the "..keyName.." button.", 
-										{ "YES", "NO" } )
-		end
-		return true
-	end
 	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
@@ -153,9 +125,6 @@ function scene:createScene( event )
 		storyboard.gotoScene(where, how)
 	end
 	
-	-- Add the back key callback
-	Runtime:addEventListener( "key", onKeyEvent );
-	
 	-- all display objects must be inserted into group
 	group:insert(classicButton)
 	group:insert(loginButton)
@@ -168,6 +137,37 @@ end
 function scene:enterScene( event )
 	local group = self.view
 	storyboard.removeScene( "superLaunch" )
+
+	-- Handler that gets notified when the alert closes
+	local function onQuitComplete( event )
+			if "clicked" == event.action then
+					local i = event.index
+					if 1 == i then							
+						native.requestExit()
+					elseif 2 == i then
+						-- Do nothing; dialog will simply dismiss
+					end
+			end
+	end
+		
+	-- Back Key listener
+	local function onKeyEvent( event )
+		local phase = event.phase
+		local keyName = event.keyName
+		
+		-- Show alert with five buttons
+		if (keyName == "back") then 
+			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
+										{ "YES", "NO" }, onQuitComplete )
+		else			
+			local alert = native.showAlert( "SuperLaunch", "You pressed the "..keyName.." button.", 
+										{ "YES", "NO" } )
+		end
+		return true
+	end
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onKeyEvent );
 	
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	
@@ -176,6 +176,7 @@ end
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
+	Runtime:removeEventListener( "key", onKeyEvent );
 	
 	-- INSERT code here (e.g. stop timers, remove listenets, unload sounds, etc.)
 	

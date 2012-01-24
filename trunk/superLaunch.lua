@@ -461,66 +461,41 @@ function scene:createScene( event )
 		end
 		
 		local goToMenu = function ( event )
-		--[[
-			timeLeft = 0
-			Runtime:removeEventListener( "enterFrame", timeCheck )
-			if timebar ~= nil then timeBar:removeSelf() end
-			--TODO/FIX--scoreDisplay.parent:remove( scoreDisplay )
-			print("Clearing All "..game.numChildren.."in Game")	
-			while game.numChildren > 0	do		
-					if game[1] ~= nil then
-						if game[1].bodyName ~= nil then
-							print("Clearing "..game[1].bodyName)
-						end
-						game:remove( 1 )
-					end
+			if menuButton ~= nil then
+				menuButton.isVisible = false
+				menuButton = nil
 			end
-			while overlayDisplay.numChildren > 0	do	
-				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-				for i=1, overlayDisplay.numChildren do
-					if overlayDisplay[i] ~= nil then
-						if overlayDisplay[i].bodyName ~= nil then
-							print("Clearing "..overlayDisplay[i].bodyName)
-						end
-						overlayDisplay:remove( i )
-					end
-				end
+			if restartButton ~= nil then
+				restartButton.isVisible = false
+				restartButton = nil
 			end
-			game:removeSelf()
-			overlayDisplay:removeSelf()
-			mainContainerGroup:removeSelf()
-			if restartButton ~= nil then restartButton:removeSelf() end
-			if menuButton ~= nil then menuButton.isVisible = false end
-			print (mainCharacter)
-			if mainCharacter ~= nil then mainCharacter:removeSelf() end
-			if timeBar ~= nil then timeBar:removeSelf() end
-			if lifeBar ~= nil then lifeBar.isVisible = false end
-			if boostBar ~= nil then boostBar.isVisible = false end
-			physics = nil
-			ui = nil
-			audio.stop( backgroundMusicChannel )
-			--]]
 			storyboard.gotoScene("mainMenu")
 		end
-	
-		local backButtonPress = function( event )
-			Runtime:removeEventListener( "key", onKeyEvent )	
-			Runtime:removeEventListener( "enterFrame", frameCheck )
-			Runtime:removeEventListener( "enterFrame", removeLifeLava )
-			Runtime:removeEventListener( "collision", onGlobalCollision )	
-			goToMenu()
+		
+		local removeMainItems = function( event )
+			while game.numChildren > 0	do		
+					print("Clearing All "..game.numChildren.."in Game")				
+					for i=1, game.numChildren do
+						if game[i] ~= nil then
+							if game[i].bodyName ~= nil then
+								print("Clearing "..game[i].bodyName)
+							end
+							game:remove( i )
+						end
+					end
+				end
+				while overlayDisplay.numChildren > 0	do	
+					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+					for i=1, overlayDisplay.numChildren do
+						if overlayDisplay[i] ~= nil then
+							if overlayDisplay[i].bodyName ~= nil then
+								print("Clearing "..overlayDisplay[i].bodyName)
+							end
+							overlayDisplay:remove( i )
+						end
+					end
+				end
 		end
-
-		local backButton = ui.newButton{
-			defaultSrc = "btn_back.png",
-			overSrc = "btn_back.png",
-			onRelease = backButtonPress,
-			emboss = true,
-			x = 470,
-			y = 30
-		}
-		backButton.isVisible = true
-		overlayDisplay:insert(backButton)
 		
 		local function showDeath( deathType )
 			lifeBar:setSize( 0 )
@@ -557,28 +532,8 @@ function scene:createScene( event )
 				restartButton.isVisible = false
 				--TODO: FIX--scoreDisplay.parent:remove( scoreDisplay )				
 				
-				while game.numChildren > 0	do		
-					print("Clearing All "..game.numChildren.."in Game")				
-					for i=1, game.numChildren do
-						if game[i] ~= nil then
-							if game[i].bodyName ~= nil then
-								print("Clearing "..game[i].bodyName)
-							end
-							game:remove( i )
-						end
-					end
-				end
-				while overlayDisplay.numChildren > 0	do	
-					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren do
-						if overlayDisplay[i] ~= nil then
-							if overlayDisplay[i].bodyName ~= nil then
-								print("Clearing "..overlayDisplay[i].bodyName)
-							end
-							overlayDisplay:remove( i )
-						end
-					end
-				end
+				removeMainItems()
+				
 				menuButton.isVisible = false
 				restartButton.isVisible = false
 				--director:changeScene("testChange", "crossFade", arguments)
@@ -750,6 +705,40 @@ function scene:createScene( event )
 				showDeath( "explosion" )
 			end
 		end
+	
+		local backButtonPress = function( event )
+			Runtime:removeEventListener( "key", onKeyEvent )	
+			Runtime:removeEventListener( "enterFrame", frameCheck )
+			Runtime:removeEventListener( "enterFrame", removeLifeLava )
+			Runtime:removeEventListener( "collision", onGlobalCollision )
+			if lifeBar ~= nil then
+				lifeBar:setSize( 0 )
+				lifeBar.isVisible = false
+				lifeBar = nil
+			end
+			if boostBar ~= nil then
+				boostBar:setSize( 0 )
+				boostBar.isVisible = false
+				boostBar = nil
+			end
+			if mainCharacter ~= nil then
+				mainCharacter.isVisible = false
+				mainCharacter = nil
+			end
+			removeMainItems()			
+			goToMenu()
+		end
+
+		local backButton = ui.newButton{
+			defaultSrc = "btn_back.png",
+			overSrc = "btn_back.png",
+			onRelease = backButtonPress,
+			emboss = true,
+			x = 470,
+			y = 30
+		}
+		backButton.isVisible = true
+		overlayDisplay:insert(backButton)
 		
 		local jetpackButton
 		local jetpackSoundChannel
