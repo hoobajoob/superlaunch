@@ -442,14 +442,14 @@ function scene:createScene( event )
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
-		
+		S
 		local function showExplosion()		
-			local explosionSheet = sprite.newSpriteSheet( "explosionSprite.png", 170, 130 )
-			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 4)
-			sprite.add( explosionSpriteSet, "explosionSprite", 1, 4, 2500, 1 )
+			local explosionSheet = sprite.newSpriteSheet( "starExpSprite.png", 264, 264 )
+			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
+			sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 1 )
 			explosion = sprite.newSprite( explosionSpriteSet )
 			game:insert( explosion )
-			explosion.x = mainCharacter.x; explosion.y = 230
+			explosion.x = mainCharacter.x; explosion.y = mainCharacter.y
 			if playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
 			explosion:play()
 		end
