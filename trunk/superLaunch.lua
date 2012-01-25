@@ -33,7 +33,8 @@ function scene:createScene( event )
 	local restartButton = nil
 	local timeBar = nil
 	local lifeBar = nil
-	local boostBar = nil
+	local boostBar = nil		
+	local jetpackButton = nil
 	math.randomseed( os.time() )
 	math.random()	
 	
@@ -341,6 +342,18 @@ function scene:createScene( event )
 					game:insert( jetRefill )
 					jetRefill:toFront()	
 				end
+				
+				print ("mainCharacter.x = " ..mainCharacter.x)
+				if mainCharacter.y < -500 then	
+					for s=1,4 do
+						for i=1,8 do
+							local farStar = display.newImage( "farStar.png" )
+							farStar.x = addition - 1600 + math.random( ( s * 320 ), ( ( s + 1 ) * 320 ) ); farStar.y = math.random( mainCharacter.y - 800, mainCharacter.y + 200 )
+							game:insert( farStar )
+							farStar:toFront()	
+						end	
+					end
+				end
 			end
 		end
 		
@@ -517,6 +530,10 @@ function scene:createScene( event )
 			end
 			mainCharacter:pause()
 			mainCharacter.bodyType = "static"
+			
+			jetpackButton.isVisible = false	
+			jetpackButton:removeSelf();
+			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 			
 			local menuButtonPress = function ( event )
 				menuButton.isVisible = false
@@ -750,7 +767,6 @@ function scene:createScene( event )
 		backButton.isVisible = true
 		overlayDisplay:insert(backButton)
 		
-		local jetpackButton
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
 		local function applyJetpackBoost( event )
@@ -758,19 +774,14 @@ function scene:createScene( event )
 			if boost > 0 then
 				if tDelta > 150 and mainCharacter ~= nil then	
 					tJetpack = event.time
-					boost = boost - 10
+					if boost < 10 then
+						boost = 0
+					else
+						boost = boost - 10
+					end
 					boostBar:setSize( boost )
 					mainCharacter:applyLinearImpulse( 10, -30, mainCharacter.x - 1, mainCharacter.y )
 				end
-			else
-				jetpackButton.isVisible = false	
-				jetpackButton:removeSelf();
-				jetpackButton = display.newImage( "jetPack.png" )
-				jetpackButton.x = 445; jetpackButton.y = 245
-				jetpackButton.bodyName = "Jet Pack Button"
-				overlayDisplay:insert(jetpackButton)
-				Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
-				
 			end
 		end
 		local jetChannel
