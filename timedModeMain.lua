@@ -2,24 +2,22 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+-- Back Key listener
+local function onBackEvent( event )
+	local phase = event.phase
+	local keyName = event.keyName
+	
+	if (keyName == "back" and phase == "up") then 
+		Runtime:removeEventListener( "key", onBackEvent )
+		storyboard.gotoScene("mainMenu")
+	end
+	return true
+end
 
 function scene:createScene( event )
 	local group = self.view
 		
 	local bg = display.newImage( "background.png", true )
-		
-	-- Back Key listener
-	local function onKeyEvent( event )
-		local phase = event.phase
-		local keyName = event.keyName
-		
-		-- Show alert with five buttons
-		if (keyName == "back") then 
-			Runtime:removeEventListener( "key", onKeyEvent )
-			storyboard.gotoScene("mainMenu")
-		end
-		return true
-	end
 	
 	local topBoundary = display.screenOriginY
 	local bottomBoundary = display.screenOriginY
@@ -42,7 +40,7 @@ function scene:createScene( event )
 		}
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
+		Runtime:removeEventListener( "key", onBackEvent )
 		storyboard.gotoScene("mainMenu")
 	end
 	
@@ -132,9 +130,6 @@ function scene:createScene( event )
 			}
 	hardLaunchButton.isVisible = false	
 	
-	-- Add the back key callback
-	Runtime:addEventListener( "key", onKeyEvent );
-	
 	
 	group:insert( bg )
 	group:insert( mainLabel )
@@ -150,10 +145,16 @@ function scene:enterScene( event )
 	local group = self.view
 	----Fix
 	scene.createScene( self )
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onBackEvent );
 end
 
 function scene:exitScene( event )
 	local group = self.view
+	
+	-- Add the back key callback
+	Runtime:removeEventListener( "key", onBackEvent );
 end
 
 function scene:destroyScene( event )

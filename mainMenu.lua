@@ -3,6 +3,31 @@ local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
+-- Handler that gets notified when the alert closes
+local function onQuitComplete( event )
+		if "clicked" == event.action then
+				local i = event.index
+				if 1 == i then							
+					native.requestExit()
+				elseif 2 == i then
+					-- Do nothing; dialog will simply dismiss
+				end
+		end
+end
+	
+-- Back Key listener
+local function onKeyEvent( event )
+	local phase = event.phase
+	local keyName = event.keyName
+
+	if (keyName == "back" and phase == "up") then 
+		local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
+									{ "YES", "NO" }, onQuitComplete )
+	end
+	return true
+end
+	
+
 -----------------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
 -- 
@@ -36,7 +61,7 @@ function scene:createScene( event )
 	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
 	db:exec( tablesetup )
 	
-	local classicButtonPress = function( event )			
+	local classicButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
@@ -137,37 +162,10 @@ end
 function scene:enterScene( event )
 	local group = self.view
 	storyboard.removeScene( "superLaunch" )
-
-	-- Handler that gets notified when the alert closes
-	local function onQuitComplete( event )
-			if "clicked" == event.action then
-					local i = event.index
-					if 1 == i then							
-						native.requestExit()
-					elseif 2 == i then
-						-- Do nothing; dialog will simply dismiss
-					end
-			end
-	end
-		
-	-- Back Key listener
-	local function onKeyEvent( event )
-		local phase = event.phase
-		local keyName = event.keyName
-		
-		-- Show alert with five buttons
-		if (keyName == "back") then 
-			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
-										{ "YES", "NO" }, onQuitComplete )
-		else			
-			local alert = native.showAlert( "SuperLaunch", "You pressed the "..keyName.." button.", 
-										{ "YES", "NO" } )
-		end
-		return true
-	end
-	
 	-- Add the back key callback
-	Runtime:addEventListener( "key", onKeyEvent );
+	if (onKeyEvent ~= nil) then print("onKeyEvent Exists") end
+	Runtime:removeEventListener( "key", onKeyEvent )
+	Runtime:addEventListener( "key", onKeyEvent )
 	
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	
@@ -176,7 +174,7 @@ end
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
-	Runtime:removeEventListener( "key", onKeyEvent );
+	Runtime:removeEventListener( "key", onKeyEvent )
 	
 	-- INSERT code here (e.g. stop timers, remove listenets, unload sounds, etc.)
 	
