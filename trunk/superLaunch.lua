@@ -706,6 +706,22 @@ function scene:createScene( event )
 					ttsky2.x = sky2.x
 				end	
 				
+				-------
+				
+				if ( game.y + llskyStars.y ) > llskyStars.contentHeight then
+					llskyStars:translate(0,  -(llskyStars.contentHeight * 2))
+				end
+				if ( game.y + sky2.y ) > lrskyStars.contentHeight then
+					lrskyStars:translate(0,  -(lrskyStars.contentHeight * 2))
+				end
+				
+				if ( game.y + llskyStars.y + llskyStars.contentHeight) < -40 then
+					llskyStars:translate(0,  llskyStars.contentHeight * 2)
+				end
+				if ( game.y + lrskyStars.y + lrskyStars.contentHeight) < -40 then
+					lrskyStars:translate(0,  lrskyStars.contentHeight * 2)
+				end
+				
 				local llskyStarsTotal = game.x + llskyStars.x + llskyStars.contentWidth
 				local lrskyStarsTotal = game.x + lrskyStars.x + lrskyStars.contentWidth
 						
@@ -721,6 +737,8 @@ function scene:createScene( event )
 					ulskyStars.x = sky.x
 					urskyStars.x = sky2.x
 				end	
+				
+				-------
 				
 				if game.y < 320 then
 					mountain_big.x = mountain_big.x + ( ( vx / 320 ) * 8 )
