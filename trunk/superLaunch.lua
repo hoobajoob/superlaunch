@@ -331,6 +331,16 @@ function scene:createScene( event )
 					game:insert( bomb )
 					bomb:toFront()	
 				end
+				
+				if math.random(100) > 25 then
+					local jetRefill = display.newImage( "jetRefill.png" )
+					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
+					jetRefill.bodyName = "jetRefill"
+					physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
+					jetRefill.isSensor = true
+					game:insert( jetRefill )
+					jetRefill:toFront()	
+				end
 			end
 		end
 		
@@ -946,6 +956,13 @@ function scene:createScene( event )
 					end
 					lifeBar:setSize( life )
 					mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
+				elseif event.other.bodyName == "jetRefill" then
+					if boost > 75 then
+						boost = 100
+					else
+						boost = boost + 25
+					end
+					boostBar:setSize( boost )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
