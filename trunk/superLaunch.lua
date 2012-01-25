@@ -217,6 +217,22 @@ function scene:createScene( event )
 			game:insert( ttsky2 )
 			ttsky2:setReferencePoint( display.CenterLeftReferencePoint )
 			ttsky2.x = startingSkyX2; ttsky2.y = -820
+			llskyStars = display.newImage( "skyStars.png", true )
+			game:insert( llskyStars )
+			llskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			llskyStars.x = startingSkyX1; llskyStars.y = -1140
+			lrskyStars = display.newImage( "skyStars.png", true )
+			game:insert( lrskyStars )
+			lrskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			lrskyStars.x = startingSkyX2; lrskyStars.y = -1140
+			ulskyStars = display.newImage( "skyStars.png", true )
+			game:insert( ulskyStars )
+			ulskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			ulskyStars.x = startingSkyX1; ulskyStars.y = -1460
+			urskyStars = display.newImage( "skyStars.png", true )
+			game:insert( urskyStars )
+			urskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			urskyStars.x = startingSkyX2; urskyStars.y = -1460
 			
 			mountain_big = display.newImage("mountain_big.png", 132-240, 92) 
 			game:insert( mountain_big )
@@ -341,18 +357,6 @@ function scene:createScene( event )
 					jetRefill.isSensor = true
 					game:insert( jetRefill )
 					jetRefill:toFront()	
-				end
-				
-				print ("mainCharacter.x = " ..mainCharacter.x)
-				if mainCharacter.y < -500 then	
-					for s=1,4 do
-						for i=1,8 do
-							local farStar = display.newImage( "farStar.png" )
-							farStar.x = addition - 1600 + math.random( ( s * 320 ), ( ( s + 1 ) * 320 ) ); farStar.y = math.random( mainCharacter.y - 800, mainCharacter.y + 200 )
-							game:insert( farStar )
-							farStar:toFront()	
-						end	
-					end
 				end
 			end
 		end
@@ -700,6 +704,22 @@ function scene:createScene( event )
 				if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
 					ttsky.x = sky.x
 					ttsky2.x = sky2.x
+				end	
+				
+				local llskyStarsTotal = game.x + llskyStars.x + llskyStars.contentWidth
+				local lrskyStarsTotal = game.x + lrskyStars.x + lrskyStars.contentWidth
+						
+				if ( llskyStarsTotal < 0 or llskyStarsTotal > llskyStars.contentWidth * 2 or lrskyStarsTotal < 0 or lrskyStarsTotal > lrskyStars.contentWidth * 2 ) and game.y > 1000 then
+					llskyStars.x = sky.x
+					lrskyStars.x = sky2.x
+				end	
+				
+				local ulskyStarsTotal = game.x + ulskyStars.x + ulskyStars.contentWidth
+				local urSkyStarsTotal = game.x + urskyStars.x + urskyStars.contentWidth
+						
+				if ( ulskyStarsTotal < 0 or ulskyStarsTotal > ulskyStars.contentWidth * 2 or urSkyStarsTotal < 0 or urSkyStarsTotal > urskyStars.contentWidth * 2 ) and game.y > 1400 then
+					ulskyStars.x = sky.x
+					urskyStars.x = sky2.x
 				end	
 				
 				if game.y < 320 then
