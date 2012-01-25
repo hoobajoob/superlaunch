@@ -442,7 +442,7 @@ function scene:createScene( event )
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
-		S
+
 		local function showExplosion()		
 			local explosionSheet = sprite.newSpriteSheet( "starExpSprite.png", 264, 264 )
 			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
@@ -472,29 +472,29 @@ function scene:createScene( event )
 			storyboard.gotoScene("mainMenu")
 		end
 		
-		local removeMainItems = function( event )
+		local removeMainItems = function( event )	
 			while game.numChildren > 0	do		
-					print("Clearing All "..game.numChildren.."in Game")				
-					for i=1, game.numChildren do
-						if game[i] ~= nil then
-							if game[i].bodyName ~= nil then
-								print("Clearing "..game[i].bodyName)
-							end
-							game:remove( i )
+				print("Clearing All "..game.numChildren.."in Game")				
+				for i=1, game.numChildren do
+					if game[i] ~= nil then
+						if game[i].bodyName ~= nil then
+							print("Clearing "..game[i].bodyName)
 						end
+						game:remove( i )
 					end
 				end
-				while overlayDisplay.numChildren > 0	do	
-					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren do
-						if overlayDisplay[i] ~= nil then
-							if overlayDisplay[i].bodyName ~= nil then
-								print("Clearing "..overlayDisplay[i].bodyName)
-							end
-							overlayDisplay:remove( i )
+			end
+			while overlayDisplay.numChildren > 0	do	
+				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+				for i=1, overlayDisplay.numChildren do
+					if overlayDisplay[i] ~= nil then
+						if overlayDisplay[i].bodyName ~= nil then
+							print("Clearing "..overlayDisplay[i].bodyName)
 						end
+						overlayDisplay:remove( i )
 					end
 				end
+			end
 		end
 		
 		local function showDeath( deathType )
@@ -676,22 +676,22 @@ function scene:createScene( event )
 				end	
 				
 				if game.y < 320 then
-					mountain_big.x = mountain_big.x - ( vx / 300 )
+					mountain_big.x = mountain_big.x + ( ( vx / 320 ) * 8 )
 					if mountain_big.x < mainCharacter.x - 280 then
 						mountain_big.x = mainCharacter.x + 500
 					end	
 					
-					mountain_sma.x = mountain_sma.x - ( ( vx / 300 ) * 3 )
+					mountain_sma.x = mountain_sma.x + ( ( vx / 320 ) * 7 )
 					if mountain_sma.x < mainCharacter.x - 280 then
 						mountain_sma.x = mainCharacter.x + 500
 					end						
 					
-					tree_s.x = tree_s.x - ( ( vx / 300 ) * 6 )
+					tree_s.x = tree_s.x + ( ( vx / 320 ) * 5 )
 					if tree_s.x < mainCharacter.x - 280 then
 						tree_s.x = mainCharacter.x + 500
 					end							
 									
-					tree_l.x = tree_l.x - ( ( vx / 300 ) * 12 )
+					tree_l.x = tree_l.x + ( ( vx / 320 ) * 4 )
 					if tree_l.x < mainCharacter.x - 280 then
 						tree_l.x = mainCharacter.x + 500
 					end					
@@ -1063,11 +1063,21 @@ end
 
 function scene:exitScene( event )
 	local group = self.view	
-	Runtime:removeEventListener( "enterFrame", timeCheck )
+	Runtime:removeEventListener( "enterFrame", timeCheck )	
+			if timeBar ~= nil then
+				timeBar.setSize(0)
+				timeBar.isVisible = false
+				timeBar = nil
+			end
 end
 
 function scene:destroyScene( event )
-	local group = self.view
+	local group = self.view	
+			if timeBar ~= nil then
+				timeBar.setSize(0)
+				timeBar.isVisible = false
+				timeBar = nil
+			end
 end
 
 scene:addEventListener( "createScene", scene )
