@@ -714,19 +714,34 @@ function scene:createScene( event )
 				end	
 				
 				-------
-				
-				if ( game.y + llskyStars.y ) > llskyStars.contentHeight then
-					llskyStars:translate(0,  -(llskyStars.contentHeight * 2))
-				end
-				if ( game.y + sky2.y ) > lrskyStars.contentHeight then
-					lrskyStars:translate(0,  -(lrskyStars.contentHeight * 2))
-				end
-				
-				if ( game.y + llskyStars.y + llskyStars.contentHeight) < -40 then
-					llskyStars:translate(0,  llskyStars.contentHeight * 2)
-				end
-				if ( game.y + lrskyStars.y + lrskyStars.contentHeight) < -40 then
-					lrskyStars:translate(0,  lrskyStars.contentHeight * 2)
+				if mainCharacter.y < -1100 then
+					if ( game.y + llskyStars.y ) > llskyStars.contentHeight then
+						llskyStars:translate(0,  -(llskyStars.contentHeight * 2))
+					end
+					if ( game.y + lrskyStars.y ) > lrskyStars.contentHeight then
+						lrskyStars:translate(0,  -(lrskyStars.contentHeight * 2))
+					end
+					
+					if ( game.y + llskyStars.y + llskyStars.contentHeight) < 120 then
+						llskyStars:translate(0,  llskyStars.contentHeight * 2)
+					end
+					if ( game.y + lrskyStars.y + lrskyStars.contentHeight) < 120 then
+						lrskyStars:translate(0,  lrskyStars.contentHeight * 2)
+					end
+					
+					if ( game.y + ulskyStars.y ) > ulskyStars.contentHeight then
+						ulskyStars:translate(0,  -(ulskyStars.contentHeight * 2))
+					end
+					if ( game.y + urskyStars.y ) > urskyStars.contentHeight then
+						urskyStars:translate(0,  -(urskyStars.contentHeight * 2))
+					end
+					
+					if ( game.y + ulskyStars.y + ulskyStars.contentHeight) < 120 then
+						ulskyStars:translate(0,  ulskyStars.contentHeight * 2)
+					end
+					if ( game.y + urskyStars.y + urskyStars.contentHeight) < 120 then
+						urskyStars:translate(0,  urskyStars.contentHeight * 2)
+					end
 				end
 				
 				local llskyStarsTotal = game.x + llskyStars.x + llskyStars.contentWidth
