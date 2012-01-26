@@ -62,6 +62,7 @@ function scene:createScene( event )
 	db:exec( tablesetup )
 	
 	local classicButtonPress = function( event )
+		ads.Hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
@@ -69,11 +70,13 @@ function scene:createScene( event )
 	end
 	
 	local loginButtonPress = function( event )
+		ads.Hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("localLogin")
 	end
 	
-	local levelButtonPress = function( event )		
+	local levelButtonPress = function( event )	
+		ads.Hide()	
 		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
@@ -81,11 +84,13 @@ function scene:createScene( event )
 	end
 	
 	local highScoresButtonPress = function( event )
+		ads.Hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("highScores")
 	end
 	
 	local helpButtonPress = function( event )
+		ads.Hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("help")
 	end
@@ -160,6 +165,8 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
+	
+	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	local group = self.view
 	storyboard.removeScene( "superLaunch" )
 	-- Add the back key callback
@@ -167,8 +174,8 @@ function scene:enterScene( event )
 	Runtime:removeEventListener( "key", onKeyEvent )
 	Runtime:addEventListener( "key", onKeyEvent )
 	
-	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
-	
+	-- iPhone, iPod touch, iPad, android etc
+	ads.show( "banner", { x=0, y=0, interval=60 } )
 end
 
 -- Called when scene is about to move offscreen:
