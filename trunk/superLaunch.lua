@@ -12,6 +12,7 @@ function scene:createScene( event )
 	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
+	local flame
 	local mainContainerGroup
 	local game
 	local overlayDisplay
@@ -92,6 +93,8 @@ function scene:createScene( event )
 		local explosion
 		local boost = 100
 		local worldLength = 0
+		flame = display.newImage("flame.png")
+		flame.isVisible = false
 		mainContainerGroup = display.newGroup()
 		group:insert( mainContainerGroup )
 		game = display.newGroup()
@@ -646,8 +649,12 @@ function scene:createScene( event )
 			local tAddShown = (event.time - tAdShownPrevious)
 			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
 				AddSection()
-			mainCharacter:toFront();
+				mainCharacter:toFront();
 			end
+			
+			flame.x = mainCharacter.x
+			flame.y = mainCharacter.y
+			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
 				scoreDisplay:setText( string.format( "%i", score ) )
@@ -809,8 +816,9 @@ function scene:createScene( event )
 		local tJetpack = system.getTimer()
 		local function applyJetpackBoost( event )
 			local tDelta = (event.time - tJetpack)
-			if boost > 0 then
+			if boost > 0 then		
 				if tDelta > 150 and mainCharacter ~= nil then	
+					flame.isVisible = true
 					tJetpack = event.time
 					if boost < 10 then
 						boost = 0
@@ -820,6 +828,8 @@ function scene:createScene( event )
 					boostBar:setSize( boost )
 					mainCharacter:applyLinearImpulse( 10, -30, mainCharacter.x - 1, mainCharacter.y )
 				end
+			else
+				flame.isVisible = false
 			end
 		end
 		local jetChannel
@@ -831,11 +841,13 @@ function scene:createScene( event )
 		local function startJets()
 			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
 			if playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
+			flame.isVisible = true
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		local function endJets()
 			audio.stop( jetChannel )
+			flame.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
