@@ -30,13 +30,12 @@ function scene:createScene( event )
 	local hardLaunchButton = nil
 	
 	local mainLabel = ui.newLabel{
-			bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+			bounds = { display.contentWidth /2 - 105, 65 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
 			text = "Select a Character",
 			--font = "Trebuchet-BoldItalic",
-			textColor = { 255, 200, 100, 255 },
+			textColor = { 0, 0, 0, 255 },
 			size = 33,
-			align = "center",
-			emboss = true
+			align = "center"
 		}
 	
 	local backButtonPress = function( event )
@@ -50,7 +49,7 @@ function scene:createScene( event )
 		onRelease = backButtonPress,
 		emboss = true,
 		x = 450,
-		y = 30
+		y = 80
 	}
 	backButton.isVisible = true
 	
@@ -58,7 +57,8 @@ function scene:createScene( event )
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false
-		mainLabel.setText("Select Launch Type")
+		mainLabel.isVisible = false
+		--mainLabel.setText("Select Launch Type")
 		slingShotButton.isVisible = true
 		hardLaunchButton.isVisible = true
 	end
@@ -83,21 +83,21 @@ function scene:createScene( event )
 					onEvent = noahButtonPress,
 					emboss = true,
 					x = 180,
-					y = 200
+					y = 240
 				}
 	babyButton = ui.newButton{
 					defaultSrc = "baby.png",
 					onEvent = babyButtonPress,
 					emboss = true,
 					x = 320,
-					y = 200
+					y = 240
 				}
 	dogButton = ui.newButton{
 					defaultSrc = "dog.png",
 					onEvent = dogButtonPress,
 					emboss = true,
 					x = 250,
-					y = 100
+					y = 140
 				}
 		
 	local function slingShotButtonPress()
@@ -116,9 +116,10 @@ function scene:createScene( event )
 				text = "SlingShot Mode",
 				emboss = true,
 				x = 240,
-				y = 44
+				y = 125
 			}
 	slingShotButton.isVisible = false	
+	
 	hardLaunchButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				onEvent = hardLaunchButtonPress,
@@ -126,10 +127,9 @@ function scene:createScene( event )
 				text = "Hard Launch Mode",
 				emboss = true,
 				x = 240,
-				y = 288
+				y = 205
 			}
 	hardLaunchButton.isVisible = false	
-	
 	
 	group:insert( bg )
 	group:insert( mainLabel )
