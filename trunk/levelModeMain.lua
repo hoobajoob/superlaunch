@@ -2,6 +2,17 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+-- Back Key listener
+local function onBackEvent( event )
+	local phase = event.phase
+	local keyName = event.keyName
+	
+	if (keyName == "back" and phase == "up") then 
+		Runtime:removeEventListener( "key", onBackEvent )
+		storyboard.gotoScene("mainMenu")
+	end
+	return true
+end
 
 function scene:createScene( event )
 	local group = self.view
@@ -19,17 +30,16 @@ function scene:createScene( event )
 	local hardLaunchButton = nil
 	
 	local mainLabel = ui.newLabel{
-			bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+			bounds = { display.contentWidth /2 - 105, 65 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
 			text = "Select a Character",
 			--font = "Trebuchet-BoldItalic",
-			textColor = { 255, 200, 100, 255 },
+			textColor = { 0, 0, 0, 255 },
 			size = 33,
-			align = "center",
-			emboss = true
+			align = "center"
 		}
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
+		Runtime:removeEventListener( "key", onBackEvent )
 		storyboard.gotoScene("mainMenu")
 	end
 	
@@ -72,21 +82,21 @@ function scene:createScene( event )
 					onEvent = noahButtonPress,
 					emboss = true,
 					x = 180,
-					y = 200
+					y = 240
 				}
 	babyButton = ui.newButton{
 					defaultSrc = "baby.png",
 					onEvent = babyButtonPress,
 					emboss = true,
 					x = 320,
-					y = 200
+					y = 240
 				}
 	dogButton = ui.newButton{
 					defaultSrc = "dog.png",
 					onEvent = dogButtonPress,
 					emboss = true,
 					x = 250,
-					y = 100
+					y = 140
 				}
 		
 	local function slingShotButtonPress()

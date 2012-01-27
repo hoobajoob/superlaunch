@@ -111,6 +111,7 @@ local function newButtonHandler( self, event )
  
         local onPress = self._onPress
         local onRelease = self._onRelease
+        local arguments = self.arguments
  
         local buttonEvent = {}
         if (self._id) then
@@ -133,20 +134,12 @@ local function newButtonHandler( self, event )
                         buttonEvent.phase = "press"
                         buttonEvent.x = event.x - self.contentBounds.xMin
                         buttonEvent.y = event.y - self.contentBounds.yMin
+						if (self._arguments ~= nil) then
+							buttonEvent.arguments = self._arguments
+						end
                         result = onEvent( buttonEvent )
                 elseif onPress then
-					if self.arguments ~= nil then
-						print ("Running on press event with arguments")
-						print ("arguments = ")
-						for i=1, table.getn(self.arguments) do
-							if self.arguments[i] ~= nil then
-								print(self.arguments[i])
-							end
-						end
-						result = onPress( event, self.arguments )
-					else
                         result = onPress( event )
-					end
                 end
  
                 -- Subsequent touch events will target button even if they are outside the contentBounds of button
@@ -262,12 +255,6 @@ local function newButton( params )
                 over.isVisible = false
                 button:insert( over, false )    
         end
-		
-		if params.arguments then
-			button.arguments = params.arguments
-		else
-			button.arguments = nil
-		end
         
         -- Public methods
         function button:setText( newText )
@@ -377,6 +364,10 @@ local function newButton( params )
         if (params.onEvent and ( type(params.onEvent) == "function" ) ) then
                 button._onEvent = params.onEvent
         end
+		
+		if params.arguments then
+			button._arguments = params.arguments
+		end
         
         -- set button to active (meaning, can be pushed)
         button.isActive = true
