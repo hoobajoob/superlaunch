@@ -2,6 +2,17 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+-- Back Key listener
+local function onBackEvent( event )
+	local phase = event.phase
+	local keyName = event.keyName
+	
+	if (keyName == "back" and phase == "up") then 
+		Runtime:removeEventListener( "key", onBackEvent )
+		storyboard.gotoScene("mainMenu")
+	end
+	return true
+end
 
 function scene:createScene( event )
 	local group = self.view
@@ -75,10 +86,16 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onBackEvent );
 end
 
 function scene:exitScene( event )
 	local group = self.view
+	
+	-- Add the back key callback
+	Runtime:removeEventListener( "key", onBackEvent );
 end
 
 function scene:destroyScene( event )

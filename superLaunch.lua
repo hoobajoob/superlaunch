@@ -1152,6 +1152,7 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
+	ads.hide();
 end
 
 function scene:exitScene( event )

@@ -26,6 +26,16 @@ local function onKeyEvent( event )
 	end
 	return true
 end
+	 
+--Handle the applicationExit event to close the db
+function onSystemEvent( event )
+	if( event.type == "applicationExit" ) then              
+		db:close()
+	end
+end
+ 
+--setup the system listener to catch applicationExit
+Runtime:addEventListener( "system", onSystemEvent )	
 	
 
 -----------------------------------------------------------------------------------------
@@ -46,70 +56,47 @@ function scene:createScene( event )
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
-	 
-	--Handle the applicationExit event to close the db
-	function onSystemEvent( event )
-		if( event.type == "applicationExit" ) then              
-			db:close()
-		end
-	end
-	 
-	--setup the system listener to catch applicationExit
-	Runtime:addEventListener( "system", onSystemEvent )	
 	
 	--Setup the user table if it doesn't exist
 	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
 	db:exec( tablesetup )
 	
-	local classicButtonPress = function( event )
-		ads.Hide()
+	local playButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
-		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
-		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		storyboard.gotoScene("timedModeMain")
+		storyboard.gotoScene("playMenu")
 	end
 	
 	local loginButtonPress = function( event )
-		ads.Hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("localLogin")
 	end
 	
-	local levelButtonPress = function( event )	
-		ads.Hide()	
-		Runtime:removeEventListener( "key", onKeyEvent )
-		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
-		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		storyboard.gotoScene("levelModeMain")		
-	end
-	
 	local highScoresButtonPress = function( event )
-		ads.Hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("highScores")
 	end
 	
 	local helpButtonPress = function( event )
-		ads.Hide()
+		ads.hide()
 		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("help")
 	end
 	
-	local classicButton = ui.newButton{
+	local playButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
-				onEvent = classicButtonPress,
-				overSrc = "buttonRedOver.png",
-				text = "Classic Play",
-				emboss = true,
 				x = 240,
-				y = 34
+				y = 90,
+				overSrc = "buttonRedOver.png",
+				onEvent = playButtonPress,
+				text = "Play",
+				emboss = true
 			}
-	classicButton.isVisible = true
+	playButton.isVisible = true
 	
 	local loginButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 98,
+				y = 150,
 				overSrc = "buttonRedOver.png",
 				onEvent = loginButtonPress,
 				text = "Login",
@@ -117,21 +104,10 @@ function scene:createScene( event )
 			}
 	loginButton.isVisible = true	
 	
-	local levelButton = ui.newButton{
-				defaultSrc = "buttonRed.png",
-				x = 240,
-				y = 162,
-				overSrc = "buttonRedOver.png",
-				onEvent = levelButtonPress,
-				text = "Level Play",
-				emboss = true
-			}
-	levelButton.isVisible = true
-	
 	local highScoresButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 226,
+				y = 210,
 				overSrc = "buttonRedOver.png",
 				onEvent = highScoresButtonPress,
 				text = "High Scores and Achievements",
@@ -142,7 +118,7 @@ function scene:createScene( event )
 	local helpButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
-				y = 286,
+				y = 270,
 				overSrc = "buttonRedOver.png",
 				onEvent = helpButtonPress,
 				text = "Help",
@@ -156,9 +132,8 @@ function scene:createScene( event )
 	end
 	
 	-- all display objects must be inserted into group
-	group:insert(classicButton)
+	group:insert(playButton)
 	group:insert(loginButton)
-	group:insert(levelButton)
 	group:insert(highScoresButton)
 	group:insert(helpButton)
 end
@@ -175,7 +150,7 @@ function scene:enterScene( event )
 	Runtime:addEventListener( "key", onKeyEvent )
 	
 	-- iPhone, iPod touch, iPad, android etc
-	ads.show( "banner", { x=0, y=0, interval=60 } )
+	ads.show( "banner", { x=0, y=0, interval=10 } )
 end
 
 -- Called when scene is about to move offscreen:
