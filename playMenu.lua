@@ -26,15 +26,15 @@ function scene:createScene( event )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 		storyboard.arguments = "superLaunch"
-		storyboard.gotoScene("levelModeMain")
+		storyboard.gotoScene("timedModeMain")
 	end
 	
 	local levelButtonPress = function( event )	
 		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		storyboard.arguments = "levelLaunch"
-		storyboard.gotoScene("levelModeMain")		
+		storyboard.arguments = "levelMenu"
+		storyboard.gotoScene("timedModeMain")		
 	end
 	
 	local backButtonPress = function( event )
