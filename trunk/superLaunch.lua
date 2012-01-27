@@ -36,6 +36,7 @@ function scene:createScene( event )
 	local lifeBar = nil
 	local boostBar = nil		
 	local jetpackButton = nil
+	
 	math.randomseed( os.time() )
 	math.random()	
 	
@@ -292,11 +293,11 @@ function scene:createScene( event )
 				if newToys == true then
 					toyX = addition + math.random( 10, 480 )
 					if math.random(100) < 83 then
-						if math.random(5) < 3 then
+						if math.random(5) < 5 then
 							local trampoline = display.newImage( "trampoline.png" )
 							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
 							trampoline.bodyName = "trampoline"..worldLength
-							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,11, -20,11, -20,9, 20,9 } } )	
+							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,13, -20,11, -20,9, 20,9 } } )	
 							game:insert( trampoline )	
 							trampoline:toFront()
 						else						
@@ -360,6 +361,20 @@ function scene:createScene( event )
 					jetRefill.isSensor = true
 					game:insert( jetRefill )
 					jetRefill:toFront()	
+				end
+				
+				if math.random(100) > 10 then			
+					local roosterSheet = sprite.newSpriteSheet( "roosterSprite.png", 125, 113 )
+					local roosterSpriteSet = sprite.newSpriteSet(roosterSheet, 1, 2)
+					sprite.add( roosterSpriteSet, "roosterSprite", 1, 2, 80, 4 )
+					local rooster = sprite.newSprite( roosterSpriteSet )	
+					rooster:prepare()				
+					rooster.x = addition + math.random( 40, 920 ); rooster.y = groundReferencePoint - 100
+					rooster.bodyName = "rooster"
+					physics.addBody( rooster, "static", { friction=0, bounce=0} )
+					rooster.isSensor = true
+					game:insert( rooster )
+					rooster:toFront()
 				end
 			end
 		end
@@ -1039,6 +1054,15 @@ function scene:createScene( event )
 						boost = boost + 25
 					end
 					boostBar:setSize( boost )
+				elseif event.other.bodyName == "rooster" then
+					print("impacted rooster")
+					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+					mainCharacter.x = event.other.x + 10; mainCharacter.y = event.other.y + 50
+					event.other:play()
+					Runtime:removeEventListener( "enterFrame", frameCheck )
+					Runtime:removeEventListener( "enterFrame", removeLifeLava )
+					Runtime:removeEventListener( "collision", onGlobalCollision )
+					showDeath ( "bloody" )			
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )

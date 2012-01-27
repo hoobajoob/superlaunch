@@ -2,7 +2,6 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
-local playType
 -- Back Key listener
 local function onBackEvent( event )
 	local phase = event.phase
@@ -29,6 +28,9 @@ function scene:createScene( event )
 	local dogButton = nil
 	local slingShotButton = nil
 	local hardLaunchButton = nil
+	
+	local playType = storyboard.arguments
+	print( "playType = "..playType)
 	
 	local mainLabel = ui.newLabel{
 			bounds = { display.contentWidth /2 - 105, 65 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
@@ -145,7 +147,6 @@ function scene:enterScene( event )
 	local group = self.view
 	----Fix
 	scene.createScene( self )
-	playType = storyboard.arguments[1]
 	-- Add the back key callback
 	Runtime:addEventListener( "key", onBackEvent );
 end

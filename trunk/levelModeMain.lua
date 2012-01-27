@@ -141,6 +141,7 @@ function scene:createScene( event )
 end
 
 function scene:enterScene( event )
+	
 	local group = self.view
 end
 
