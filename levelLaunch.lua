@@ -1,37 +1,61 @@
 module(..., package.seeall)
+local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
 function scene:createScene( event )
 	local group = self.view
+	local arguments = storyboard.arguments
 	
-	print ("Playing Level ".. arguments[2])
-	local scene = {}
+	print( "Level mode is being initiated. Level = "..arguments[4] )
+
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
+	local flame
 	local mainContainerGroup
 	local game
 	local overlayDisplay
 	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
-	local swooshSound = audio.loadSound("swoosh.mp3")	
-	local bounceSound = audio.loadSound("bounce.mp3")	
-	local owSound = audio.loadSound("ow.ogg")	
-	local jetSound = audio.loadSound("jetFuel.mp3")	
-	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
+	local swooshSound = audio.loadSound("swoosh.mp3")
+	local bounceSound = audio.loadSound("bounce.mp3")
+	local owSound = audio.loadSound("ow.ogg")
+	local jetSound = audio.loadSound("jetFuel.mp3")
+	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")
 	--]]------
 	local totalScore = {}
-	local timeLeft = 100
+	local timeLeft = 10
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
-	timeBar = nil
+	local launchType = "slingShot"
+	local menuButton = nil
+	local restartButton = nil
+	local timeBar = nil
+	local lifeBar = nil
+	local boostBar = nil		
+	local jetpackButton = nil
 	math.randomseed( os.time() )
-	math.random()
+	math.random()	
+	
+	--Open GameData.sqlite.  If the file doesn't exist it will be created
+	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
+	db = sqlite3.open( path )   
+	 
+	--Handle the applicationExit event to close the db
+	function onSystemEvent( event )
+		if( event.type == "applicationExit" ) then              
+			db:close()
+		end
+	end
+	 
+	--setup the system listener to catch applicationExit
+	Runtime:addEventListener( "system", onSystemEvent )	
+	
 	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
@@ -62,7 +86,7 @@ function scene:createScene( event )
 	end
 	--]]
 	function start()
-		print("Starting Super Launch")
+		print("Starting Level Launch")
 		physics.start()
 		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
@@ -72,7 +96,10 @@ function scene:createScene( event )
 		local explosion
 		local boost = 100
 		local worldLength = 0
+		flame = display.newImage("flame.png")
+		flame.isVisible = false
 		mainContainerGroup = display.newGroup()
+		group:insert( mainContainerGroup )
 		game = display.newGroup()
 		mainContainerGroup:insert( game )
 		game.x = 0
@@ -81,6 +108,88 @@ function scene:createScene( event )
 						
 		-- Sky and ground graphics
 		local function createFirstSection()
+		
+			--Create Backwards Crap
+			---[[
+				borderBodyElement = { friction=0.5, bounce=0.3 }
+				local borderBottom = display.newRect( -820, 775, 480, 20 )
+				borderBottom:setFillColor( 0, 100, 100)		-- make invisible
+				physics.addBody( borderBottom, "static", borderBodyElement )
+				game:insert( borderBottom )
+
+				local borderLeft = display.newRect( -820, -200, 20, 975 )
+				borderLeft:setFillColor( 0, 100, 100)		-- make invisible
+				physics.addBody( borderLeft, "static", borderBodyElement )
+				game:insert( borderLeft )
+---[[
+				local borderRight = display.newRect( -360, 300, 20, 800 )
+				borderRight:setFillColor( 0, 100, 100)		-- make invisible
+				physics.addBody( borderRight, "static", borderBodyElement )
+				game:insert( borderRight )
+				--]]
+				local triangle = display.newImage("triangle.png")
+				triangle.x = -600; triangle.y = 160
+				
+				local triangle2 = display.newImage("triangle.png")
+				triangle2.x = -510; triangle2.y = 160
+
+				local pentagon = display.newImage("pentagon.png")
+				pentagon.x = -600; pentagon.y = 70
+
+				local pentagon2 = display.newImage("pentagon.png")
+				pentagon2.x = -510; pentagon2.y = 70
+
+				local crate = display.newImage("crate.png")
+				crate.x = -530; crate.y = 250
+
+				local crateB = display.newImage("crateB.png")
+				crateB.x = -430; crateB.y = 250
+
+				local crateC = display.newImage("crateC.png")
+				crateC.x = -420; crateC.y = 50
+
+				local soccerball = display.newImage("soccer_ball.png")
+				soccerball.x = -600; soccerball.y = 320
+
+				local superball = display.newImage("super_ball.png")
+				superball.x = -420; superball.y = 340
+
+				local superball2 = display.newImage("super_ball.png")
+				superball2.x = -440; superball2.y = 130
+
+				local superball3 = display.newImage("super_ball.png")
+				superball3.x = -430; superball3.y = 180
+
+
+				triangleShape = { 0,-35, 37,30, -37,30 }
+				pentagonShape = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
+
+				physics.addBody( crate, { density=2, friction=0.5, bounce=0.4 } )
+				physics.addBody( crateB, { density=4, friction=0.5, bounce=0.4 } )
+				physics.addBody( crateC, { density=1, friction=0.5, bounce=0.4 } )
+				game:insert( crate )
+				game:insert( crateB )
+				game:insert( crateC )
+
+				physics.addBody( triangle, { density=0.9, friction=0.5, bounce=0.3, shape=triangleShape } )
+				physics.addBody( triangle2, { density=0.9, friction=0.5, bounce=0.3, shape=triangleShape } )
+				game:insert( triangle )
+				game:insert( triangle2 )
+
+				physics.addBody( pentagon, { density=0.9, friction=0.5, bounce=0.4, shape=pentagonShape } )
+				physics.addBody( pentagon2, { density=0.9, friction=0.5, bounce=0.4, shape=pentagonShape } )
+				game:insert( pentagon )
+				game:insert( pentagon2 )
+
+				physics.addBody( soccerball, { density=0.9, friction=0.5, bounce=0.6, radius=38 } )
+				physics.addBody( superball, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				physics.addBody( superball2, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				physics.addBody( superball3, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				game:insert( soccerball )
+				game:insert( superball )
+				game:insert( superball2 )
+				game:insert( superball3 )
+			--]]
 		
 			sky = display.newImage( "sky.png", true )
 			game:insert( sky )
@@ -114,70 +223,136 @@ function scene:createScene( event )
 			game:insert( ttsky2 )
 			ttsky2:setReferencePoint( display.CenterLeftReferencePoint )
 			ttsky2.x = startingSkyX2; ttsky2.y = -820
+			llskyStars = display.newImage( "skyStars.png", true )
+			game:insert( llskyStars )
+			llskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			llskyStars.x = startingSkyX1; llskyStars.y = -1140
+			lrskyStars = display.newImage( "skyStars.png", true )
+			game:insert( lrskyStars )
+			lrskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			lrskyStars.x = startingSkyX2; lrskyStars.y = -1140
+			ulskyStars = display.newImage( "skyStars.png", true )
+			game:insert( ulskyStars )
+			ulskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			ulskyStars.x = startingSkyX1; ulskyStars.y = -1460
+			urskyStars = display.newImage( "skyStars.png", true )
+			game:insert( urskyStars )
+			urskyStars:setReferencePoint( display.CenterLeftReferencePoint )
+			urskyStars.x = startingSkyX2; urskyStars.y = -1460
+			
+			mountain_big = display.newImage("mountain_big.png", 132-240, 92) 
+			game:insert( mountain_big )
+			mountain_sma = display.newImage("mountain_small.png", 84, 111)
+			game:insert( mountain_sma )
+			 
+			tree_s = display.newImage("tree_s.png", 129-30, 151) 
+			game:insert( tree_s )
+			tree_l = display.newImage("tree_l.png", 145, 131) 
+			game:insert( tree_l )
 
 			local grass = display.newImage( "grass.png", true )
 			game:insert( grass )
-			grass.x = 160; grass.y = groundReferencePoint
-			physics.addBody( grass, "static", { friction=0.1, bounce=0.25 } )
+			grass.x = 160; grass.y = groundReferencePoint - 20
+			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			grass.bodyName = "grass1"
 		end
 	
 		local function AddSection()
 			worldLength = worldLength + 1
-			local addition = 160 + ( (worldLength - 1) * 960 )
-			
+			local addition = (worldLength* 960 )
+			local newToys = true
+
 			local dgrass
 			if worldLength > 1 and math.random(5) < 3 then
-				dgrass = display.newImage( "lava.png", true )
-				dgrass.bodyName = "lava"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint
-				physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2 } )
+				if math.random(5) < 3 then
+					dgrass = display.newImage( "lava.png", true )
+					dgrass.bodyName = "lava"..worldLength
+					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+				else
+					newToys = false
+					dgrass = display.newImage( "quickSand.png", true )
+					dgrass.bodyName = "quickSand"..worldLength
+					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+					physics.addBody( dgrass, "static",
+									  { friction=0.9, bounce=0, shape={ -360,60, -480,60, -480,-30, -360,0 }},
+									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
+									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
+									)
+				end
 			else
 				dgrass = display.newImage( "grass.png", true )
 				dgrass.bodyName = "grass"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint
-				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25 } )
+				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			end
 			
 			game:insert( dgrass )
+			dgrass:toBack()
+			sky:toBack()
+			sky2:toBack()
 
-			if worldLength > 2 then		
-				if math.random(100) < 83 then
-					if math.random(5) < 3 then
-						local trampoline = display.newImage( "ramp.png" )
-						trampoline.x = addition + math.random( 40, 920 ); trampoline.y = groundReferencePoint - 40
-						trampoline.bodyName = "trampoline"..worldLength
-						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,1, -20,1, -20,-1, 20,-1 } } )	
-						game:insert( trampoline )		
-					else						
-						local ramp = display.newImage( "ramp.png" )
-						ramp.x = addition + math.random( 40, 920 ); ramp.y = groundReferencePoint - 65
-						ramp.bodyName = "ramp"..worldLength
-						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
-						game:insert( ramp )		
+			if worldLength > 2 then					
+				if newToys == true then
+					toyX = addition + math.random( 10, 480 )
+					if math.random(100) < 83 then
+						if math.random(5) < 3 then
+							local trampoline = display.newImage( "trampoline.png" )
+							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
+							trampoline.bodyName = "trampoline"..worldLength
+							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,11, -20,11, -20,9, 20,9 } } )	
+							game:insert( trampoline )	
+							trampoline:toFront()
+						else						
+
+							local ramp = display.newImage( "ramp.png" )
+							ramp.x = toyX; ramp.y = groundReferencePoint - 75
+							ramp.bodyName = "ramp"..worldLength
+							physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+							game:insert( ramp )	
+							ramp:toFront()	
+						end
+					else 
+						if math.random(5) <4 then
+							local spikeWall = display.newImage( "spikewall.png" )
+							spikeWall.x = toyX; spikeWall.y = groundReferencePoint - 90
+							spikeWall.bodyName = "spikeWall"..worldLength
+							physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
+							game:insert( spikeWall )
+							spikeWall:toFront()	
+						else
+							local keg = display.newImage( "keg.png" )
+							keg.x = toyX; keg.y = groundReferencePoint - 75
+							keg.bodyName = "keg"..worldLength
+							physics.addBody( keg, "static", { friction=1, bounce=0 } )
+							game:insert( keg )
+							keg:toFront()	
+						end
 					end
-				else 
-					if math.random(5) <4 then
-						local spikeWall = display.newImage( "spikewall.png" )
-						spikeWall.x = addition - math.random( 40, 920 ); spikeWall.y = groundReferencePoint - 80
-						spikeWall.bodyName = "spikeWall"..worldLength
-						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
-						game:insert( spikeWall )
-					else
-						local keg = display.newImage( "keg.png" )
-						keg.x = addition - math.random( 40, 920 ); keg.y = groundReferencePoint - 65
-						keg.bodyName = "keg"..worldLength
-						physics.addBody( keg, "static", { friction=1, bounce=0 } )
-						game:insert( keg )
-					end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				end
-					
+				
+
 				local star = display.newImage( "star.png" )
 				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
 				star.bodyName = "star"
 				physics.addBody( star, "static", { friction=0, bounce=0 } )
 				star.isSensor = true
 				game:insert( star )
+				 star:toFront()	
 				
 				local bacon = display.newImage( "bacon.png" )
 				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
@@ -185,14 +360,26 @@ function scene:createScene( event )
 				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
 				bacon.isSensor = true
 				game:insert( bacon )
+				bacon:toFront()	
 				
-				if math.random(100) > 83 then
+				if math.random(100) > 85 then
 					local bomb = display.newImage( "bomb.png" )
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
 					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
 					bomb.isSensor = true
 					game:insert( bomb )
+					bomb:toFront()	
+				end
+				
+				if math.random(100) > 25 then
+					local jetRefill = display.newImage( "jetRefill.png" )
+					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
+					jetRefill.bodyName = "jetRefill"
+					physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
+					jetRefill.isSensor = true
+					game:insert( jetRefill )
+					jetRefill:toFront()	
 				end
 			end
 		end
@@ -222,31 +409,51 @@ function scene:createScene( event )
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 			if character == "dog" then mainCharacter:rotate(90) end
+			
+			if #arguments > 2 then
+				launchType = arguments[3]
+				print ("Launch Type is: "..launchType)
+				if launchType == "hardLaunch" then	
+					local launchTypeLabel = ui.newLabel{
+							bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+							text = "Hard Launch Mode",
+							--font = "Trebuchet-BoldItalic",
+							textColor = { 255, 200, 100, 255 },
+							size = 33,
+							align = "center",
+							emboss = true
+						}
+					overlayDisplay:insert( launchTypeLabel )					
+				end
+			end
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 		end
-		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 200
+		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250
 
 		slingshotString = display.newImage( "string.png" )
-		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 180
+		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 230
+		physics.addBody( slingshotString, "static", { friction=0.5 } )
 		slingshotString.bodyName = "slingShotString"
 		game:insert(slingshotString)
-		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 55, 220 )
---[[
+		
+
+		--[[
 		slingshot = display.newImage( "slingshot.png" )
-		slingshot.x = 170; slingshot.y = groundReferencePoint - 180
-		--physics.addBody( slingshot, "static", { friction=0.5 } )
+		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
+		physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
---]]
+		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
+		--]]
 		------------------------------------------------------------
 		-- Simple score display
 
 		local scoreDisplay = ui.newLabel{
-			bounds = { display.contentWidth - 120, 10 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+			bounds = { display.contentWidth - 140, 10 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
 			text = "0",
 			--font = "Trebuchet-BoldItalic",
 			textColor = { 255, 225, 102, 255 },
@@ -263,7 +470,7 @@ function scene:createScene( event )
 		-- Life display
 
 
-		local lifeBar = tbaUI.newBar{
+		lifeBar = tbaUI.newBar{
 			bounds = { 0, 10 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = life,
@@ -277,7 +484,7 @@ function scene:createScene( event )
 		-- boost display
 
 
-		local boostBar = tbaUI.newBar{
+		boostBar = tbaUI.newBar{
 			bounds = { 400, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = boost,
@@ -286,15 +493,16 @@ function scene:createScene( event )
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
-		
+
+
 		local function showExplosion()		
-			local explosionSheet = sprite.newSpriteSheet( "explosionSprite.png", 170, 130 )
-			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 4)
-			sprite.add( explosionSpriteSet, "explosionSprite", 1, 4, 2500, 1 )
+			local explosionSheet = sprite.newSpriteSheet( "starExpSprite.png", 264, 264 )
+			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
+			sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 1 )
 			explosion = sprite.newSprite( explosionSpriteSet )
 			game:insert( explosion )
-			explosion.x = mainCharacter.x; explosion.y = 230
-			local explosionChannel = audio.play( explosionSound, { channel=2 }  )
+			explosion.x = mainCharacter.x; explosion.y = mainCharacter.y
+			if playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
 			explosion:play()
 		end
 
@@ -302,6 +510,43 @@ function scene:createScene( event )
 			blood = display.newImage( "blood.png" )
 			game:insert( blood )
 			blood .x = mainCharacter.x + 10; blood .y = mainCharacter.y
+		end
+		
+		local goToMenu = function ( event )
+			if menuButton ~= nil then
+				menuButton.isVisible = false
+				menuButton = nil
+			end
+			if restartButton ~= nil then
+				restartButton.isVisible = false
+				restartButton = nil
+			end
+			storyboard.gotoScene("mainMenu")
+		end
+		
+		local removeMainItems = function( event )	
+			while game.numChildren > 0	do		
+				print("Clearing All "..game.numChildren.."in Game")				
+				for i=1, game.numChildren do
+					if game[i] ~= nil then
+						if game[i].bodyName ~= nil then
+							print("Clearing "..game[i].bodyName)
+						end
+						game:remove( i )
+					end
+				end
+			end
+			while overlayDisplay.numChildren > 0	do	
+				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+				for i=1, overlayDisplay.numChildren do
+					if overlayDisplay[i] ~= nil then
+						if overlayDisplay[i].bodyName ~= nil then
+							print("Clearing "..overlayDisplay[i].bodyName)
+						end
+						overlayDisplay:remove( i )
+					end
+				end
+			end
 		end
 		
 		local function showDeath( deathType )
@@ -314,49 +559,55 @@ function scene:createScene( event )
 			end
 			mainCharacter:pause()
 			mainCharacter.bodyType = "static"
-			local menuButton = nil
-			local restartButton = nil
 			
-			local menuButtonPress = function( event )
+			jetpackButton.isVisible = false	
+			jetpackButton:removeSelf();
+			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
+
+
+			
+			local menuButtonPress = function ( event )
 				menuButton.isVisible = false
-				timeLeft = 0
-				Runtime:removeEventListener( "enterFrame", timeCheck )
-				if timebar ~= nil then timeBar:removeSelf() end
-				--TODO/FIX--scoreDisplay.parent:remove( scoreDisplay )
-				print("Clearing All "..game.numChildren.."in Game")	
-				while game.numChildren > 0	do		
-						if game[1] ~= nil then
-							if game[1].bodyName ~= nil then
-								print("Clearing "..game[1].bodyName)
-							end
-							game:remove( 1 )
-						end
-				end
-				while overlayDisplay.numChildren > 0	do	
-					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren do
-						if overlayDisplay[i] ~= nil then
-							if overlayDisplay[i].bodyName ~= nil then
-								print("Clearing "..overlayDisplay[i].bodyName)
-							end
-							overlayDisplay:remove( i )
-						end
-					end
-				end
-				game:removeSelf()
-				overlayDisplay:removeSelf()
-				mainContainerGroup:removeSelf()
-				if restartButton ~= nil then restartButton:removeSelf() end
-				physics = nil
-				ui = nil
-				audio.stop( backgroundMusicChannel )
-				director:changeScene("mainMenu", "moveFromLeft")
+				goToMenu()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			end
-						
+									
+
 			menuButton = ui.newButton{
-				default = "buttonRed.png",
+				defaultSrc = "buttonRed.png",
 				over = "buttonRedOver.png",
-				onPress = menuButtonPress,
+				onPress = goToMenu,
 				text = "Return To Menu",
 				emboss = true,
 				x = 240,
@@ -372,28 +623,30 @@ function scene:createScene( event )
 				restartButton.isVisible = false
 				--TODO: FIX--scoreDisplay.parent:remove( scoreDisplay )				
 				
-				while game.numChildren > 0	do		
-					print("Clearing All "..game.numChildren.."in Game")				
-					for i=1, game.numChildren do
-						if game[i] ~= nil then
-							if game[i].bodyName ~= nil then
-								print("Clearing "..game[i].bodyName)
-							end
-							game:remove( i )
-						end
-					end
-				end
-				while overlayDisplay.numChildren > 0	do	
-					print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
-					for i=1, overlayDisplay.numChildren do
-						if overlayDisplay[i] ~= nil then
-							if overlayDisplay[i].bodyName ~= nil then
-								print("Clearing "..overlayDisplay[i].bodyName)
-							end
-							overlayDisplay:remove( i )
-						end
-					end
-				end
+				removeMainItems()
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				menuButton.isVisible = false
 				restartButton.isVisible = false
 				--director:changeScene("testChange", "crossFade", arguments)
@@ -438,44 +691,48 @@ function scene:createScene( event )
 					totalDisplay.bodyName = "totalDisplay"
 					overlayDisplay:insert( totalDisplay )
 					score = 0
-					
-					--Open GameData.sqlite.  If the file doesn't exist it will be created
-					local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
-					db = sqlite3.open( path )   
-					 
-					--Handle the applicationExit event to close the db
-					local function onSystemEvent( event )
-						if( event.type == "applicationExit" ) then              
-							db:close()
-						end
-					end
-					 
-					--setup the system listener to catch applicationExit
-					Runtime:addEventListener( "system", onSystemEvent )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 					--Setup the high score table if it doesn't exist
-					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, sName, dScore, dtCreated);]]
-					print(tablesetup)
+					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
+
 					db:exec( tablesetup )
 
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
-					local testvalue = {}
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, 'New User', ]]..aggregatedScore..[[, 2011-05-13);]]
-					db:exec( tablefill )
 
-					--print the sqlite version to the terminal
-					print( "version " .. sqlite3.version() )
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
+					print (tablefill)
+					db:exec( tablefill )
+					
+					--Insert in to OpenFeint high score
+					gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
+
+
+
 					 
-					--print all the table contents
-					for row in db:nrows("SELECT * FROM tblHighScores") do
-					  local text = row.sName.." - "..row.dScore.." - "..row.dtCreated
-					  local t = display.newText(text, 0, 50 + (40 * row.ixHighScore), null, 16)
-					  t:setTextColor(255,0,255)
-					  overlayDisplay:insert( t )
-					end
+
+
+
+
+
+
+
 			else
 				restartButton = ui.newButton{
-					default = "buttonRed.png",
+					defaultSrc = "buttonRed.png",
 					over = "buttonRedOver.png",
 					onPress = restartButtonPress,
 					text = "Restart",
@@ -495,18 +752,22 @@ function scene:createScene( event )
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
-			if mainCharacter.x > ( worldLength - 2 ) * 960 then
+			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
 				AddSection()
-			mainCharacter:toFront();
+				mainCharacter:toFront();
 			end
+			
+			flame.x = mainCharacter.x
+			flame.y = mainCharacter.y
+			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
 				scoreDisplay:setText( string.format( "%i", score ) )
 			end
-			if (mainCharacter.x > 100) then
+			if (mainCharacter.x > -800) then
 				game.x = math.ceil(-mainCharacter.x) + 120
 			end
-			if (mainCharacter.y < 220) then
+			if (mainCharacter.x < -100 or mainCharacter.y < 220) then
 				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 220
 			end
 			if mainCharacter ~= nil then
@@ -518,75 +779,203 @@ function scene:createScene( event )
 				end
 			end
 			
-			
-			if ( game.x + sky.x ) > sky.contentWidth then
-				sky:translate( -(sky.contentWidth * 2), 0)
-			end
-			if ( game.x + sky2.x ) > sky.contentWidth then
-				sky2:translate( -(sky2.contentWidth * 2), 0)
-			end
-			
-			if ( game.x + sky.x + sky.contentWidth) < -40 then
-				sky:translate( sky.contentWidth * 2, 0)
-			end
-			if ( game.x + sky2.x + sky2.contentWidth) < -40 then
-				sky2:translate( sky2.contentWidth * 2, 0)
-			end
-			
-			local mskyTotal = game.x + msky.x + msky.contentWidth
-			local msky2Total = game.x + msky2.x + msky2.contentWidth
-			
-			if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 20 then
-				msky.x = sky.x
-				msky2.x = sky2.x
-			end			
-			
-			local tskyTotal = game.x + tsky.x + tsky.contentWidth
-			local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
+			if (mainCharacter.x > 0) then
+
+				if ( game.x + sky.x ) > sky.contentWidth then
+					sky:translate( -(sky.contentWidth * 2), 0)
+				end
+				if ( game.x + sky2.x ) > sky.contentWidth then
+					sky2:translate( -(sky2.contentWidth * 2), 0)
+				end
+				
+
+				if ( game.x + sky.x + sky.contentWidth) < -40 then
+					sky:translate( sky.contentWidth * 2, 0)
+				end
+				if ( game.x + sky2.x + sky2.contentWidth) < -40 then
+					sky2:translate( sky2.contentWidth * 2, 0)
+				end
+				
+
+				local mskyTotal = game.x + msky.x + msky.contentWidth
+				local msky2Total = game.x + msky2.x + msky2.contentWidth
+				
+
+				if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 20 then
+					msky.x = sky.x
+					msky2.x = sky2.x
+				end			
+				
+
+
+				local tskyTotal = game.x + tsky.x + tsky.contentWidth
+				local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
+						
+				if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 220 then
+					tsky.x = sky.x
+					tsky2.x = sky2.x
+				end
+				
+				local ttskyTotal = game.x + ttsky.x + ttsky.contentWidth
+				local ttsky2Total = game.x + ttsky2.x + ttsky2.contentWidth
+						
+				if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
+					ttsky.x = sky.x
+					ttsky2.x = sky2.x
+				end	
+				
+				-------
+				if mainCharacter.y < -1100 then
+					if ( game.y + llskyStars.y ) > llskyStars.contentHeight then
+						llskyStars:translate(0,  -(llskyStars.contentHeight * 2))
+					end
+					if ( game.y + lrskyStars.y ) > lrskyStars.contentHeight then
+						lrskyStars:translate(0,  -(lrskyStars.contentHeight * 2))
+					end
 					
-			if ( tskyTotal < 0 or tskyTotal > tsky.contentWidth * 2 or tsky2Total < 0 or tsky2Total > tsky2.contentWidth * 2 ) and game.y > 220 then
-				tsky.x = sky.x
-				tsky2.x = sky2.x
+					if ( game.y + llskyStars.y + llskyStars.contentHeight) < 120 then
+						llskyStars:translate(0,  llskyStars.contentHeight * 2)
+					end
+					if ( game.y + lrskyStars.y + lrskyStars.contentHeight) < 120 then
+						lrskyStars:translate(0,  lrskyStars.contentHeight * 2)
+					end
+					
+					if ( game.y + ulskyStars.y ) > ulskyStars.contentHeight then
+						ulskyStars:translate(0,  -(ulskyStars.contentHeight * 2))
+					end
+					if ( game.y + urskyStars.y ) > urskyStars.contentHeight then
+						urskyStars:translate(0,  -(urskyStars.contentHeight * 2))
+					end
+					
+					if ( game.y + ulskyStars.y + ulskyStars.contentHeight) < 120 then
+						ulskyStars:translate(0,  ulskyStars.contentHeight * 2)
+					end
+					if ( game.y + urskyStars.y + urskyStars.contentHeight) < 120 then
+						urskyStars:translate(0,  urskyStars.contentHeight * 2)
+					end
+				end
+				
+				local llskyStarsTotal = game.x + llskyStars.x + llskyStars.contentWidth
+				local lrskyStarsTotal = game.x + lrskyStars.x + lrskyStars.contentWidth
+						
+				if ( llskyStarsTotal < 0 or llskyStarsTotal > llskyStars.contentWidth * 2 or lrskyStarsTotal < 0 or lrskyStarsTotal > lrskyStars.contentWidth * 2 ) and game.y > 1000 then
+					llskyStars.x = sky.x
+					lrskyStars.x = sky2.x
+				end	
+				
+				local ulskyStarsTotal = game.x + ulskyStars.x + ulskyStars.contentWidth
+				local urSkyStarsTotal = game.x + urskyStars.x + urskyStars.contentWidth
+						
+				if ( ulskyStarsTotal < 0 or ulskyStarsTotal > ulskyStars.contentWidth * 2 or urSkyStarsTotal < 0 or urSkyStarsTotal > urskyStars.contentWidth * 2 ) and game.y > 1400 then
+					ulskyStars.x = sky.x
+					urskyStars.x = sky2.x
+				end	
+				
+				-------
+				
+				if game.y < 320 then
+					mountain_big.x = mountain_big.x + ( ( vx / 320 ) * 8 )
+					if mountain_big.x < mainCharacter.x - 280 then
+						mountain_big.x = mainCharacter.x + 500
+					end	
+					
+					mountain_sma.x = mountain_sma.x + ( ( vx / 320 ) * 7 )
+					if mountain_sma.x < mainCharacter.x - 280 then
+						mountain_sma.x = mainCharacter.x + 500
+					end						
+					
+					tree_s.x = tree_s.x + ( ( vx / 320 ) * 5 )
+					if tree_s.x < mainCharacter.x - 280 then
+						tree_s.x = mainCharacter.x + 500
+					end							
+									
+					tree_l.x = tree_l.x + ( ( vx / 320 ) * 4 )
+					if tree_l.x < mainCharacter.x - 280 then
+						tree_l.x = mainCharacter.x + 500
+					end					
+				end
+
+
+
 			end
 			
-			local ttskyTotal = game.x + ttsky.x + ttsky.contentWidth
-			local ttsky2Total = game.x + ttsky2.x + ttsky2.contentWidth
-					
-			if ( ttskyTotal < 0 or ttskyTotal > ttsky.contentWidth * 2 or ttsky2Total < 0 or ttsky2Total > ttsky2.contentWidth * 2 ) and game.y > 400 then
-				ttsky.x = sky.x
-				ttsky2.x = sky2.x
-			end			
-			
+
+
+
+
+
+
+
+
 			if life <= 0 then	
-				print("removing event Listeners")
+
 				Runtime:removeEventListener( "enterFrame", frameCheck )
 				Runtime:removeEventListener( "enterFrame", removeLifeLava )
 				Runtime:removeEventListener( "collision", onGlobalCollision )
 				showDeath( "explosion" )
 			end
 		end
+	
+		local backButtonPress = function( event )
+			Runtime:removeEventListener( "key", onKeyEvent )	
+			Runtime:removeEventListener( "enterFrame", frameCheck )
+			Runtime:removeEventListener( "enterFrame", removeLifeLava )
+			Runtime:removeEventListener( "collision", onGlobalCollision )
+			if lifeBar ~= nil then
+				lifeBar:setSize( 0 )
+				lifeBar.isVisible = false
+				lifeBar = nil
+			end
+			if boostBar ~= nil then
+				boostBar:setSize( 0 )
+				boostBar.isVisible = false
+				boostBar = nil
+			end
+			if mainCharacter ~= nil then
+				mainCharacter.isVisible = false
+				mainCharacter = nil
+			end
+			removeMainItems()			
+			goToMenu()
+		end
+
+		local backButton = ui.newButton{
+			defaultSrc = "btn_back.png",
+			overSrc = "btn_back.png",
+			onRelease = backButtonPress,
+			emboss = true,
+			x = 470,
+			y = 30
+		}
+		backButton.isVisible = true
+		overlayDisplay:insert(backButton)
 		
-		local jetpackButton
+
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
 		local function applyJetpackBoost( event )
 			local tDelta = (event.time - tJetpack)
-			if boost > 0 then
+			if boost > 0 then		
 				if tDelta > 150 and mainCharacter ~= nil then	
+					flame.isVisible = true
 					tJetpack = event.time
-					boost = boost - 10
+					if boost < 10 then
+						boost = 0
+					else
+						boost = boost - 10
+					end
 					boostBar:setSize( boost )
 					mainCharacter:applyLinearImpulse( 10, -30, mainCharacter.x - 1, mainCharacter.y )
 				end
 			else
-				jetpackButton.isVisible = false	
-				jetpackButton:removeSelf();
-				jetpackButton = display.newImage( "jetPack.png" )
-				jetpackButton.x = 445; jetpackButton.y = 245
-				jetpackButton.bodyName = "Jet Pack Button"
-				overlayDisplay:insert(jetpackButton)
-				Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
-				
+				flame.isVisible = false
+
+
+
+
+
+
+
 			end
 		end
 		local jetChannel
@@ -597,17 +986,19 @@ function scene:createScene( event )
 		--]]
 		local function startJets()
 			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
-			jetChannel = audio.play( jetSound,{ channel=4 })
+			if playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
+			flame.isVisible = true
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		local function endJets()
 			audio.stop( jetChannel )
+			flame.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		jetpackButton = ui.newButton{
-			default = "jetPack.png",
+			defaultSrc = "jetPack.png",
 			over = "jetPackOver.png",
 			onPress = startJets,
 			onRelease = endJets,
@@ -626,7 +1017,7 @@ function scene:createScene( event )
 				tLavaPrevious = event.time
 				life = life - 1
 				lifeBar:setSize( life )
-				local owChannel = audio.play( owSound, { channel=4 }  ) 
+				if playSounds then local owChannel = audio.play( owSound, { channel=4 }  ) end
 			end
 		end	
 
@@ -652,29 +1043,37 @@ function scene:createScene( event )
 				if "moved" == phase then
 					-- Make object move (we subtract t.x0,t.y0 so that moves are
 					-- relative to initial grab point, rather than object "snapping").
-					t.x = event.x - t.x0
-					t.y = event.y - t.y0
+					if event.x>1 then
+						t.x = event.x - t.x0
+					else
+						t.x = 1
+					end					
+					if event.y< 245 then
+						t.y = event.y - t.y0
+					else
+						t.y = 245
+					end
 				elseif "ended" == phase or "cancelled" == phase then
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					--slingshot:removeSelf()
 					slingshotString:removeSelf()
-					local swooshChannel = audio.play( swooshSound, { channel=2 }  )
+					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
-					if t.x<1 then
-						t.x = 1
-					end
-					if t.y>295 then
-						t.y = 295
-					end
+
+
+
+
+
+
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
 					game:insert(t)
 					t.bodyName = "mainCharacterDynamic"
 					t.isFixedRotation = true
 					--t.angularDamping = 10
 					t:removeEventListener( "touch", onTouch )
-					t:applyLinearImpulse( 2 * (170 - t.x) , 1 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
+					t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
 			end
@@ -682,6 +1081,57 @@ function scene:createScene( event )
 			-- Important to return true. This tells the system that the event
 			-- should not be propagated to listeners of any objects underneath.
 			return true
+		end
+		local function launchCharacter()
+			angle = 50
+			power = 1
+			display.getCurrentStage():setFocus( nil )
+			local t = mainCharacter
+			--slingshot:removeSelf()
+			slingshotString:removeSelf()
+			if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+			t:prepare("mainCharacterSprite")
+			t:play()
+			physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+			game:insert(t)
+			t.bodyName = "mainCharacterDynamic"
+			t.isFixedRotation = true
+			--t.angularDamping = 10
+			t:removeEventListener( "touch", onTouch )
+			--Angle of 0 = all y Force. Angle of 100 = all x Force.
+			print ( "Angle = "..angle.." and Power = "..power )
+			local xForce = power * angle * 200
+			local yForce = -( power * ( 100 - angle ) ) 
+			print ( "xForce = "..xForce.." and yForce = "..yForce )
+			t:applyLinearImpulse( -100 , -300 , t.x + 9, t.y)
+			Runtime:addEventListener( "enterFrame", frameCheck )
+		end
+		local launchHardMode = function()
+			timer.performWithDelay(2000, launchCharacter )
+		end
+	
+		if launchType == "hardLaunch" then
+		---[[
+			local launchReadyButton = nil
+					
+			local function launchReadyButtonPress()
+					local angle = 50
+					local power = 50
+					launchReadyButton.isVisible = false
+					director:openPopUp( "hardLaunch", launchHardMode )
+			end
+			
+			launchReadyButton = ui.newButton{
+						defaultSrc = "buttonRed.png",
+						onPress = launchReadyButtonPress,
+						overSrc = "buttonRedOver.png",
+						text = "Ready",
+						emboss = true,
+						x = 240,
+						y = 140
+					}
+			game:insert(launchReadyButton)	
+			--]]
 		end
 
 		mainCharacter:addEventListener( "touch", onTouch )
@@ -718,7 +1168,14 @@ function scene:createScene( event )
 						life = life - 10
 					end
 					lifeBar:setSize( life )
-					mainCharacter:applyLinearImpulse( 15, -5, mainCharacter.x, mainCharacter.y )
+					mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
+				elseif event.other.bodyName == "jetRefill" then
+					if boost > 75 then
+						boost = 100
+					else
+						boost = boost + 25
+					end
+					boostBar:setSize( boost )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
@@ -792,15 +1249,15 @@ function scene:createScene( event )
 				lifeBar:setSize( life )
 				local impactChannel
 				if string.find(bodyName, "lava") ~= nil or string.find(bodyName, "grass") ~= nil then
-					impactChannel = audio.play( boingSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( boingSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "ramp") ~= nil then
-					impactChannel = audio.play( swooshSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( swooshSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "trampoline") ~= nil then
-					impactChannel = audio.play( bounceSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( bounceSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "keg") ~= nil then
-					impactChannel = audio.play( owSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 				elseif string.find(bodyName, "spikeWall") ~= nil then
-					impactChannel = audio.play( owSound, { channel=3 }  ) 
+					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 				end
 			end--]]
 		end
@@ -813,19 +1270,45 @@ function scene:createScene( event )
 		return game
 	end
 	
-	return start()
+	-- Back Key listener
+	local function onKeyEventSuperLaunch( event )
+		local phase = event.phase
+		local keyName = event.keyName
+
+		if (phase == "up" and keyName == "back") then 
+			Runtime:removeEventListener( "key", onKeyEvent );
+			timer.performWithDelay(100, moveBack("characterSelect", "moveFromLeft", {"superLaunch"}), 1)
+		end
+	end
+	
+	-- Add the back key callback
+	Runtime:addEventListener( "key", onKeyEventSuperLaunch );	
+	
+	start()
 end
 
 function scene:enterScene( event )
 	local group = self.view
+	ads.hide();
 end
 
 function scene:exitScene( event )
-	local group = self.view
+	local group = self.view	
+	Runtime:removeEventListener( "enterFrame", timeCheck )	
+			if timeBar ~= nil then
+				timeBar.setSize(0)
+				timeBar.isVisible = false
+				timeBar = nil
+			end
 end
 
 function scene:destroyScene( event )
-	local group = self.view
+	local group = self.view	
+			if timeBar ~= nil then
+				timeBar.setSize(0)
+				timeBar.isVisible = false
+				timeBar = nil
+			end
 end
 
 scene:addEventListener( "createScene", scene )

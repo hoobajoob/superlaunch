@@ -21,8 +21,7 @@ function scene:createScene( event )
 	}
 	backButton.isVisible = true
 	
-	local levelButtonPress = function(self, event)
-		print ("running function"..self.text)
+	local levelButtonPress = function(event)		
 		--[[
 		while group.numChildren > 0	do	
 			print("Clearing All "..group.numChildren.."in self")	
@@ -34,7 +33,7 @@ function scene:createScene( event )
 		end
 		--]]
 		Runtime:removeEventListener( "key", onKeyEventLevelMenu );
-		storyboard.arguments = {self.text}
+		table.insert(storyboard.arguments, event.arguments)
 		storyboard.gotoScene("levelLaunch")
 	end
 	
@@ -51,7 +50,8 @@ function scene:createScene( event )
 				text = level,
 				emboss = true,
 				x = ( col * 68 ),
-				y = ( row * 58 )
+				y = ( row * 58 ),
+				arguments = level
 			}
 		thisButton.isVisible = true
 		group:insert( thisButton )

@@ -2,6 +2,7 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+local playType
 -- Back Key listener
 local function onBackEvent( event )
 	local phase = event.phase
@@ -16,7 +17,7 @@ end
 
 function scene:createScene( event )
 	local group = self.view
-		
+	
 	local bg = display.newImage( "background.png", true )
 	
 	local topBoundary = display.screenOriginY
@@ -57,8 +58,7 @@ function scene:createScene( event )
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false
-		mainLabel.isVisible = false
-		--mainLabel.setText("Select Launch Type")
+		mainLabel.setText("Select Launch Type")
 		slingShotButton.isVisible = true
 		hardLaunchButton.isVisible = true
 	end
@@ -102,11 +102,11 @@ function scene:createScene( event )
 		
 	local function slingShotButtonPress()
 		storyboard.arguments = {character, true, "slingShot"}
-		storyboard.gotoScene("superLaunch")
+		storyboard.gotoScene(playType)
 	end
 	local function hardLaunchButtonPress()
 		storyboard.arguments = {character, true, "hardLaunch"}
-		storyboard.gotoScene("superLaunch")
+		storyboard.gotoScene(playType)
 	end
 	
 	slingShotButton = ui.newButton{
@@ -145,7 +145,7 @@ function scene:enterScene( event )
 	local group = self.view
 	----Fix
 	scene.createScene( self )
-	
+	playType = storyboard.arguments[1]
 	-- Add the back key callback
 	Runtime:addEventListener( "key", onBackEvent );
 end

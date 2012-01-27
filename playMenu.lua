@@ -25,13 +25,15 @@ function scene:createScene( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-		storyboard.gotoScene("timedModeMain")
+		storyboard.arguments = "superLaunch"
+		storyboard.gotoScene("levelModeMain")
 	end
 	
 	local levelButtonPress = function( event )	
 		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
+		storyboard.arguments = "levelLaunch"
 		storyboard.gotoScene("levelModeMain")		
 	end
 	
@@ -71,11 +73,6 @@ function scene:createScene( event )
 				emboss = true
 			}
 	levelButton.isVisible = true
-
-	function moveBack(where, how, arguments)
-		storyboard.arguments = arguments
-		storyboard.gotoScene(where, how)
-	end
 	
 	-- all display objects must be inserted into group
 	group:insert(classicButton)
