@@ -26,7 +26,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 10
+	local timeLeft = 100
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -36,6 +36,8 @@ function scene:createScene( event )
 	local lifeBar = nil
 	local boostBar = nil		
 	local jetpackButton = nil
+	local shootingForTheStarsAchieved = false
+	local twentyThousandLeagueAchieved = false
 	
 	math.randomseed( os.time() )
 	math.random()	
@@ -600,11 +602,6 @@ function scene:createScene( event )
 				else
 					table.insert(totalScore, score)
 				end
-			if timeMode then
-				print ("Time Mode is on")
-			else
-				print("Time Mode is off")
-			end
 			if timeMode and timeLeft <= 0 then
 				local aggregatedScore = 0
 				for i=1, #totalScore do
@@ -634,7 +631,9 @@ function scene:createScene( event )
 					
 					--Insert in to OpenFeint high score
 					gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
-					 
+					 	
+					if aggregatedScore > 49999 then gameNetwork.request( "unlockAchievement", "1395962" ) end
+					if aggregatedScore > 999999 then gameNetwork.request( "unlockAchievement", "1395982" ) end
 			else
 				restartButton = ui.newButton{
 					defaultSrc = "buttonRed.png",
@@ -654,6 +653,12 @@ function scene:createScene( event )
 		local tNotMovingPrevious = system.getTimer()
 		local tAdShownPrevious = system.getTimer()
 		local function frameCheck( event )
+			
+			if not shootingForTheStarsAchieved and mainCharacter.y < -900 then
+				gameNetwork.request( "unlockAchievement", "1395992" )
+				shootingForTheStarsAchieved = true
+			end
+			
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
@@ -664,7 +669,11 @@ function scene:createScene( event )
 			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
-				scoreDisplay:setText( string.format( "%i", score ) )
+				scoreDisplay:setText( string.format( "%i", score ) )			
+				if not twentyThousandLeagueAchieved and score > 19999 then
+					gameNetwork.request( "unlockAchievement", "1395952" )
+					twentyThousandLeagueAchieved = true
+				end
 			end
 			if (mainCharacter.x > -800) then
 				game.x = math.ceil(-mainCharacter.x) + 120
