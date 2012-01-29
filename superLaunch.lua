@@ -292,7 +292,7 @@ function scene:createScene( event )
 				if newToys == true then
 					toyX = addition + math.random( 10, 480 )
 					if math.random(100) < 83 then
-						if math.random(5) < 5 then
+						if math.random(5) < 3 then
 							local trampoline = display.newImage( "trampoline.png" )
 							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
 							trampoline.bodyName = "trampoline"..worldLength
@@ -308,7 +308,7 @@ function scene:createScene( event )
 							ramp:toFront()	
 						end
 					else 
-						if math.random(5) <4 then
+						if math.random(5) < 3 then
 							local spikeWall = display.newImage( "spikewall.png" )
 							spikeWall.x = toyX; spikeWall.y = groundReferencePoint - 90
 							spikeWall.bodyName = "spikeWall"..worldLength
@@ -342,7 +342,7 @@ function scene:createScene( event )
 				game:insert( bacon )
 				bacon:toFront()	
 				
-				if math.random(100) > 85 then
+				if math.random(100) < 15 then
 					local bomb = display.newImage( "bomb.png" )
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
@@ -352,7 +352,7 @@ function scene:createScene( event )
 					bomb:toFront()	
 				end
 				
-				if math.random(100) > 25 then
+				if math.random(100) < 50 then
 					local jetRefill = display.newImage( "jetRefill.png" )
 					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
 					jetRefill.bodyName = "jetRefill"
@@ -362,7 +362,7 @@ function scene:createScene( event )
 					jetRefill:toFront()	
 				end
 				
-				if math.random(100) > 10 then				
+				if math.random(100) < 15 then				
 					local roosterPH = display.newImage( "rooster.png" )
 					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
 					roosterPH.bodyName = "rooster"
