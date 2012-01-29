@@ -364,7 +364,7 @@ function scene:createScene( event )
 					jetRefill:toFront()	
 				end
 				
-				if math.random(100) < 15 then				
+				if math.random(100) < 85 then				
 					local roosterPH = display.newImage( "rooster.png" )
 					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
 					roosterPH.bodyName = "rooster"
@@ -1069,6 +1069,7 @@ function scene:createScene( event )
 					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
 					event.other.isVisible = false
 					rooster.x = event.other.x; rooster.y = event.other.y
+					rooster.isVisible = true
 					rooster:prepare()						
 					rooster:toFront()
 					rooster:play()
