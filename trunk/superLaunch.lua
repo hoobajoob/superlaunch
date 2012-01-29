@@ -43,16 +43,6 @@ function scene:createScene( event )
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
-	 
-	--Handle the applicationExit event to close the db
-	function onSystemEvent( event )
-		if( event.type == "applicationExit" ) then              
-			db:close()
-		end
-	end
-	 
-	--setup the system listener to catch applicationExit
-	Runtime:addEventListener( "system", onSystemEvent )	
 	
 	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
@@ -103,6 +93,13 @@ function scene:createScene( event )
 		game.x = 0
 		overlayDisplay = display.newGroup()
 		mainContainerGroup:insert( overlayDisplay )	
+		
+			
+		local roosterSheet = sprite.newSpriteSheet( "roosterSprite.png", 125, 113 )
+		local roosterSpriteSet = sprite.newSpriteSet(roosterSheet, 1, 2)
+		sprite.add( roosterSpriteSet, "roosterSprite", 1, 2, 1000, 4 )
+		local rooster = sprite.newSprite( roosterSpriteSet )	
+		game:insert( rooster )
 						
 		-- Sky and ground graphics
 		local function createFirstSection()
@@ -363,18 +360,14 @@ function scene:createScene( event )
 					jetRefill:toFront()	
 				end
 				
-				if math.random(100) > 10 then			
-					local roosterSheet = sprite.newSpriteSheet( "roosterSprite.png", 125, 113 )
-					local roosterSpriteSet = sprite.newSpriteSet(roosterSheet, 1, 2)
-					sprite.add( roosterSpriteSet, "roosterSprite", 1, 2, 80, 4 )
-					local rooster = sprite.newSprite( roosterSpriteSet )	
-					rooster:prepare()				
-					rooster.x = addition + math.random( 40, 920 ); rooster.y = groundReferencePoint - 100
-					rooster.bodyName = "rooster"
-					physics.addBody( rooster, "static", { friction=0, bounce=0} )
-					rooster.isSensor = true
-					game:insert( rooster )
-					rooster:toFront()
+				if math.random(100) > 10 then				
+					local roosterPH = display.newImage( "rooster.png" )
+					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
+					roosterPH.bodyName = "rooster"
+					physics.addBody( roosterPH, "static", { friction=0, bounce=0} )
+					roosterPH.isSensor = true
+					game:insert( roosterPH )
+					roosterPH:toFront()
 				end
 			end
 		end
@@ -1055,10 +1048,13 @@ function scene:createScene( event )
 					end
 					boostBar:setSize( boost )
 				elseif event.other.bodyName == "rooster" then
-					print("impacted rooster")
 					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
-					mainCharacter.x = event.other.x + 10; mainCharacter.y = event.other.y + 50
-					event.other:play()
+					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
+					event.other.isVisible = false
+					rooster.x = event.other.x; rooster.y = event.other.y
+					rooster:prepare()						
+					rooster:toFront()
+					rooster:play()
 					Runtime:removeEventListener( "enterFrame", frameCheck )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					Runtime:removeEventListener( "collision", onGlobalCollision )
