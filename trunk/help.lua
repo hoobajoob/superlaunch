@@ -16,7 +16,7 @@ function scene:createScene( event )
 	local bottomBoundary = display.screenOriginY
 	local scrollView = scrollView.new{ top=topBoundary, bottom=bottomBoundary }
 	 
-	local myText = display.newText("Move Up to Scroll", 0, 0, native.systemFontBold, 16)
+	local myText = display.newText("\n\n\nMove Up to Scroll", 0, 0, native.systemFontBold, 16)
 	myText:setTextColor(0, 0, 0)
 	myText.x = math.floor(display.contentWidth*0.5)
 	myText.y = 48
@@ -57,9 +57,31 @@ function scene:createScene( event )
 	}
 	backButton.isVisible = true
 	
+	local emailButtonPress = function( event )
+		local options =
+		{
+		   to = "kc@teambearattack.com",
+		   subject = "Superlaunch Feedback",
+		   body = "KC.  I have something to tell you about Superlaunch:\n\n\n",
+		}
+		native.showPopup("mail", options)
+	end	
+	
+	local emailButton = ui.newButton{
+				defaultSrc = "buttonRed.png",
+				x = 240,
+				y = 30,
+				overSrc = "buttonRedOver.png",
+				onEvent = emailButtonPress,
+				text = "Email Developer",
+				emboss = true
+			}
+	emailButton.isVisible = true
+	
 	group:insert( background )
 	group:insert( scrollView )
 	group:insert( backButton )
+	group:insert( emailButton )
 end
 
 function scene:enterScene( event )
