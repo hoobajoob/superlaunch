@@ -84,8 +84,6 @@ function scene:createScene( event )
 		local explosion
 		local boost = 100
 		local worldLength = 0
-		flame = display.newImage("flame.png")
-		flame.isVisible = false
 		mainContainerGroup = display.newGroup()
 		group:insert( mainContainerGroup )
 		game = display.newGroup()
@@ -93,6 +91,9 @@ function scene:createScene( event )
 		game.x = 0
 		overlayDisplay = display.newGroup()
 		mainContainerGroup:insert( overlayDisplay )	
+		flame = display.newImage("flame.png")
+		flame.isVisible = false
+		game:insert( flame )
 		
 			
 		local roosterSheet = sprite.newSpriteSheet( "roosterSprite.png", 125, 113 )
@@ -100,6 +101,7 @@ function scene:createScene( event )
 		sprite.add( roosterSpriteSet, "roosterSprite", 1, 2, 1000, 4 )
 		local rooster = sprite.newSprite( roosterSpriteSet )	
 		game:insert( rooster )
+		rooster.isVisible = false
 						
 		-- Sky and ground graphics
 		local function createFirstSection()
@@ -495,7 +497,7 @@ function scene:createScene( event )
 		local function showBlood()
 			blood = display.newImage( "blood.png" )
 			game:insert( blood )
-			blood .x = mainCharacter.x + 10; blood .y = mainCharacter.y
+			blood.x = mainCharacter.x + 10; blood.y = mainCharacter.y
 		end
 		
 		local goToMenu = function ( event )
@@ -659,9 +661,6 @@ function scene:createScene( event )
 				AddSection()
 				mainCharacter:toFront();
 			end
-			
-			flame.x = mainCharacter.x
-			flame.y = mainCharacter.y
 			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
@@ -837,7 +836,10 @@ function scene:createScene( event )
 		
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
-		local function applyJetpackBoost( event )
+		local function applyJetpackBoost( event )			
+			flame.x = mainCharacter.x - 20
+			flame.y = mainCharacter.y + 40
+			flame:toFront()
 			local tDelta = (event.time - tJetpack)
 			if boost > 0 then		
 				if tDelta > 150 and mainCharacter ~= nil then	
@@ -874,17 +876,9 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
-		jetpackButton = ui.newButton{
-			defaultSrc = "jetPack.png",
-			over = "jetPackOver.png",
-			onPress = startJets,
-			onRelease = endJets,
-			emboss = true,
-			x = 445,
-			y = 245
-		}
-		jetpackButton.bodyName = "Jet Pack Button"
+		jetpackButton = display.newImage( "jetPack.png" )
 		overlayDisplay:insert(jetpackButton)
+		jetpackButton.x = 445; jetpackButton.y = 245
 		
 		local tLava = system.getTimer()
 		local function removeLifeLava( event )
@@ -930,7 +924,20 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
-				elseif "ended" == phase or "cancelled" == phase then
+				elseif "ended" == phase or "cancelled" == phase then					
+					jetpackButton.isVisible = false
+					jetpackButton = nil
+					jetpackButton = ui.newButton{
+						defaultSrc = "jetPack.png",
+						x = 445,
+						y = 245,
+						overSrc = "jetPackOver.png",
+						onPress = startJets,
+						onRelease = endJets
+					}
+					jetpackButton.bodyName = "Jet Pack Button"
+					overlayDisplay:insert(jetpackButton)
+					
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					--slingshot:removeSelf()
@@ -953,7 +960,8 @@ function scene:createScene( event )
 			-- should not be propagated to listeners of any objects underneath.
 			return true
 		end
-		local function launchCharacter()
+		local function launchCharacter()	
+			
 			angle = 50
 			power = 1
 			display.getCurrentStage():setFocus( nil )
