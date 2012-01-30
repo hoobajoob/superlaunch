@@ -256,141 +256,67 @@ function scene:createScene( event )
 			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			grass.bodyName = "grass1"
 		end
-	
-		local function AddSection()
-			worldLength = worldLength + 1
-			local addition = (worldLength* 960 )
-			local newToys = true
-
-			local dgrass
-			if worldLength > 1 and math.random(5) < 3 then
-				if math.random(5) < 3 then
-					dgrass = display.newImage( "lava.png", true )
-					dgrass.bodyName = "lava"..worldLength
-					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-				else
-					newToys = false
-					dgrass = display.newImage( "quickSand.png", true )
-					dgrass.bodyName = "quickSand"..worldLength
-					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-					physics.addBody( dgrass, "static",
+		
+		local function CreateAllObjects()
+			local levelData = xml:loadFile( "levelData.xml" )
+			local curLevel
+			for i=1, #levelData.child do
+				if levelData.child[i].properties["id"] = arguments[2] then
+					curLevel = levelData.child[i]
+					exit
+				end
+			end
+			for i=1, #curLevel.child do
+				local curNode = curLevel.child[i]
+				if curNode.name = land then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local ground
+						if curData[i] = 1 then
+							ground = display.newImage( "grass.png", true )
+							ground.bodyName = "grass"..worldLength
+							physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+						elseif curData[i] = 2 then
+							ground = display.newImage( "lava.png", true )
+							ground.bodyName = "lava"..worldLength
+							physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )						
+						elseif curData[i] = 3 then
+							dgrass = display.newImage( "quickSand.png", true )
+							dgrass.bodyName = "quickSand"..worldLength
+							physics.addBody( dgrass, "static",
 									  { friction=0.9, bounce=0, shape={ -360,60, -480,60, -480,-30, -360,0 }},
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
-				end
-			else
-				dgrass = display.newImage( "grass.png", true )
-				dgrass.bodyName = "grass"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-			end
-			
-			game:insert( dgrass )
-			dgrass:toBack()
-			sky:toBack()
-			sky2:toBack()
-
-			if worldLength > 2 then					
-				if newToys == true then
-					toyX = addition + math.random( 10, 480 )
-					if math.random(100) < 83 then
-						if math.random(5) < 3 then
-							local trampoline = display.newImage( "trampoline.png" )
-							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
-							trampoline.bodyName = "trampoline"..worldLength
-							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,11, -20,11, -20,9, 20,9 } } )	
-							game:insert( trampoline )	
-							trampoline:toFront()
-						else						
-
-							local ramp = display.newImage( "ramp.png" )
-							ramp.x = toyX; ramp.y = groundReferencePoint - 75
-							ramp.bodyName = "ramp"..worldLength
-							physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
-							game:insert( ramp )	
-							ramp:toFront()	
 						end
-					else 
-						if math.random(5) <4 then
-							local spikeWall = display.newImage( "spikewall.png" )
-							spikeWall.x = toyX; spikeWall.y = groundReferencePoint - 90
-							spikeWall.bodyName = "spikeWall"..worldLength
-							physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
-							game:insert( spikeWall )
-							spikeWall:toFront()	
-						else
-							local keg = display.newImage( "keg.png" )
-							keg.x = toyX; keg.y = groundReferencePoint - 75
-							keg.bodyName = "keg"..worldLength
-							physics.addBody( keg, "static", { friction=1, bounce=0 } )
-							game:insert( keg )
-							keg:toFront()	
-						end
+						
+						ground.x = addition; ground.y = groundReferencePoint - 20
+						game:insert( ground )
+						addition = addition + 960
 					end
+				elseif curNode.name = ramps then
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-				end
+				elseif curNode.name = spikeWalls then
 				
-
-				local star = display.newImage( "star.png" )
-				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
-				star.bodyName = "star"
-				physics.addBody( star, "static", { friction=0, bounce=0 } )
-				star.isSensor = true
-				game:insert( star )
-				 star:toFront()	
+				elseif curNode.name = barrels then
 				
-				local bacon = display.newImage( "bacon.png" )
-				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
-				bacon.bodyName = "bacon"
-				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
-				bacon.isSensor = true
-				game:insert( bacon )
-				bacon:toFront()	
+				elseif curNode.name = roosters then
 				
-				if math.random(100) > 85 then
-					local bomb = display.newImage( "bomb.png" )
-					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
-					bomb.bodyName = "bomb"
-					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
-					bomb.isSensor = true
-					game:insert( bomb )
-					bomb:toFront()	
-				end
+				elseif curNode.name = stars then
 				
-				if math.random(100) > 25 then
-					local jetRefill = display.newImage( "jetRefill.png" )
-					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
-					jetRefill.bodyName = "jetRefill"
-					physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
-					jetRefill.isSensor = true
-					game:insert( jetRefill )
-					jetRefill:toFront()	
+				elseif curNode.name = bacon then
+				
+				elseif curNode.name = jetRefills then
+				
+				elseif curNode.name = bombs then
+				
 				end
 			end
 		end
 		
-		createFirstSection()
-		for i=1,2 do
-			AddSection()
-		end	
-		
-		local timeBar
-		
+		createAllObjects()
+				
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
 		if arguments ~= nil then
