@@ -265,13 +265,11 @@ function scene:createScene( event )
 				if math.random(5) < 3 then
 					dgrass = display.newImage( "lava.png", true )
 					dgrass.bodyName = "lava"..worldLength
-					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
 					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 				else
 					newToys = false
 					dgrass = display.newImage( "quickSand.png", true )
 					dgrass.bodyName = "quickSand"..worldLength
-					dgrass.x = addition; dgrass.y = groundReferencePoint - 20
 					physics.addBody( dgrass, "static",
 									  { friction=0.9, bounce=0, shape={ -360,60, -480,60, -480,-30, -360,0 }},
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
@@ -281,9 +279,9 @@ function scene:createScene( event )
 			else
 				dgrass = display.newImage( "grass.png", true )
 				dgrass.bodyName = "grass"..worldLength
-				dgrass.x = addition; dgrass.y = groundReferencePoint - 20
 				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			end
+			dgrass.x = addition; dgrass.y = groundReferencePoint - 20
 			
 			game:insert( dgrass )
 			dgrass:toBack()
