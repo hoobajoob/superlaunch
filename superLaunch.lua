@@ -379,8 +379,6 @@ function scene:createScene( event )
 			AddSection()
 		end	
 		
-		local timeBar
-		
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
 		if arguments ~= nil then
@@ -812,6 +810,12 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", frameCheck )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
+			Runtime:removeEventListener( "enterFrame", timeCheck )	
+			if timeBar ~= nil then
+				timeBar:setSize( 0 )
+				timeBar.isVisible = false
+				timeBar = nil
+			end
 			if lifeBar ~= nil then
 				lifeBar:setSize( 0 )
 				lifeBar.isVisible = false
