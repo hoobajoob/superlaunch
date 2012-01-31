@@ -2,6 +2,7 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+local xml = require( "xml" ).newParser()
 
 function scene:createScene( event )
 	local group = self.view
@@ -105,6 +106,14 @@ function scene:createScene( event )
 		game.x = 0
 		overlayDisplay = display.newGroup()
 		mainContainerGroup:insert( overlayDisplay )	
+		
+			
+		local roosterSheet = sprite.newSpriteSheet( "roosterSprite.png", 125, 113 )
+		local roosterSpriteSet = sprite.newSpriteSet(roosterSheet, 1, 2)
+		sprite.add( roosterSpriteSet, "roosterSprite", 1, 2, 1000, 4 )
+		local rooster = sprite.newSprite( roosterSpriteSet )	
+		game:insert( rooster )
+		rooster.isVisible = false
 						
 		-- Sky and ground graphics
 		local function createFirstSection()
@@ -257,34 +266,36 @@ function scene:createScene( event )
 			grass.bodyName = "grass1"
 		end
 		
-		local function CreateAllObjects()
+		local function createAllObjects()
 			local levelData = xml:loadFile( "levelData.xml" )
 			local curLevel
 			for i=1, #levelData.child do
-				if levelData.child[i].properties["id"] = arguments[2] then
+				if levelData.child[i].properties["id"] == tostring(arguments[4]) then
 					curLevel = levelData.child[i]
-					exit
+					print("Level Found!!")
+					break
 				end
 			end
 			for i=1, #curLevel.child do
 				local curNode = curLevel.child[i]
-				if curNode.name = land then
+				if curNode.name == "land" then
 					local addition = 1120
 					local curData = tbaUI.fromCSV( curNode.value )
 					for i=1, #curData do
 						local ground
-						if curData[i] = 1 then
+						if curData[i] == "1" then
+							print("adding Grass")
 							ground = display.newImage( "grass.png", true )
 							ground.bodyName = "grass"..worldLength
-							physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-						elseif curData[i] = 2 then
+							physics.addBody( ground, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+						elseif curData[i] == "2" then
 							ground = display.newImage( "lava.png", true )
 							ground.bodyName = "lava"..worldLength
-							physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )						
-						elseif curData[i] = 3 then
-							dgrass = display.newImage( "quickSand.png", true )
-							dgrass.bodyName = "quickSand"..worldLength
-							physics.addBody( dgrass, "static",
+							physics.addBody( ground, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )						
+						elseif curData[i] == "3" then
+							ground = display.newImage( "quickSand.png", true )
+							ground.bodyName = "quickSand"..worldLength
+							physics.addBody( ground, "static",
 									  { friction=0.9, bounce=0, shape={ -360,60, -480,60, -480,-30, -360,0 }},
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
@@ -295,26 +306,126 @@ function scene:createScene( event )
 						game:insert( ground )
 						addition = addition + 960
 					end
-				elseif curNode.name = ramps then
-
-				elseif curNode.name = spikeWalls then
+				elseif curNode.name == "ramps" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local ramp = display.newImage( "ramp.png" )
+						ramp.x = curData[i] * 5; ramp.y = groundReferencePoint - 75
+						ramp.bodyName = "ramp"..addition
+						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+						game:insert( ramp )	
+						ramp:toFront()	
+						addition = addition + 960
+					end
+				elseif curNode.name == "trampolines" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local trampoline = display.newImage( "trampoline.png" )
+						trampoline.x = curData[i] * 5; trampoline.y = groundReferencePoint - 60
+						trampoline.bodyName = "trampoline"..addition
+						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,13, -20,11, -20,9, 20,9 } } )	
+						game:insert( trampoline )	
+						trampoline:toFront()						
+						addition = addition + 960
+					end
+				elseif curNode.name == "spikeWalls" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local spikeWall = display.newImage( "spikewall.png" )
+						spikeWall.x = curData[i] * 5; spikeWall.y = groundReferencePoint - 90
+						spikeWall.bodyName = "spikeWall"..addition
+						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
+						game:insert( spikeWall )	
+						spikeWall:toFront()	
+						addition = addition + 960
+					end
 				
-				elseif curNode.name = barrels then
+				elseif curNode.name == "kegs" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local keg = display.newImage( "keg.png" )
+						keg.x = curData[i] * 5; keg.y = groundReferencePoint - 75
+						keg.bodyName = "keg"..addition
+						physics.addBody( keg, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+						game:insert( keg )	
+						keg:toFront()	
+						addition = addition + 960
+					end
 				
-				elseif curNode.name = roosters then
+				elseif curNode.name == "roosters" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local roosterPH = display.newImage( "rooster.png" )
+						roosterPH.x = curData[i] * 5; roosterPH.y = groundReferencePoint - 100
+						roosterPH.bodyName = "rooster"..addition
+						physics.addBody( roosterPH, "static", { friction=0, bounce=0} )
+						game:insert( roosterPH )	
+						roosterPH:toFront()	
+						addition = addition + 960
+					end
 				
-				elseif curNode.name = stars then
+				elseif curNode.name == "stars" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local star = display.newImage( "star.png" )
+						star.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); star.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						star.x = star.x * 5
+						star.bodyName = "star"
+						physics.addBody( star, "static", { friction=0, bounce=0 } )
+						star.isSensor = true
+						game:insert( star )
+						star:toFront()	
+					end
 				
-				elseif curNode.name = bacon then
+				elseif curNode.name == "bacon" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local bacon = display.newImage( "bacon.png" )
+						bacon.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); bacon.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						bacon.x = bacon.x * 5
+						bacon.bodyName = "bacon"
+						physics.addBody( bacon, "static", { friction=0, bounce=0 } )
+						bacon.isSensor = true
+						game:insert( bacon )
+						bacon:toFront()	
+					end
 				
-				elseif curNode.name = jetRefills then
+				elseif curNode.name == "jetRefills" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local jetRefill = display.newImage( "jetRefill.png" )
+						jetRefill.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); jetRefill.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						jetRefill.x = jetRefill.x * 5
+						jetRefill.bodyName = "jetRefill"
+						physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
+						jetRefill.isSensor = true
+						game:insert( jetRefill )
+						jetRefill:toFront()	
+					end
 				
-				elseif curNode.name = bombs then
+				elseif curNode.name == "bombs" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local bomb = display.newImage( "bomb.png" )
+						bomb.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); bomb.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						bomb.x = bomb.x * 5
+						bomb.bodyName = "bomb"
+						physics.addBody( bomb, "static", { friction=0, bounce=0 } )
+						bomb.isSensor = true
+						game:insert( bomb )
+						bomb:toFront()	
+					end
 				
 				end
 			end
 		end
 		
+		createFirstSection()
 		createAllObjects()
 				
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
@@ -678,10 +789,6 @@ function scene:createScene( event )
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
-			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
-				AddSection()
-				mainCharacter:toFront();
-			end
 			
 			flame.x = mainCharacter.x
 			flame.y = mainCharacter.y
@@ -1102,6 +1209,19 @@ function scene:createScene( event )
 						boost = boost + 25
 					end
 					boostBar:setSize( boost )
+				elseif string.find(event.other.bodyName, "rooster") ~= nil then
+					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
+					event.other.isVisible = false
+					rooster.x = event.other.x; rooster.y = event.other.y
+					rooster.isVisible = true
+					rooster:prepare()						
+					rooster:toFront()
+					rooster:play()
+					Runtime:removeEventListener( "enterFrame", frameCheck )
+					Runtime:removeEventListener( "enterFrame", removeLifeLava )
+					Runtime:removeEventListener( "collision", onGlobalCollision )
+					showDeath ( "bloody" )		
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
