@@ -23,6 +23,7 @@ function scene:createScene( event )
 	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
+
 	local swooshSound = audio.loadSound("swoosh.mp3")
 	local bounceSound = audio.loadSound("bounce.mp3")
 	local owSound = audio.loadSound("ow.ogg")
@@ -30,7 +31,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")
 	--]]------
 	local totalScore = {}
-	local timeLeft = 10
+	local timeLeft = 100
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -40,23 +41,17 @@ function scene:createScene( event )
 	local lifeBar = nil
 	local boostBar = nil		
 	local jetpackButton = nil
+
+
+
 	math.randomseed( os.time() )
 	math.random()	
 	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
-	 
-	--Handle the applicationExit event to close the db
-	function onSystemEvent( event )
-		if( event.type == "applicationExit" ) then              
-			db:close()
-		end
-	end
-	 
-	--setup the system listener to catch applicationExit
-	Runtime:addEventListener( "system", onSystemEvent )	
-	
+
+
 	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
@@ -97,15 +92,16 @@ function scene:createScene( event )
 		local explosion
 		local boost = 100
 		local worldLength = 0
-		flame = display.newImage("flame.png")
-		flame.isVisible = false
 		mainContainerGroup = display.newGroup()
 		group:insert( mainContainerGroup )
 		game = display.newGroup()
 		mainContainerGroup:insert( game )
 		game.x = 0
 		overlayDisplay = display.newGroup()
-		mainContainerGroup:insert( overlayDisplay )	
+		mainContainerGroup:insert( overlayDisplay )
+		flame = display.newImage("flame.png")
+		flame.isVisible = false
+		game:insert( flame )
 		
 			
 		local roosterSheet = sprite.newSpriteSheet( "roosterSprite.png", 125, 113 )
@@ -265,8 +261,15 @@ function scene:createScene( event )
 			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			grass.bodyName = "grass1"
 		end
+
 		
 		local function createAllObjects()
+
+
+
+
+
+
 			local levelData = xml:loadFile( "levelData.xml" )
 			local curLevel
 			for i=1, #levelData.child do
@@ -292,6 +295,8 @@ function scene:createScene( event )
 							ground = display.newImage( "lava.png", true )
 							ground.bodyName = "lava"..worldLength
 							physics.addBody( ground, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )						
+
+
 						elseif curData[i] == "3" then
 							ground = display.newImage( "quickSand.png", true )
 							ground.bodyName = "quickSand"..worldLength
@@ -300,6 +305,53 @@ function scene:createScene( event )
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 						end
 						
 						ground.x = addition; ground.y = groundReferencePoint - 20
@@ -348,9 +400,11 @@ function scene:createScene( event )
 					local curData = tbaUI.fromCSV( curNode.value )
 					for i=1, #curData do
 						local keg = display.newImage( "keg.png" )
+
 						keg.x = curData[i] * 5; keg.y = groundReferencePoint - 75
 						keg.bodyName = "keg"..addition
 						physics.addBody( keg, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+
 						game:insert( keg )	
 						keg:toFront()	
 						addition = addition + 960
@@ -361,18 +415,22 @@ function scene:createScene( event )
 					local curData = tbaUI.fromCSV( curNode.value )
 					for i=1, #curData do
 						local roosterPH = display.newImage( "rooster.png" )
+
 						roosterPH.x = curData[i] * 5; roosterPH.y = groundReferencePoint - 100
 						roosterPH.bodyName = "rooster"..addition
 						physics.addBody( roosterPH, "static", { friction=0, bounce=0} )
+
 						game:insert( roosterPH )	
 						roosterPH:toFront()	
 						addition = addition + 960
 					end
 				
+
 				elseif curNode.name == "stars" then
 					local curData = tbaUI.fromCSV( curNode.value )
 					for i=1, #curData do						
 						local star = display.newImage( "star.png" )
+
 						star.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); star.y = curData[i]:sub((curData[i]:find(',')) + 1)
 						star.x = star.x * 5
 						star.bodyName = "star"
@@ -382,10 +440,13 @@ function scene:createScene( event )
 						star:toFront()	
 					end
 				
+
 				elseif curNode.name == "bacon" then
 					local curData = tbaUI.fromCSV( curNode.value )
 					for i=1, #curData do						
 						local bacon = display.newImage( "bacon.png" )
+
+
 						bacon.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); bacon.y = curData[i]:sub((curData[i]:find(',')) + 1)
 						bacon.x = bacon.x * 5
 						bacon.bodyName = "bacon"
@@ -395,10 +456,12 @@ function scene:createScene( event )
 						bacon:toFront()	
 					end
 				
+
 				elseif curNode.name == "jetRefills" then
 					local curData = tbaUI.fromCSV( curNode.value )
 					for i=1, #curData do						
 						local jetRefill = display.newImage( "jetRefill.png" )
+
 						jetRefill.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); jetRefill.y = curData[i]:sub((curData[i]:find(',')) + 1)
 						jetRefill.x = jetRefill.x * 5
 						jetRefill.bodyName = "jetRefill"
@@ -426,6 +489,10 @@ function scene:createScene( event )
 		end
 		
 		createFirstSection()
+
+
+
+
 		createAllObjects()
 				
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
@@ -477,7 +544,6 @@ function scene:createScene( event )
 		slingshotString.bodyName = "slingShotString"
 		game:insert(slingshotString)
 		
-
 		--[[
 		slingshot = display.newImage( "slingshot.png" )
 		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
@@ -531,7 +597,6 @@ function scene:createScene( event )
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
 
-
 		local function showExplosion()		
 			local explosionSheet = sprite.newSpriteSheet( "starExpSprite.png", 264, 264 )
 			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
@@ -546,7 +611,7 @@ function scene:createScene( event )
 		local function showBlood()
 			blood = display.newImage( "blood.png" )
 			game:insert( blood )
-			blood .x = mainCharacter.x + 10; blood .y = mainCharacter.y
+			blood.x = mainCharacter.x + 10; blood.y = mainCharacter.y
 		end
 		
 		local goToMenu = function ( event )
@@ -600,47 +665,12 @@ function scene:createScene( event )
 			jetpackButton.isVisible = false	
 			jetpackButton:removeSelf();
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
-
-
 			
 			local menuButtonPress = function ( event )
 				menuButton.isVisible = false
 				goToMenu()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			end
 									
-
 			menuButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				over = "buttonRedOver.png",
@@ -661,29 +691,6 @@ function scene:createScene( event )
 				--TODO: FIX--scoreDisplay.parent:remove( scoreDisplay )				
 				
 				removeMainItems()
-				
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 				menuButton.isVisible = false
 				restartButton.isVisible = false
 				--director:changeScene("testChange", "crossFade", arguments)
@@ -706,11 +713,6 @@ function scene:createScene( event )
 				else
 					table.insert(totalScore, score)
 				end
-			if timeMode then
-				print ("Time Mode is on")
-			else
-				print("Time Mode is off")
-			end
 			if timeMode and timeLeft <= 0 then
 				local aggregatedScore = 0
 				for i=1, #totalScore do
@@ -729,27 +731,11 @@ function scene:createScene( event )
 					overlayDisplay:insert( totalDisplay )
 					score = 0
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 					--Setup the high score table if it doesn't exist
 					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
-
 					db:exec( tablesetup )
 
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
-
 					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
 					print (tablefill)
 					db:exec( tablefill )
@@ -759,14 +745,7 @@ function scene:createScene( event )
 
 
 
-					 
-
-
-
-
-
-
-
+					
 			else
 				restartButton = ui.newButton{
 					defaultSrc = "buttonRed.png",
@@ -786,16 +765,27 @@ function scene:createScene( event )
 		local tNotMovingPrevious = system.getTimer()
 		local tAdShownPrevious = system.getTimer()
 		local function frameCheck( event )
+
+
+
+
+
+
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
-			
-			flame.x = mainCharacter.x
-			flame.y = mainCharacter.y
+
+
+
+
 			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
 				scoreDisplay:setText( string.format( "%i", score ) )
+
+
+
+
 			end
 			if (mainCharacter.x > -800) then
 				game.x = math.ceil(-mainCharacter.x) + 120
@@ -813,7 +803,6 @@ function scene:createScene( event )
 			end
 			
 			if (mainCharacter.x > 0) then
-
 				if ( game.x + sky.x ) > sky.contentWidth then
 					sky:translate( -(sky.contentWidth * 2), 0)
 				end
@@ -821,7 +810,6 @@ function scene:createScene( event )
 					sky2:translate( -(sky2.contentWidth * 2), 0)
 				end
 				
-
 				if ( game.x + sky.x + sky.contentWidth) < -40 then
 					sky:translate( sky.contentWidth * 2, 0)
 				end
@@ -829,18 +817,14 @@ function scene:createScene( event )
 					sky2:translate( sky2.contentWidth * 2, 0)
 				end
 				
-
 				local mskyTotal = game.x + msky.x + msky.contentWidth
 				local msky2Total = game.x + msky2.x + msky2.contentWidth
 				
-
 				if ( mskyTotal < 0 or mskyTotal > msky.contentWidth * 2 or msky2Total < 0 or msky2Total > msky2.contentWidth * 2 ) and game.y > 20 then
 					msky.x = sky.x
 					msky2.x = sky2.x
 				end			
 				
-
-
 				local tskyTotal = game.x + tsky.x + tsky.contentWidth
 				local tsky2Total = game.x + tsky2.x + tsky2.contentWidth
 						
@@ -927,21 +911,9 @@ function scene:createScene( event )
 						tree_l.x = mainCharacter.x + 500
 					end					
 				end
-
-
-
 			end
 			
-
-
-
-
-
-
-
-
 			if life <= 0 then	
-
 				Runtime:removeEventListener( "enterFrame", frameCheck )
 				Runtime:removeEventListener( "enterFrame", removeLifeLava )
 				Runtime:removeEventListener( "collision", onGlobalCollision )
@@ -954,6 +926,12 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", frameCheck )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
+			Runtime:removeEventListener( "enterFrame", timeCheck )	
+			if timeBar ~= nil then
+				timeBar:setSize( 0 )
+				timeBar.isVisible = false
+				timeBar = nil
+			end
 			if lifeBar ~= nil then
 				lifeBar:setSize( 0 )
 				lifeBar.isVisible = false
@@ -983,10 +961,12 @@ function scene:createScene( event )
 		backButton.isVisible = true
 		overlayDisplay:insert(backButton)
 		
-
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
-		local function applyJetpackBoost( event )
+		local function applyJetpackBoost( event )			
+			flame.x = mainCharacter.x - 20
+			flame.y = mainCharacter.y + 40
+			flame:toFront()
 			local tDelta = (event.time - tJetpack)
 			if boost > 0 then		
 				if tDelta > 150 and mainCharacter ~= nil then	
@@ -1002,13 +982,6 @@ function scene:createScene( event )
 				end
 			else
 				flame.isVisible = false
-
-
-
-
-
-
-
 			end
 		end
 		local jetChannel
@@ -1030,17 +1003,9 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
-		jetpackButton = ui.newButton{
-			defaultSrc = "jetPack.png",
-			over = "jetPackOver.png",
-			onPress = startJets,
-			onRelease = endJets,
-			emboss = true,
-			x = 445,
-			y = 245
-		}
-		jetpackButton.bodyName = "Jet Pack Button"
+		jetpackButton = display.newImage( "jetPack.png" )
 		overlayDisplay:insert(jetpackButton)
+		jetpackButton.x = 445; jetpackButton.y = 245
 		
 		local tLava = system.getTimer()
 		local function removeLifeLava( event )
@@ -1086,7 +1051,19 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
-				elseif "ended" == phase or "cancelled" == phase then
+				elseif "ended" == phase or "cancelled" == phase then				
+					jetpackButton.isVisible = false
+					jetpackButton = nil
+					jetpackButton = ui.newButton{
+						defaultSrc = "jetPack.png",
+						x = 445,
+						y = 245,
+						overSrc = "jetPackOver.png",
+						onPress = startJets,
+						onRelease = endJets
+					}
+					jetpackButton.bodyName = "Jet Pack Button"
+					overlayDisplay:insert(jetpackButton)
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					--slingshot:removeSelf()
@@ -1094,12 +1071,6 @@ function scene:createScene( event )
 					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
-
-
-
-
-
-
 					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
 					game:insert(t)
 					t.bodyName = "mainCharacterDynamic"
@@ -1214,6 +1185,7 @@ function scene:createScene( event )
 					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
 					event.other.isVisible = false
 					rooster.x = event.other.x; rooster.y = event.other.y
+					game.y = rooster.y - 240
 					rooster.isVisible = true
 					rooster:prepare()						
 					rooster:toFront()
@@ -1221,7 +1193,7 @@ function scene:createScene( event )
 					Runtime:removeEventListener( "enterFrame", frameCheck )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					Runtime:removeEventListener( "collision", onGlobalCollision )
-					showDeath ( "bloody" )		
+					showDeath ( "bloody" )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )

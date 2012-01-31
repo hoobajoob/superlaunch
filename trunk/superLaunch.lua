@@ -575,7 +575,6 @@ function scene:createScene( event )
 				--TODO: FIX--scoreDisplay.parent:remove( scoreDisplay )				
 				
 				removeMainItems()
-				
 				menuButton.isVisible = false
 				restartButton.isVisible = false
 				--director:changeScene("testChange", "crossFade", arguments)
@@ -947,8 +946,7 @@ function scene:createScene( event )
 						onRelease = endJets
 					}
 					jetpackButton.bodyName = "Jet Pack Button"
-					overlayDisplay:insert(jetpackButton)
-					
+					overlayDisplay:insert(jetpackButton)					
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					--slingshot:removeSelf()
@@ -971,8 +969,7 @@ function scene:createScene( event )
 			-- should not be propagated to listeners of any objects underneath.
 			return true
 		end
-		local function launchCharacter()	
-			
+		local function launchCharacter()
 			angle = 50
 			power = 1
 			display.getCurrentStage():setFocus( nil )
@@ -1066,11 +1063,12 @@ function scene:createScene( event )
 						boost = boost + 25
 					end
 					boostBar:setSize( boost )
-				elseif event.other.bodyName == "rooster" then
+				elseif string.find(event.other.bodyName, "rooster") ~= nil then
 					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
 					event.other.isVisible = false
 					rooster.x = event.other.x; rooster.y = event.other.y
+					game.y = rooster.y - 240
 					rooster.isVisible = true
 					rooster:prepare()						
 					rooster:toFront()
@@ -1078,7 +1076,7 @@ function scene:createScene( event )
 					Runtime:removeEventListener( "enterFrame", frameCheck )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					Runtime:removeEventListener( "collision", onGlobalCollision )
-					showDeath ( "bloody" )			
+					showDeath ( "bloody" )
 				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
