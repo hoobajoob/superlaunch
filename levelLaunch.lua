@@ -305,53 +305,6 @@ function scene:createScene( event )
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 						end
 						
 						ground.x = addition; ground.y = groundReferencePoint - 20
@@ -765,27 +718,13 @@ function scene:createScene( event )
 		local tNotMovingPrevious = system.getTimer()
 		local tAdShownPrevious = system.getTimer()
 		local function frameCheck( event )
-
-
-
-
-
-
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
-
-
-
-
 			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
 				scoreDisplay:setText( string.format( "%i", score ) )
-
-
-
-
 			end
 			if (mainCharacter.x > -800) then
 				game.x = math.ceil(-mainCharacter.x) + 120

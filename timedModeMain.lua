@@ -30,7 +30,6 @@ function scene:createScene( event )
 	local hardLaunchButton = nil
 	
 	local playType = storyboard.arguments
-	print( "playType = "..playType)
 	
 	local mainLabel = ui.newLabel{
 			bounds = { display.contentWidth /2 - 105, 65 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
@@ -108,7 +107,12 @@ function scene:createScene( event )
 	end
 	local function hardLaunchButtonPress()
 		storyboard.arguments = {character, true, "hardLaunch"}
-		storyboard.gotoScene(playType)
+		storyboard.nextScene = playType
+		if playType == "superLaunch" then
+			storyboard.gotoScene(hardLaunch)		
+		else
+			storyboard.gotoScene(playType)
+		end
 	end
 	
 	slingShotButton = ui.newButton{

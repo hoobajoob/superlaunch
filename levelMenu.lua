@@ -34,7 +34,12 @@ function scene:createScene( event )
 		--]]
 		Runtime:removeEventListener( "key", onKeyEventLevelMenu );
 		table.insert(storyboard.arguments, event.arguments)
-		storyboard.gotoScene("levelLaunch")
+		if storyboard.arguments[3] == "hardLaunch" then
+			storyboard.nextScene = "levelLaunch"
+			storyboard.gotoScene( "hardLaunch" )
+		else
+			storyboard.gotoScene("levelLaunch")
+		end
 	end
 	
 	---[[

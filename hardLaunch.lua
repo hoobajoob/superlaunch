@@ -1,97 +1,71 @@
 module(..., package.seeall)
+local ui = require("ui")
+local util = require("util")
+local storyboard = require( "storyboard" )
+local scene = storyboard.newScene()
+local launchButton
 
---====================================================================--
--- POP UP: SCREEN 3
---====================================================================--
-
---[[
-
- - Version: 1.3
- - Made by Ricardo Rauber Pereira @ 2010
- - Blog: http://rauberlabs.blogspot.com/
- - Mail: ricardorauber@gmail.com
-
-******************
- - INFORMATION
-******************
-
-  - Sample scene.
-
---]]
-
-new = function ()
+function scene:createScene( event )
+	local group = self.view
 	
-	------------------
-	-- Groups
-	------------------
+	local background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
 	
-	local localGroup = display.newGroup()
+	background:setFillColor(140, 140, 140)
 	
-	------------------
-	-- Display Objects
-	------------------
+	launchButton = display.newImage( "launch.png" )
+	group:insert( launchButton )
+end
+
+function scene:enterScene( event )
+	local group = self.view
+	local touchDelay = 0
+	launchButton.isVisible = false
+	local tNoPress
 	
-	local w, h = display.contentWidth, display.contentHeight
-	local background = display.newImage( "background.png" )
-	background.xScale = 0.8
-	background.yScale = 0.8
-	background.alpha = 0.95
-	local title = display.newText( "POP UP - Touch to go back", 0, 0, native.systemFontBold, 16 )
+	local function sendLaunchValues()
+	{
+		Runtime:removeEventListener( "enterFrame", touchDelayAdd )
+		storyboard.launchAngle = 50
+		storyboard.launchPower = 100 - ( touchDelay * .2 )	
+		storyboard.gotoScene(storyBoard.nextScene)
+	}
 	
-	------------------
-	-- Listeners
-	------------------
-	
-	local touched = function ( event )
-		if event.phase == "ended" then
-			director:closePopUp()
+	local function touchDelayAdd( event )
+		if (event.time - tNoPress) > 100 then
+			tNoPress = event.time
+			touchDelay = touchDelay + 1
+		end
+		if touchDelay > 500 then
+			sendLaunchValues()
 		end
 	end
 	
-	--====================================================================--
-	-- INITIALIZE
-	--====================================================================--
-	
-	local function initVars ()
-		
-		------------------
-		-- Inserts
-		------------------
-		
-		localGroup:insert( background )
-		localGroup:insert( title )
-		
-		------------------
-		-- Positions
-		------------------
-		
-		title.x = 160
-		title.y = 240
-		
-		------------------
-		-- Colors
-		------------------
-		
-		title:setTextColor( 255,255,255 )
-		
-		------------------
-		-- Listeners
-		------------------
-		
-		background:addEventListener( "touch" , touched )
-		
+	local function launchButtonTouched( event )
+		sendLaunchValues()
 	end
 	
-	------------------
-	-- Initiate variables
-	------------------
-	
-	initVars()
-	
-	------------------
-	-- MUST return a display.newGroup()
-	------------------
-	
-	return localGroup
-	
+	local function showButton( event )
+		launchButton.isVisible = true
+		launchButton:addEventListener( "touch", launchButtonTouched )
+		tNoPress = system.getTimer()
+		Runtime:addEventListener( "enterFrame", touchDelayAdd )
+	end
+	 
+	timer.performWithDelay( 1000, showButton )
 end
+
+function scene:exitScene( event )
+	local group = self.view
+		launchButton:removeEventListener( "touch", launchButtonTouched )
+end
+
+function scene:destroyScene( event )
+	local group = self.view
+end
+
+scene:addEventListener( "createScene", scene )
+scene:addEventListener( "enterScene", scene )
+scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "destroyScene", scene )
+
+return scene
