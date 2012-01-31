@@ -970,8 +970,8 @@ function scene:createScene( event )
 			return true
 		end
 		local function launchCharacter()
-			angle = 50
-			power = 1
+			angle = storyboard.launchAngle
+			power = storyboard.launchPower
 			display.getCurrentStage():setFocus( nil )
 			local t = mainCharacter
 			--slingshot:removeSelf()
@@ -988,41 +988,20 @@ function scene:createScene( event )
 			--Angle of 0 = all y Force. Angle of 100 = all x Force.
 			print ( "Angle = "..angle.." and Power = "..power )
 			local xForce = power * angle * 200
-			local yForce = -( power * ( 100 - angle ) ) 
+			local yForce = power * ( 100 - angle )
 			print ( "xForce = "..xForce.." and yForce = "..yForce )
-			t:applyLinearImpulse( -100 , -300 , t.x + 9, t.y)
+			t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
 			Runtime:addEventListener( "enterFrame", frameCheck )
-		end
-		local launchHardMode = function()
-			timer.performWithDelay(2000, launchCharacter )
 		end
 	
 		if launchType == "hardLaunch" then
-		---[[
-			local launchReadyButton = nil
-					
-			local function launchReadyButtonPress()
-					local angle = 50
-					local power = 50
-					launchReadyButton.isVisible = false
-					director:openPopUp( "hardLaunch", launchHardMode )
-			end
-			
-			launchReadyButton = ui.newButton{
-						defaultSrc = "buttonRed.png",
-						onPress = launchReadyButtonPress,
-						overSrc = "buttonRedOver.png",
-						text = "Ready",
-						emboss = true,
-						x = 240,
-						y = 140
-					}
-			game:insert(launchReadyButton)	
-			--]]
+			local angle = 50
+			local power = storyboard.launchPower
+			timer.performWithDelay(2000, launchCharacter )
+		else
+			mainCharacter:addEventListener( "touch", onTouch )
 		end
-
-		mainCharacter:addEventListener( "touch", onTouch )
-
+		
 		----------------------------------------------------------
 		-- Two collision types (run Corona Terminal to see output)
 		----------------------------------------------------------
