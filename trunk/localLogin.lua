@@ -111,7 +111,7 @@ function scene:createScene( event )
 		x = 240,
 		y = 280,
 		overSrc = "btn_achievementsA.png",
-		onEvent = submitButtonPress,
+		onRelease = submitButtonPress,
 		emboss = true
 	}
 	submitButton.isVisible = true

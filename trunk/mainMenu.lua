@@ -48,6 +48,7 @@ Runtime:addEventListener( "system", onSystemEvent )
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
+	print("creating mainmenu")
 	local group = self.view
 	
 	local bg = display.newImage( "background.png", true )
@@ -87,7 +88,7 @@ function scene:createScene( event )
 				x = 240,
 				y = 90,
 				overSrc = "buttonRedOver.png",
-				onEvent = playButtonPress,
+				onRelease = playButtonPress,
 				text = "Play",
 				emboss = true
 			}
@@ -98,7 +99,7 @@ function scene:createScene( event )
 				x = 240,
 				y = 150,
 				overSrc = "buttonRedOver.png",
-				onEvent = loginButtonPress,
+				onRelease = loginButtonPress,
 				text = "Login",
 				emboss = true
 			}
@@ -109,7 +110,7 @@ function scene:createScene( event )
 				x = 240,
 				y = 210,
 				overSrc = "buttonRedOver.png",
-				onEvent = highScoresButtonPress,
+				onRelease = highScoresButtonPress,
 				text = "High Scores and Achievements",
 				emboss = true
 			}
@@ -120,7 +121,7 @@ function scene:createScene( event )
 				x = 240,
 				y = 270,
 				overSrc = "buttonRedOver.png",
-				onEvent = helpButtonPress,
+				onRelease = helpButtonPress,
 				text = "Help",
 				emboss = true
 			}
@@ -140,6 +141,7 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
+	print("entering mainmenu")
 	
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	local group = self.view
