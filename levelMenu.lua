@@ -21,17 +21,7 @@ function scene:createScene( event )
 	}
 	backButton.isVisible = true
 	
-	local levelButtonPress = function(event)		
-		--[[
-		while group.numChildren > 0	do	
-			print("Clearing All "..group.numChildren.."in self")	
-			for i=1, group.numChildren do
-				if group[i] ~= nil then
-					group:remove( i )
-				end
-			end
-		end
-		--]]
+	local levelButtonPress = function(event)
 		Runtime:removeEventListener( "key", onKeyEventLevelMenu );
 		table.insert(storyboard.arguments, event.arguments)
 		if storyboard.arguments[3] == "hardLaunch" then
@@ -45,8 +35,9 @@ function scene:createScene( event )
 	---[[
 	local int row = 1
 	local int col = 1
-	for level=1,30 do
-		print( "inserting button at " .. ( col * 68 ).."-".. ( row * 54 ))
+	local yOffset = 40
+	local xOffset = 0
+	for level=1,20 do
 		local thisButton = ui.newButton{				
 				defaultSrc = "levelButton.png",
 				onEvent = levelButtonPress,
@@ -54,14 +45,14 @@ function scene:createScene( event )
 				text = "SlingShot Mode",
 				text = level,
 				emboss = true,
-				x = ( col * 68 ),
-				y = ( row * 58 ),
+				x = ( col * 78 ) + xOffset,
+				y = ( row * 58 ) + yOffset,
 				arguments = level
 			}
 		thisButton.isVisible = true
 		group:insert( thisButton )
 		col = col + 1
-		if level % 6 == 0 then row = row + 1; col = 1 end
+		if level % 5 == 0 then row = row + 1; col = 1 end
     end
 	--]]
 	

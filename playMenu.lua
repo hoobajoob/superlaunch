@@ -16,6 +16,7 @@ end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
+	print("creating playMenu")
 	local group = self.view
 	
 	local bg = display.newImage( "background.png", true )
@@ -54,7 +55,7 @@ function scene:createScene( event )
 	
 	local classicButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
-				onEvent = classicButtonPress,
+				onRelease = classicButtonPress,
 				overSrc = "buttonRedOver.png",
 				text = "Classic Play",
 				emboss = true,
@@ -68,7 +69,7 @@ function scene:createScene( event )
 				x = 240,
 				y = 240,
 				overSrc = "buttonRedOver.png",
-				onEvent = levelButtonPress,
+				onRelease = levelButtonPress,
 				text = "Level Play",
 				emboss = true
 			}
@@ -82,6 +83,7 @@ end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
+	print("entering playMenu")
 	
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	local group = self.view

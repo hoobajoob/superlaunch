@@ -72,7 +72,7 @@ function scene:createScene( event )
 				x = 240,
 				y = 30,
 				overSrc = "buttonRedOver.png",
-				onEvent = emailButtonPress,
+				onRelease = emailButtonPress,
 				text = "Email Developer",
 				emboss = true
 			}

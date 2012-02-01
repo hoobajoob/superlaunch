@@ -15,6 +15,7 @@ local function onBackEvent( event )
 end
 
 function scene:createScene( event )
+	print( "creating timedModeMain" )
 	local group = self.view
 	
 	local bg = display.newImage( "background.png", true )
@@ -81,21 +82,21 @@ function scene:createScene( event )
 
 	noahButton = ui.newButton{
 					defaultSrc = "noah.png",
-					onEvent = noahButtonPress,
+					onRelease = noahButtonPress,
 					emboss = true,
 					x = 180,
 					y = 240
 				}
 	babyButton = ui.newButton{
 					defaultSrc = "baby.png",
-					onEvent = babyButtonPress,
+					onRelease = babyButtonPress,
 					emboss = true,
 					x = 320,
 					y = 240
 				}
 	dogButton = ui.newButton{
 					defaultSrc = "dog.png",
-					onEvent = dogButtonPress,
+					onRelease = dogButtonPress,
 					emboss = true,
 					x = 250,
 					y = 140
@@ -109,7 +110,7 @@ function scene:createScene( event )
 		storyboard.arguments = {character, true, "hardLaunch"}
 		storyboard.nextScene = playType
 		if playType == "superLaunch" then
-			storyboard.gotoScene(hardLaunch)		
+			storyboard.gotoScene( "hardLaunch" )		
 		else
 			storyboard.gotoScene(playType)
 		end
@@ -117,7 +118,7 @@ function scene:createScene( event )
 	
 	slingShotButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
-				onEvent = slingShotButtonPress,
+				onRelease = slingShotButtonPress,
 				overSrc = "buttonRedOver.png",
 				text = "SlingShot Mode",
 				emboss = true,
@@ -128,7 +129,7 @@ function scene:createScene( event )
 	
 	hardLaunchButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
-				onEvent = hardLaunchButtonPress,
+				onRelease = hardLaunchButtonPress,
 				overSrc = "buttonRedOver.png",
 				text = "Hard Launch Mode",
 				emboss = true,
@@ -148,6 +149,7 @@ function scene:createScene( event )
 end
 
 function scene:enterScene( event )
+	print( "entering timedModeMain" )
 	local group = self.view
 	----Fix
 	scene.createScene( self )
