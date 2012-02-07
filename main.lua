@@ -2,7 +2,7 @@ display.setStatusBar( display.HiddenStatusBar )
 --local preloader = require("preloader")
 local storyboard = require "storyboard"
 local ls = require( "loadingScreen" )
---[[
+---[[
 local splash = ls.newLoadingScreen{
 	srcImage = "splash.png",
 	duration = 4000,
@@ -45,9 +45,9 @@ end
 
 isSimulator = "simulator" == system.getInfo("environment")
 
---splash.loadingFinished()
+splash.loadingFinished()
 
-storyboard.gotoScene( "mainMenu" )
+--storyboard.gotoScene( "mainMenu" )
 
 
 
