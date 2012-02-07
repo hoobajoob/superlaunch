@@ -2,15 +2,25 @@
 module(..., package.seeall)
 
 function newLoadingScreen( params )
-	local loadingScreen, lcImage, startTime, endTime, finalEvent, eventArguments
-	
+	local loadingScreen, lcImage, startTime, endTime, finalEvent, eventArguments, background, transitionToImage
+	local fadeOutComplete = false
 	loadingScreen = display.newGroup()
+	
+	if params.blackBackground then
+		background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
+		background:setFillColor(0, 0, 0)
+	end
 	
 	if params.srcImage then
 		lcImage = display.newImage( params.srcImage )
 	else
 		lcImage = display.newRect(0, 0, display.contentWidth, display.contentHeight)
 		lcImage:setFillColor(0, 0, 0)
+	end
+	
+	if params.fadeIn then
+		lcImage.alpha = 0
+		transition.to( lcImage, { time=1000, alpha=1 } )
 	end
 	
 	if params.finalEvent then
@@ -26,7 +36,12 @@ function newLoadingScreen( params )
 	
 	loadingScreen.clear = function()
 		print ( "screenCleared" )
+		if transitionToImage ~= nil then
+			transitionToImage.isVisible = false
+			transitionToImage:removeSelf()		
+		end
 		lcImage.isVisible = false
+		lcImage:removeSelf()
 		loadingScreen.isVisible = false
 		loadingScreen:removeSelf()
 		loadingScreen = nil
@@ -42,11 +57,26 @@ function newLoadingScreen( params )
 	loadingScreen.loadingFinished = function()
 		curTime = system.getTimer()
 		if endTime > curTime then
-			timer.performWithDelay(endTime - curTime, loadingScreen.clear, 1)
+			if params.fadeOut and fadeOutComplete == false then
+				fadeOutComplete = true
+				transition.to( lcImage, { time=1000, alpha=0, onComplete=loadingScreen.loadingFinished } )
+			else
+				timer.performWithDelay(endTime - curTime, loadingScreen.clear, 1)
+			end
 		else
 			loadingScreen.clear()
 		end
 	end
 	
+	
+	if params.transitionToImage then
+		transitionToImage = display.newImage( params.transitionToImage )
+		transitionToImage.alpha = 0
+		local function trans()
+			transition.to( transitionToImage, { time=( endTime - curTime ) / 2, alpha=1 } )
+		end
+		curTime = system.getTimer()
+		timer.performWithDelay( (endTime - curTime) / 4, trans , 1 )
+	end
 	return loadingScreen
 end

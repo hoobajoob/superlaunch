@@ -5,7 +5,8 @@ local ls = require( "loadingScreen" )
 ---[[
 local splash = ls.newLoadingScreen{
 	srcImage = "splash.png",
-	duration = 4000,
+	transitionToImage = "splashWIcons.png",
+	duration = 5000,
 	finalEvent = storyboard.gotoScene,
 	eventArguments = "mainMenu"
 }
