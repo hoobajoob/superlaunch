@@ -1,14 +1,26 @@
 display.setStatusBar( display.HiddenStatusBar )
-
 --local preloader = require("preloader")
+local storyboard = require "storyboard"
+local ls = require( "loadingScreen" )
+--[[
+local splash = ls.newLoadingScreen{
+	srcImage = "splash.png",
+	duration = 4000,
+	finalEvent = storyboard.gotoScene,
+	eventArguments = "mainMenu"
+}
+--]]
 local ui = require("ui")
 local physics = require("physics")
 local tableView = require("tableView")
 local ads = require("ads")
-ads.init( "inneractive", "RecRoomRecords_Superlaunch_Android" )
 local gameNetwork = require "gameNetwork"
-gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI", "SuperLaunch", "405093" )
 require "sqlite3"
+
+
+
+ads.init( "inneractive", "RecRoomRecords_Superlaunch_Android" )
+gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI", "SuperLaunch", "405093" )
 
 highScoreLeaderboard = "1002786"
 	
@@ -33,16 +45,9 @@ end
 
 isSimulator = "simulator" == system.getInfo("environment")
 
--- hide the status bar
-display.setStatusBar( display.HiddenStatusBar )
+--splash.loadingFinished()
 
--- include the Corona "storyboard" module
-local storyboard = require "storyboard"
-
--- load menu screen
-storyboard.gotoScene("mainMenu")
-
-
+storyboard.gotoScene( "mainMenu" )
 
 
 
