@@ -1,6 +1,14 @@
 module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
+local ls = require( "loadingScreen" )
+
+local splash = ls.newLoadingScreen{
+	srcImage = "splashWIcons.png",
+	duration = 500,
+	fadeOut = true
+}
+
 local scene = storyboard.newScene()
 
 -- Handler that gets notified when the alert closes
@@ -150,6 +158,8 @@ function scene:enterScene( event )
 	if (onKeyEvent ~= nil) then print("onKeyEvent Exists") end
 	Runtime:removeEventListener( "key", onKeyEvent )
 	Runtime:addEventListener( "key", onKeyEvent )
+	
+	splash.loadingFinished()
 	
 	-- iPhone, iPod touch, iPad, android etc
 	ads.show( "banner", { x=0, y=0, interval=10 } )
