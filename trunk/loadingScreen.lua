@@ -26,6 +26,7 @@ function newLoadingScreen( params )
 	
 	loadingScreen.clear = function()
 		print ( "screenCleared" )
+		lcImage.isVisible = false
 		loadingScreen.isVisible = false
 		loadingScreen:removeSelf()
 		loadingScreen = nil
