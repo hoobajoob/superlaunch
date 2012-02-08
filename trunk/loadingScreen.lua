@@ -2,7 +2,7 @@
 module(..., package.seeall)
 
 function newLoadingScreen( params )
-	local loadingScreen, lcImage, startTime, endTime, finalEvent, eventArguments, background, transitionToImage
+	local loadingScreen, lcImage, startTime, endTime, fadeTime, finalEvent, eventArguments, background, transitionToImage
 	local fadeOutComplete = false
 	loadingScreen = display.newGroup()
 	
@@ -16,22 +16,28 @@ function newLoadingScreen( params )
 	else
 		lcImage = display.newRect(0, 0, display.contentWidth, display.contentHeight)
 		lcImage:setFillColor(0, 0, 0)
+	end	
+	
+	startTime = system.getTimer()
+	if isSimulator then
+		endTime = startTime + 250
+		fadeTime = 250
+	else
+		fadeTime = 1000
+		if params.duration then
+			endTime = startTime + params.duration
+		else
+			endTime = startTime + 500
+		end
 	end
 	
 	if params.fadeIn then
 		lcImage.alpha = 0
-		transition.to( lcImage, { time=1000, alpha=1 } )
+		transition.to( lcImage, { time=fadeTime, alpha=1 } )
 	end
 	
 	if params.finalEvent then
 		finalEvent = params.finalEvent
-	end
-	
-	startTime = system.getTimer()
-	if params.duration then
-		endTime = startTime + params.duration
-	else
-		endTime = startTime + 500
 	end
 	
 	loadingScreen.clear = function()
@@ -59,7 +65,7 @@ function newLoadingScreen( params )
 		if endTime > curTime then
 			if params.fadeOut and fadeOutComplete == false then
 				fadeOutComplete = true
-				transition.to( lcImage, { time=1000, alpha=0, onComplete=loadingScreen.loadingFinished } )
+				transition.to( lcImage, { time=fadeTime, alpha=0, onComplete=loadingScreen.loadingFinished } )
 			else
 				timer.performWithDelay(endTime - curTime, loadingScreen.clear, 1)
 			end

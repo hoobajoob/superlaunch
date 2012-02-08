@@ -1,4 +1,5 @@
 display.setStatusBar( display.HiddenStatusBar )
+isSimulator = "simulator" == system.getInfo("environment")
 --local preloader = require("preloader")
 local storyboard = require "storyboard"
 local ls = require( "loadingScreen" )
@@ -44,7 +45,6 @@ local onSystem = function( event )
 	end
 end
 
-isSimulator = "simulator" == system.getInfo("environment")
 
 splash.loadingFinished()
 
