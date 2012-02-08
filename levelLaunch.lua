@@ -6,7 +6,7 @@ local xml = require( "xml" ).newParser()
 
 function scene:createScene( event )
 	local group = self.view
-	local arguments = storyboard.arguments
+	arguments = storyboard.arguments
 	
 	print( "Level mode is being initiated. Level = "..arguments[4] )
 
@@ -23,7 +23,6 @@ function scene:createScene( event )
 	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
-
 	local swooshSound = audio.loadSound("swoosh.mp3")
 	local bounceSound = audio.loadSound("bounce.mp3")
 	local owSound = audio.loadSound("ow.ogg")
@@ -39,19 +38,16 @@ function scene:createScene( event )
 	local restartButton = nil
 	local timeBar = nil
 	local lifeBar = nil
-	local boostBar = nil		
+	local boostBar = nil
+	local timeCheck
 	local jetpackButton = nil
-
-
-
+	
 	math.randomseed( os.time() )
 	math.random()	
 	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
-	db = sqlite3.open( path )   
-
-
+	db = sqlite3.open( path )  
 	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
@@ -59,14 +55,15 @@ function scene:createScene( event )
 			bounds = { 0, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = timeLeft,
-			width = 5
+			width = 5, 
+			beautyBar = true
 		}
 		timeBar.bodyName = "timeBar"
 		timeBar:setSize( timeLeft )
 		timeBar.isVisible = true
 		print( "timeMode on")
 		local tTimeLeft = system.getTimer()
-		local function timeCheck( event )
+		function timeCheck( event )
 			local tTimeLeftDelta = (event.time - tTimeLeft)
 			if timeMode and tTimeLeftDelta > 750 then
 				tTimeLeft = event.time;
@@ -92,6 +89,7 @@ function scene:createScene( event )
 		local explosion
 		local boost = 100
 		local worldLength = 0
+		local showAngle
 		mainContainerGroup = display.newGroup()
 		group:insert( mainContainerGroup )
 		game = display.newGroup()
@@ -261,7 +259,6 @@ function scene:createScene( event )
 			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			grass.bodyName = "grass1"
 		end
-
 		
 		local function createAllObjects()
 
@@ -530,7 +527,8 @@ function scene:createScene( event )
 			bounds = { 0, 10 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = life,
-			width = 5
+			width = 5, 
+			beautyBar = true
 		}
 		lifeBar.bodyName = "lifeBar"
 		overlayDisplay:insert( lifeBar )
@@ -544,7 +542,8 @@ function scene:createScene( event )
 			bounds = { 400, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = boost,
-			width = 5
+			width = 5, 
+			beautyBar = true
 		}
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
@@ -580,24 +579,15 @@ function scene:createScene( event )
 		end
 		
 		local removeMainItems = function( event )	
-			while game.numChildren > 0	do		
-				print("Clearing All "..game.numChildren.."in Game")				
-				for i=1, game.numChildren do
+			while game.numChildren > 0	dofor i=1, game.numChildren do
 					if game[i] ~= nil then
-						if game[i].bodyName ~= nil then
-							print("Clearing "..game[i].bodyName)
-						end
 						game:remove( i )
 					end
 				end
 			end
 			while overlayDisplay.numChildren > 0	do	
-				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
 				for i=1, overlayDisplay.numChildren do
 					if overlayDisplay[i] ~= nil then
-						if overlayDisplay[i].bodyName ~= nil then
-							print("Clearing "..overlayDisplay[i].bodyName)
-						end
 						overlayDisplay:remove( i )
 					end
 				end
@@ -695,10 +685,6 @@ function scene:createScene( event )
 					
 					--Insert in to OpenFeint high score
 					gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
-
-
-
-					
 			else
 				restartButton = ui.newButton{
 					defaultSrc = "buttonRed.png",
@@ -865,7 +851,8 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", frameCheck )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
-			Runtime:removeEventListener( "enterFrame", timeCheck )	
+			Runtime:removeEventListener( "enterFrame", timeCheck )
+			Runtime:removeEventListener( "enterFrame", showAngle )
 			if timeBar ~= nil then
 				timeBar:setSize( 0 )
 				timeBar.isVisible = false
@@ -990,7 +977,7 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
-				elseif "ended" == phase or "cancelled" == phase then				
+				elseif "ended" == phase or "cancelled" == phase then
 					jetpackButton.isVisible = false
 					jetpackButton = nil
 					jetpackButton = ui.newButton{
@@ -1026,59 +1013,76 @@ function scene:createScene( event )
 			return true
 		end
 		local function launchCharacter()
-			angle = 50
-			power = 1
-			display.getCurrentStage():setFocus( nil )
-			local t = mainCharacter
-			--slingshot:removeSelf()
-			slingshotString:removeSelf()
-			if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
-			t:prepare("mainCharacterSprite")
-			t:play()
-			physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-			game:insert(t)
-			t.bodyName = "mainCharacterDynamic"
-			t.isFixedRotation = true
-			--t.angularDamping = 10
-			t:removeEventListener( "touch", onTouch )
-			--Angle of 0 = all y Force. Angle of 100 = all x Force.
-			print ( "Angle = "..angle.." and Power = "..power )
-			local xForce = power * angle * 200
-			local yForce = -( power * ( 100 - angle ) ) 
-			print ( "xForce = "..xForce.." and yForce = "..yForce )
-			t:applyLinearImpulse( -100 , -300 , t.x + 9, t.y)
-			Runtime:addEventListener( "enterFrame", frameCheck )
+			Runtime:removeEventListener ( "enterFrame", showAngle )
+			if mainCharacter ~= nil then
+				angle = storyboard.launchAngle
+				power = storyboard.launchPower
+				display.getCurrentStage():setFocus( nil )
+				local t = mainCharacter
+				--slingshot:removeSelf()
+				--slingshotString:removeSelf()
+				if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+				t:prepare("mainCharacterSprite")
+				t:play()
+				physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				game:insert(t)
+				t.bodyName = "mainCharacterDynamic"
+				t.isFixedRotation = true
+				--t.angularDamping = 10
+				t:removeEventListener( "touch", onTouch )
+				--Angle of 0 = all y Force. Angle of 100 = all x Force.
+				print ( "Angle = "..angle.." and Power = "..power )
+				local xForce = power * angle
+				local yForce = power * ( 100 - angle )
+				print ( "xForce = "..xForce.." and yForce = "..yForce )
+				t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
+				Runtime:addEventListener( "enterFrame", frameCheck )
+			end
 		end
-		local launchHardMode = function()
-			timer.performWithDelay(2000, launchCharacter )
+
+		
+		local function setAngle()
+		    storyboard.launchAngle = mainCharacter.y
+			
+			Runtime:removeEventListener ( "touch", setAngle )
+			print("angle set" )
+			timer.performWithDelay(500, launchCharacter )
+		end
+		
+		local function launchDefaultAngle()
+			Runtime:removeEventListener ( "touch", setAngle )
+			if storyboard.launchAngle == nil then
+				storyboard.launchAngle = 80			
+				timer.performWithDelay(500, launchCharacter )
+			end
+		end
+		
+		local direction = 1
+		showAngle = function()
+			if direction == 1 then
+				if mainCharacter.y >= 200 then
+					direction = 0
+				else
+					mainCharacter.y = mainCharacter.y + 4
+				end
+			else
+				if mainCharacter.y <= 50 then
+					direction = 1
+				else
+					mainCharacter.y = mainCharacter.y - 4
+				end
+			end
 		end
 	
 		if launchType == "hardLaunch" then
-		---[[
-			local launchReadyButton = nil
-					
-			local function launchReadyButtonPress()
-					local angle = 50
-					local power = 50
-					launchReadyButton.isVisible = false
-					director:openPopUp( "hardLaunch", launchHardMode )
-			end
-			
-			launchReadyButton = ui.newButton{
-						defaultSrc = "buttonRed.png",
-						onPress = launchReadyButtonPress,
-						overSrc = "buttonRedOver.png",
-						text = "Ready",
-						emboss = true,
-						x = 240,
-						y = 140
-					}
-			game:insert(launchReadyButton)	
-			--]]
+			local power = storyboard.launchPower
+			Runtime:addEventListener ( "touch", setAngle )
+			timer.performWithDelay(5000, launchDefaultAngle )
+			Runtime:addEventListener ( "enterFrame", showAngle )
+		else
+			mainCharacter:addEventListener( "touch", onTouch )
 		end
-
-		mainCharacter:addEventListener( "touch", onTouch )
-
+		
 		----------------------------------------------------------
 		-- Two collision types (run Corona Terminal to see output)
 		----------------------------------------------------------
@@ -1089,14 +1093,15 @@ function scene:createScene( event )
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
 				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
-				if self.bodyName == "lava" or event.other.bodyName == "lava" then
+				local bodyName = event.other.bodyName
+				if self.bodyName == "lava" or bodyName == "lava" then
 					life = life - 1
 					lifeBar:setSize( life )
 					print("adding lava removal listener")
 					Runtime:addEventListener( "enterFrame", removeLifeLava )
-				elseif event.other.bodyName == "star" then
+				elseif bodyName == "star" then
 					mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
-				elseif event.other.bodyName == "bacon" then
+				elseif bodyName == "bacon" then
 					if life > 74 then
 						life = 100
 					else
@@ -1104,7 +1109,7 @@ function scene:createScene( event )
 					end			
 					lifeBar:setSize( life )
 					mainCharacter:applyLinearImpulse( -10, -75, mainCharacter.x + 9, mainCharacter.y )
-				elseif event.other.bodyName == "bomb" then
+				elseif bodyName == "bomb" then
 					if life < 10 then
 						life = 0
 					else
@@ -1112,14 +1117,14 @@ function scene:createScene( event )
 					end
 					lifeBar:setSize( life )
 					mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
-				elseif event.other.bodyName == "jetRefill" then
+				elseif bodyName == "jetRefill" then
 					if boost > 75 then
 						boost = 100
 					else
 						boost = boost + 25
 					end
 					boostBar:setSize( boost )
-				elseif string.find(event.other.bodyName, "rooster") ~= nil then
+				elseif bodyName ~= nil and string.find(bodyName, "rooster") ~= nil then
 					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
 					event.other.isVisible = false
@@ -1133,7 +1138,7 @@ function scene:createScene( event )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					Runtime:removeEventListener( "collision", onGlobalCollision )
 					showDeath ( "bloody" )
-				elseif string.find( event.other.bodyName, "spikeWall" ) ~= nil then
+				elseif bodyName ~= nil and string.find( bodyName, "spikeWall" ) ~= nil then
 					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
@@ -1205,16 +1210,18 @@ function scene:createScene( event )
 				life = life - ( string.format( "%i", event.force / 50  ) )
 				lifeBar:setSize( life )
 				local impactChannel
-				if string.find(bodyName, "lava") ~= nil or string.find(bodyName, "grass") ~= nil then
-					if playSounds then impactChannel = audio.play( boingSound, { channel=3 }  ) end
-				elseif string.find(bodyName, "ramp") ~= nil then
-					if playSounds then impactChannel = audio.play( swooshSound, { channel=3 }  ) end
-				elseif string.find(bodyName, "trampoline") ~= nil then
-					if playSounds then impactChannel = audio.play( bounceSound, { channel=3 }  ) end
-				elseif string.find(bodyName, "keg") ~= nil then
-					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
-				elseif string.find(bodyName, "spikeWall") ~= nil then
-					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+				if bodyName ~= nil then
+					if string.find(bodyName, "lava") ~= nil or string.find(bodyName, "grass") ~= nil then
+						if playSounds then impactChannel = audio.play( boingSound, { channel=3 }  ) end
+					elseif string.find(bodyName, "ramp") ~= nil then
+						if playSounds then impactChannel = audio.play( swooshSound, { channel=3 }  ) end
+					elseif string.find(bodyName, "trampoline") ~= nil then
+						if playSounds then impactChannel = audio.play( bounceSound, { channel=3 }  ) end
+					elseif string.find(bodyName, "keg") ~= nil then
+						if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+					elseif string.find(bodyName, "spikeWall") ~= nil then
+						if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+					end
 				end
 			end--]]
 		end
