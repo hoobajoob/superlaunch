@@ -9,7 +9,7 @@ module(..., package.seeall)
 function newBar( params )
 	local bar
 	local size, lineColor
-	local group
+	local group = display.newGroup()
 	
 	if ( params.bounds ) then
 		local bounds = params.bounds
@@ -23,13 +23,31 @@ function newBar( params )
 		if ( params.offset and type(params.offset) == "number" ) then offset=params.offset else offset = 0 end
 		if ( params.align ) then align = params.align else align = "center" end
 		
-		if ( params.size ) then
-			bar = display.newLine( left, top, left + size, top )
-			bar.width = width
+		bar = display.newLine( left, top, left + size, top )
+		bar.width = width
+		group:insert( bar )
+		
+		if params.beautyBar then
+			local topLine = display.newLine( left, top - 4, left + size, top - 4 )
+			topLine.width = 3
+			topLine:setColor ( 200, 200, 200, 255 )
+			local bottomLine = display.newLine( left, top + width - 1, left + size, top + width - 1)
+			bottomLine.width = 3
+			bottomLine:setColor ( 200, 200, 200, 255 )
+			local leftLine = display.newLine( left - 1, top - 5, left - 1, top + width )
+			leftLine.width = 3
+			leftLine:setColor ( 200, 200, 200, 255 )
+			local rightLine = display.newLine( left + size + 1, top - 5, left + size + 1, top + width )
+			rightLine.width = 3
+			rightLine:setColor ( 200, 200, 200, 255 )
+			group:insert( topLine )
+			group:insert( bottomLine )
+			group:insert( leftLine )
+			group:insert( rightLine )
 		end
 
 		-- Public methods
-		function bar:setSize( newSize )
+		function group:setSize( newSize )
 			if ( newSize ) then
 				bar:removeSelf()
 				bar = display.newLine( left, top, left + newSize, top )
@@ -46,14 +64,14 @@ function newBar( params )
 			end
 		end
 		
-		function bar:setColor( theColor )
+		function group:setColor( theColor )
 			if ( theColor and type(theColor) == "table" ) then
 				self:setColor( theColor[1], theColor[2], theColor[3], theColor[4] )
 			end
 		end
 	end
 	
-	return bar
+	return group
 	-- Return instance
 	
 end

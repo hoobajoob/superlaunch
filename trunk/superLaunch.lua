@@ -54,7 +54,8 @@ function scene:createScene( event )
 			bounds = { 0, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = timeLeft,
-			width = 5
+			width = 5, 
+			beautyBar = true
 		}
 		timeBar.bodyName = "timeBar"
 		timeBar:setSize( timeLeft )
@@ -462,7 +463,8 @@ function scene:createScene( event )
 			bounds = { 0, 10 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = life,
-			width = 5
+			width = 5, 
+			beautyBar = true
 		}
 		lifeBar.bodyName = "lifeBar"
 		overlayDisplay:insert( lifeBar )
@@ -476,7 +478,8 @@ function scene:createScene( event )
 			bounds = { 400, 290 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = boost,
-			width = 5
+			width = 5, 
+			beautyBar = true
 		}
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
