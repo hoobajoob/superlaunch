@@ -6,6 +6,10 @@ local widget = require("widget")
 
 function scene:createScene( event )
 	local group = self.view
+end
+
+function scene:enterScene( event )
+	local group = self.view
 	
 	local bg = display.newImage( "highScores.png", true )
 	
@@ -22,16 +26,6 @@ function scene:createScene( event )
 	 
 	--setup the system listener to catch applicationExit
 	Runtime:addEventListener( "system", onSystemEvent )
-
-	--Setup the high score table if it doesn't exist
-	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
-	db:exec( tablesetup )
-	
-	local usersList = {}
-	for row in db:nrows("SELECT ixUser, sName FROM tblUsers") do
-		print("adding user "..row.ixUser.." - "..row.sName)		
-		usersList[row.ixUser] = row
-	end
 	
 	local onListItemRelease = function(event)
 		--Todo:Open High Score in OpenFeint or play replay
@@ -64,13 +58,26 @@ function scene:createScene( event )
 		curRow = curRow + 1
 	end
 	--]]
+
+	--Setup the high score table if it doesn't exist
+	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
+	db:exec( tablesetup )
+	
+	local usersList = {}
+	for row in db:nrows("SELECT ixUser, sName FROM tblUsers") do
+		print("adding user "..row.ixUser.." - "..row.sName)		
+		usersList[row.ixUser] = row
+	end
+	
 	local list = widget.newTableView{
 		top = 100 + display.screenOriginY,
-		height = 220
+		bgColor = { 0, 0, 0, 255 },
+		height = 220,
+		--maskFile = "mask220x480.png"
 	}
 	--list:sync( highScoreData )
 	---[[
-	local curHeight = 100
+	--local curHeight = 100
 	for row in db:nrows("SELECT ixHighScore, ixUser, dScore, dtCreated FROM tblHighScores ORDER BY dScore DESC") do	
 		local function onRowRender( event )
 		local curRow = event.target
@@ -79,12 +86,13 @@ function scene:createScene( event )
 			else 
 				row.sName = usersList[row.ixUser].sName 
 			end
-			local text = display.newText( row.sName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 16)
+			local text = display.newRetinaText(event.view,  row.sName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 16)
 			text:setReferencePoint( display.CenterLeftReferencePoint )
 			text.x = 25
 			text.y = curRow.height * 0.5
 			--text.y = curHeight + (curRow.height * 0.5)
-			curHeight = curHeight + curRow.height
+			--curHeight = curHeight + curRow.height
+			--event.view:insert( text )
 		end
 		list:insertRow{
 			id = "index "..row.ixHighScore,
@@ -97,10 +105,6 @@ function scene:createScene( event )
 	group:insert(list.view)
 	group:insert( bg )
 	group:insert(backButton)
-end
-
-function scene:enterScene( event )
-	local group = self.view
 end
 
 function scene:exitScene( event )
