@@ -35,7 +35,8 @@ function scene:createScene( event )
 	local restartButton = nil
 	local timeBar = nil
 	local lifeBar = nil
-	local boostBar = nil		
+	local boostBar = nil	
+	local timeCheck
 	local jetpackButton = nil
 	local shootingForTheStarsAchieved = false
 	local twentyThousandLeagueAchieved = false
@@ -62,7 +63,7 @@ function scene:createScene( event )
 		timeBar.isVisible = true
 		print( "timeMode on")
 		local tTimeLeft = system.getTimer()
-		local function timeCheck( event )
+		function timeCheck( event )
 			local tTimeLeftDelta = (event.time - tTimeLeft)
 			if timeMode and tTimeLeftDelta > 750 then
 				tTimeLeft = event.time;
@@ -88,6 +89,7 @@ function scene:createScene( event )
 		local explosion
 		local boost = 100
 		local worldLength = 0
+		local showAngle
 		mainContainerGroup = display.newGroup()
 		group:insert( mainContainerGroup )
 		game = display.newGroup()
@@ -814,6 +816,7 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
 			Runtime:removeEventListener( "enterFrame", timeCheck )	
+			Runtime:removeEventListener( "enterFrame", showAngle )
 			if timeBar ~= nil then
 				timeBar:setSize( 0 )
 				timeBar.isVisible = false
@@ -973,29 +976,34 @@ function scene:createScene( event )
 			-- should not be propagated to listeners of any objects underneath.
 			return true
 		end
+		
+		
 		local function launchCharacter()
-			angle = storyboard.launchAngle
-			power = storyboard.launchPower
-			display.getCurrentStage():setFocus( nil )
-			local t = mainCharacter
-			--slingshot:removeSelf()
-			--slingshotString:removeSelf()
-			if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
-			t:prepare("mainCharacterSprite")
-			t:play()
-			physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-			game:insert(t)
-			t.bodyName = "mainCharacterDynamic"
-			t.isFixedRotation = true
-			--t.angularDamping = 10
-			t:removeEventListener( "touch", onTouch )
-			--Angle of 0 = all y Force. Angle of 100 = all x Force.
-			print ( "Angle = "..angle.." and Power = "..power )
-			local xForce = power * angle
-			local yForce = power * ( 100 - angle )
-			print ( "xForce = "..xForce.." and yForce = "..yForce )
-			t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
-			Runtime:addEventListener( "enterFrame", frameCheck )
+			Runtime:removeEventListener ( "enterFrame", showAngle )
+			if mainCharacter ~= nil then
+				angle = storyboard.launchAngle
+				power = storyboard.launchPower
+				display.getCurrentStage():setFocus( nil )
+				local t = mainCharacter
+				--slingshot:removeSelf()
+				--slingshotString:removeSelf()
+				if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+				t:prepare("mainCharacterSprite")
+				t:play()
+				physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				game:insert(t)
+				t.bodyName = "mainCharacterDynamic"
+				t.isFixedRotation = true
+				--t.angularDamping = 10
+				t:removeEventListener( "touch", onTouch )
+				--Angle of 0 = all y Force. Angle of 100 = all x Force.
+				print ( "Angle = "..angle.." and Power = "..power )
+				local xForce = power * angle
+				local yForce = power * ( 100 - angle )
+				print ( "xForce = "..xForce.." and yForce = "..yForce )
+				t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
+				Runtime:addEventListener( "enterFrame", frameCheck )
+			end
 		end
 		
 		local function setAngle()
@@ -1015,7 +1023,7 @@ function scene:createScene( event )
 		end
 		
 		local direction = 1
-		local function showAngle()
+		showAngle = function()
 			if direction == 1 then
 				if mainCharacter.y >= 200 then
 					direction = 0

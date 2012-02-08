@@ -3,11 +3,6 @@ local ui = require("ui")
 local storyboard = require( "storyboard" )
 local ls = require( "loadingScreen" )
 
-local splash = ls.newLoadingScreen{
-	srcImage = "splashWIcons.png",
-	duration = 500,
-	fadeOut = true
-}
 
 local scene = storyboard.newScene()
 
@@ -56,6 +51,11 @@ Runtime:addEventListener( "system", onSystemEvent )
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
+	local splash = ls.newLoadingScreen{
+		srcImage = "splashWIcons.png",
+		duration = 500,
+		fadeOut = true
+	}
 	print("creating mainmenu")
 	local group = self.view
 	
@@ -145,6 +145,8 @@ function scene:createScene( event )
 	group:insert(loginButton)
 	group:insert(highScoresButton)
 	group:insert(helpButton)
+	
+	splash.loadingFinished()
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -158,8 +160,6 @@ function scene:enterScene( event )
 	if (onKeyEvent ~= nil) then print("onKeyEvent Exists") end
 	Runtime:removeEventListener( "key", onKeyEvent )
 	Runtime:addEventListener( "key", onKeyEvent )
-	
-	splash.loadingFinished()
 	
 	-- iPhone, iPod touch, iPad, android etc
 	ads.show( "banner", { x=0, y=0, interval=10 } )
