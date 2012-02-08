@@ -10,7 +10,7 @@ local splash = ls.newLoadingScreen{
 	duration = 5000,
 	finalEvent = storyboard.gotoScene,
 	eventArguments = "mainMenu"
-} 
+}
 --]]
 local ui = require("ui")
 local physics = require("physics")
