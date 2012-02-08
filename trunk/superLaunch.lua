@@ -3,10 +3,14 @@ local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
+
 function scene:createScene( event )
 	print( "creating superLaunch" )
 	local group = self.view
 	arguments = storyboard.arguments
+
+
+
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
@@ -20,6 +24,7 @@ function scene:createScene( event )
 	---[[load sounds
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
+
 	local swooshSound = audio.loadSound("swoosh.mp3")	
 	local bounceSound = audio.loadSound("bounce.mp3")	
 	local owSound = audio.loadSound("ow.ogg")	
@@ -35,7 +40,7 @@ function scene:createScene( event )
 	local restartButton = nil
 	local timeBar = nil
 	local lifeBar = nil
-	local boostBar = nil	
+	local boostBar = nil
 	local timeCheck
 	local jetpackButton = nil
 	local shootingForTheStarsAchieved = false
@@ -47,7 +52,6 @@ function scene:createScene( event )
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
-	
 	---[[
 	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
 		timeMode = true
@@ -96,7 +100,7 @@ function scene:createScene( event )
 		mainContainerGroup:insert( game )
 		game.x = 0
 		overlayDisplay = display.newGroup()
-		mainContainerGroup:insert( overlayDisplay )	
+		mainContainerGroup:insert( overlayDisplay )
 		flame = display.newImage("flame.png")
 		flame.isVisible = false
 		game:insert( flame )
@@ -259,8 +263,36 @@ function scene:createScene( event )
 			physics.addBody( grass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 			grass.bodyName = "grass1"
 		end
-	
+		
 		local function AddSection()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			worldLength = worldLength + 1
 			local addition = (worldLength* 960 )
 			local newToys = true
@@ -270,6 +302,9 @@ function scene:createScene( event )
 					dgrass = display.newImage( "lava.png", true )
 					dgrass.bodyName = "lava"..worldLength
 					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+
+
+
 				else
 					newToys = false
 					dgrass = display.newImage( "quickSand.png", true )
@@ -279,15 +314,76 @@ function scene:createScene( event )
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
+
+
+
+
+
 				end
+
+
+
+
 			else
 				dgrass = display.newImage( "grass.png", true )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				dgrass.bodyName = "grass"..worldLength
 				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+
+
+
 			end
+
+
+
+
+
 			dgrass.x = addition; dgrass.y = groundReferencePoint - 20
+
+
 			
 			game:insert( dgrass )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			dgrass:toBack()
 			sky:toBack()
 			sky2:toBack()
@@ -310,6 +406,7 @@ function scene:createScene( event )
 							physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
 							game:insert( ramp )	
 							ramp:toFront()	
+
 						end
 					else 
 						if math.random(5) < 3 then
@@ -330,24 +427,49 @@ function scene:createScene( event )
 					end
 				end
 				
+
+
+
+
 				local star = display.newImage( "star.png" )
+
+
+
 				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
 				star.bodyName = "star"
 				physics.addBody( star, "static", { friction=0, bounce=0 } )
 				star.isSensor = true
 				game:insert( star )
 				 star:toFront()	
+
 				
+
+
+
+
 				local bacon = display.newImage( "bacon.png" )
+
+
+
+
 				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
 				bacon.bodyName = "bacon"
 				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
 				bacon.isSensor = true
 				game:insert( bacon )
 				bacon:toFront()	
+
 				
+
+
+
+
 				if math.random(100) < 15 then
 					local bomb = display.newImage( "bomb.png" )
+
+
+
+
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
 					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
@@ -356,8 +478,13 @@ function scene:createScene( event )
 					bomb:toFront()	
 				end
 				
+
+
+
 				if math.random(100) < 50 then
 					local jetRefill = display.newImage( "jetRefill.png" )
+
+
 					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
 					jetRefill.bodyName = "jetRefill"
 					physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
@@ -379,6 +506,12 @@ function scene:createScene( event )
 		end
 		
 		createFirstSection()
+
+
+
+
+
+
 		for i=1,2 do
 			AddSection()
 		end	
@@ -517,24 +650,15 @@ function scene:createScene( event )
 		end
 		
 		local removeMainItems = function( event )	
-			while game.numChildren > 0	do		
-				print("Clearing All "..game.numChildren.."in Game")				
-				for i=1, game.numChildren do
+			while game.numChildren > 0	dofor i=1, game.numChildren do
 					if game[i] ~= nil then
-						if game[i].bodyName ~= nil then
-							print("Clearing "..game[i].bodyName)
-						end
 						game:remove( i )
 					end
 				end
 			end
-			while overlayDisplay.numChildren > 0	do	
-				print("Clearing All "..overlayDisplay.numChildren.."in overlayDisplay")	
+			while overlayDisplay.numChildren > 0	do
 				for i=1, overlayDisplay.numChildren do
 					if overlayDisplay[i] ~= nil then
-						if overlayDisplay[i].bodyName ~= nil then
-							print("Clearing "..overlayDisplay[i].bodyName)
-						end
 						overlayDisplay:remove( i )
 					end
 				end
@@ -632,7 +756,6 @@ function scene:createScene( event )
 					
 					--Insert in to OpenFeint high score
 					gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
-					 	
 					if aggregatedScore > 49999 then gameNetwork.request( "unlockAchievement", "1395962" ) end
 					if aggregatedScore > 999999 then gameNetwork.request( "unlockAchievement", "1395982" ) end
 			else
@@ -670,7 +793,7 @@ function scene:createScene( event )
 			
 			if mainCharacter.x > score then
 				score = mainCharacter.x
-				scoreDisplay:setText( string.format( "%i", score ) )			
+				scoreDisplay:setText( string.format( "%i", score ) )
 				if not twentyThousandLeagueAchieved and score > 19999 then
 					gameNetwork.request( "unlockAchievement", "1395952" )
 					twentyThousandLeagueAchieved = true
@@ -815,7 +938,7 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", frameCheck )
 			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
-			Runtime:removeEventListener( "enterFrame", timeCheck )	
+			Runtime:removeEventListener( "enterFrame", timeCheck )
 			Runtime:removeEventListener( "enterFrame", showAngle )
 			if timeBar ~= nil then
 				timeBar:setSize( 0 )
@@ -941,7 +1064,7 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
-				elseif "ended" == phase or "cancelled" == phase then					
+				elseif "ended" == phase or "cancelled" == phase then
 					jetpackButton.isVisible = false
 					jetpackButton = nil
 					jetpackButton = ui.newButton{
@@ -953,7 +1076,7 @@ function scene:createScene( event )
 						onRelease = endJets
 					}
 					jetpackButton.bodyName = "Jet Pack Button"
-					overlayDisplay:insert(jetpackButton)					
+					overlayDisplay:insert(jetpackButton)
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					--slingshot:removeSelf()
@@ -976,8 +1099,6 @@ function scene:createScene( event )
 			-- should not be propagated to listeners of any objects underneath.
 			return true
 		end
-		
-		
 		local function launchCharacter()
 			Runtime:removeEventListener ( "enterFrame", showAngle )
 			if mainCharacter ~= nil then
@@ -1005,6 +1126,7 @@ function scene:createScene( event )
 				Runtime:addEventListener( "enterFrame", frameCheck )
 			end
 		end
+
 		
 		local function setAngle()
 		    storyboard.launchAngle = mainCharacter.y
