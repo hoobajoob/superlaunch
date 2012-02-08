@@ -19,8 +19,6 @@ function scene:createScene( event )
 
 	local bg = display.newImage( "background.png", true )
 	
-	local defaultField, numberField -- forward reference (needed for Lua closure)
-	
 	--Open GameData.sqlite.  If the file doesn't exist it will be created
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
@@ -34,11 +32,27 @@ function scene:createScene( event )
 	 
 	--setup the system listener to catch applicationExit
 	Runtime:addEventListener( "system", onSystemEvent )	
+	
+	group:insert( bg )	
+end
+
+function scene:enterScene( event )
+	local group = self.view
+	
+	local defaultField, numberField -- forward reference (needed for Lua closure)
  
 	local function updateUser( stringName )
-		userName = stringName
-		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..userName.."'") do
-			userIndex = row.ixUser break 
+		storyboard.userName = stringName
+		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."'") do
+			storyboard.userIndex = row.ixUser break 
+		end
+		if storyboard.userIndex == 0 then
+			local tablefill = [[INSERT INTO tblUsers VALUES (NULL, ']]..storyboard.userName..[[');]]
+			native.showAlert( "Superlaunch", "Database Insert = " .. tablefill, { "OK" } )
+			db:exec( tablefill )
+			for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."'") do
+				storyboard.userIndex = row.ixUser break 
+			end
 		end
 	end
  
@@ -58,8 +72,8 @@ function scene:createScene( event )
 							-- This event is called when the user stops editing a field:
 							-- for example, when they touch a different field or keyboard focus goes away
 					
-							print( "Text entered = " .. tostring( getObj().text ) )         -- display the text entered
-							updateUser(tostring( getObj().text ))
+						native.showAlert( "Superlaunch", "Text entered = " .. tostring( getObj().text ), { "OK" } )
+						updateUser(tostring( getObj().text ))
 							
 							
 					elseif ( "submitted" == event.phase ) then
@@ -70,8 +84,7 @@ function scene:createScene( event )
 							native.setKeyboardFocus( nil )
 					end
 					
-			end     -- "return function()"
-	 
+			end     -- "return function()"	 
 	end
 	 
 	-- Create our Text Field
@@ -81,17 +94,19 @@ function scene:createScene( event )
 	local backButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		defaultField:removeSelf()
+		defaultField = nil
 		storyboard.gotoScene("mainMenu")
 	end
 	
 	local submitButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
 		if defaultField ~= nil then
-			if username ~= defaultField.text then updateUser(tostring( defaultField.text )) end		
+			if storyboard.username ~= defaultField.text then updateUser(tostring( defaultField.text )) end		
 			defaultField.isVisible = false
+			defaultField:removeSelf()
 			defaultField = nil
 		end
-		native.showAlert( "SuperLaunch", "User Index is "..userIndex.." and Username is "..userName, 
+		native.showAlert( "SuperLaunch", "User Index is "..storyboard.userIndex.." and Username is "..storyboard.userName, 
 									{ "OK" } )
 		storyboard.gotoScene("mainMenu")
 	end
@@ -116,15 +131,8 @@ function scene:createScene( event )
 	}
 	submitButton.isVisible = true
 	
-	group:insert( bg )
 	group:insert(backButton)
 	group:insert(submitButton)
-	
-end
-
-function scene:enterScene( event )
-	local group = self.view
-	
 	-- Add the back key callback
 	Runtime:addEventListener( "key", onBackEvent );
 end

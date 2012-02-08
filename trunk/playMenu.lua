@@ -84,7 +84,6 @@ end
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 	print("entering playMenu")
-	
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	local group = self.view
 	Runtime:addEventListener( "key", onBackEvent )

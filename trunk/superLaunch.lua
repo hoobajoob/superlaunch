@@ -32,7 +32,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 100
+	local timeLeft = 10
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -265,34 +265,6 @@ function scene:createScene( event )
 		end
 		
 		local function AddSection()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			worldLength = worldLength + 1
 			local addition = (worldLength* 960 )
 			local newToys = true
@@ -302,9 +274,6 @@ function scene:createScene( event )
 					dgrass = display.newImage( "lava.png", true )
 					dgrass.bodyName = "lava"..worldLength
 					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-
-
-
 				else
 					newToys = false
 					dgrass = display.newImage( "quickSand.png", true )
@@ -314,80 +283,17 @@ function scene:createScene( event )
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
-
-
-
-
-
 				end
-
-
-
-
 			else
 				dgrass = display.newImage( "grass.png", true )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 				dgrass.bodyName = "grass"..worldLength
 				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-
-
-
 			end
-
-
-
-
-
 			dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-
-
-			
 			game:insert( dgrass )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			dgrass:toBack()
 			sky:toBack()
 			sky2:toBack()
-
 			if worldLength > 2 then					
 				if newToys == true then
 					toyX = addition + math.random( 10, 480 )
@@ -426,50 +332,22 @@ function scene:createScene( event )
 						end
 					end
 				end
-				
-
-
-
-
 				local star = display.newImage( "star.png" )
-
-
-
 				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
 				star.bodyName = "star"
 				physics.addBody( star, "static", { friction=0, bounce=0 } )
 				star.isSensor = true
 				game:insert( star )
-				 star:toFront()	
-
-				
-
-
-
-
+				star:toFront()	
 				local bacon = display.newImage( "bacon.png" )
-
-
-
-
 				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
 				bacon.bodyName = "bacon"
 				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
 				bacon.isSensor = true
 				game:insert( bacon )
 				bacon:toFront()	
-
-				
-
-
-
-
 				if math.random(100) < 15 then
 					local bomb = display.newImage( "bomb.png" )
-
-
-
-
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
 					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
@@ -477,14 +355,8 @@ function scene:createScene( event )
 					game:insert( bomb )
 					bomb:toFront()	
 				end
-				
-
-
-
 				if math.random(100) < 50 then
 					local jetRefill = display.newImage( "jetRefill.png" )
-
-
 					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
 					jetRefill.bodyName = "jetRefill"
 					physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
@@ -506,12 +378,7 @@ function scene:createScene( event )
 		end
 		
 		createFirstSection()
-
-
-
-
-
-
+		
 		for i=1,2 do
 			AddSection()
 		end	
@@ -650,7 +517,8 @@ function scene:createScene( event )
 		end
 		
 		local removeMainItems = function( event )	
-			while game.numChildren > 0	dofor i=1, game.numChildren do
+			while game.numChildren > 0	do
+				for i=1, game.numChildren do
 					if game[i] ~= nil then
 						game:remove( i )
 					end
@@ -750,8 +618,10 @@ function scene:createScene( event )
 					db:exec( tablesetup )
 
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
+					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..storyboard.userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
 					print (tablefill)
+					native.showAlert( "Superlaunch", "userIndex = " .. storyboard.userIndex , { "OK" } )
+					native.showAlert( "Superlaunch", "Database Insert = " .. tablefill , { "OK" } )
 					db:exec( tablefill )
 					
 					--Insert in to OpenFeint high score

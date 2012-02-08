@@ -579,7 +579,8 @@ function scene:createScene( event )
 		end
 		
 		local removeMainItems = function( event )	
-			while game.numChildren > 0	dofor i=1, game.numChildren do
+			while game.numChildren > 0	do
+			for i=1, game.numChildren do
 					if game[i] ~= nil then
 						game:remove( i )
 					end
