@@ -404,19 +404,6 @@ function scene:createScene( event )
 			
 			if #arguments > 2 then
 				launchType = arguments[3]
-				print ("Launch Type is: "..launchType)
-				if launchType == "hardLaunch" then	
-					local launchTypeLabel = ui.newLabel{
-							bounds = { display.contentWidth /2 - 45, 15 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
-							text = "Hard Launch Mode",
-							--font = "Trebuchet-BoldItalic",
-							textColor = { 255, 200, 100, 255 },
-							size = 33,
-							align = "center",
-							emboss = true
-						}
-					overlayDisplay:insert( launchTypeLabel )					
-				end
 			end
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
@@ -620,8 +607,6 @@ function scene:createScene( event )
 					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
 					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..storyboard.userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
 					print (tablefill)
-					native.showAlert( "Superlaunch", "userIndex = " .. storyboard.userIndex , { "OK" } )
-					native.showAlert( "Superlaunch", "Database Insert = " .. tablefill , { "OK" } )
 					db:exec( tablefill )
 					
 					--Insert in to OpenFeint high score
@@ -972,7 +957,7 @@ function scene:createScene( event )
 		local function launchCharacter()
 			Runtime:removeEventListener ( "enterFrame", showAngle )
 			if mainCharacter ~= nil then
-				angle = storyboard.launchAngle
+				angle = (storyboard.launchAngle - 7.5) * 50
 				power = storyboard.launchPower
 				display.getCurrentStage():setFocus( nil )
 				local t = mainCharacter
@@ -989,52 +974,55 @@ function scene:createScene( event )
 				t:removeEventListener( "touch", onTouch )
 				--Angle of 0 = all y Force. Angle of 100 = all x Force.
 				print ( "Angle = "..angle.." and Power = "..power )
-				local xForce = power * angle
-				local yForce = power * ( 100 - angle )
+				local xForce = power
+				local yForce = power / 100  * angle
 				print ( "xForce = "..xForce.." and yForce = "..yForce )
-				t:applyLinearImpulse( xForce , yForce , t.x + 9, t.y)
+				t:applyLinearImpulse( xForce * 3 , -yForce * 3 , t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 			end
 		end
 
 		
 		local function setAngle()
-		    storyboard.launchAngle = mainCharacter.y
-			
 			Runtime:removeEventListener ( "touch", setAngle )
 			print("angle set" )
-			timer.performWithDelay(500, launchCharacter )
+			storyboard.launched = true
+			launchCharacter()
 		end
 		
 		local function launchDefaultAngle()
 			Runtime:removeEventListener ( "touch", setAngle )
-			if storyboard.launchAngle == nil then
-				storyboard.launchAngle = 80			
-				timer.performWithDelay(500, launchCharacter )
+			if not storyboard.launched then	
+				launchCharacter()
 			end
 		end
 		
 		local direction = 1
 		showAngle = function()
+			angle = storyboard.launchAngle
 			if direction == 1 then
-				if mainCharacter.y >= 200 then
+				if angle >= 9.5 then
 					direction = 0
 				else
-					mainCharacter.y = mainCharacter.y + 4
+					storyboard.launchAngle = angle + .1
 				end
 			else
-				if mainCharacter.y <= 50 then
+				if angle <= 7.5 then
 					direction = 1
 				else
-					mainCharacter.y = mainCharacter.y - 4
+					storyboard.launchAngle = angle - .1
 				end
 			end
+			mainCharacter.x = 190 + 50 * math.sin( angle );
+			mainCharacter.y = 75 + 50 * math.cos( angle );
 		end
 	
 		if launchType == "hardLaunch" then
+			storyboard.launched = false
 			local power = storyboard.launchPower
 			Runtime:addEventListener ( "touch", setAngle )
 			timer.performWithDelay(5000, launchDefaultAngle )
+			storyboard.launchAngle = 7.5
 			Runtime:addEventListener ( "enterFrame", showAngle )
 		else
 			mainCharacter:addEventListener( "touch", onTouch )
