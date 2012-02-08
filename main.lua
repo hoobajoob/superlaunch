@@ -14,7 +14,6 @@ local splash = ls.newLoadingScreen{
 --]]
 local ui = require("ui")
 local physics = require("physics")
-local tableView = require("tableView")
 local ads = require("ads")
 local gameNetwork = require "gameNetwork"
 require "sqlite3"
@@ -26,8 +25,8 @@ gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60
 
 highScoreLeaderboard = "1002786"
 	
-userName = "Anonymous"
-userIndex = 0
+storyboard.userName = "Anonymous"
+storyboard.userIndex = 0
 
 playSounds = false
 	
@@ -49,31 +48,6 @@ end
 splash.loadingFinished()
 
 --storyboard.gotoScene( "mainMenu" )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 --[[
 local adSpace

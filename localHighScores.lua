@@ -2,6 +2,7 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+local widget = require("widget")
 
 function scene:createScene( event )
 	local group = self.view
@@ -28,58 +29,13 @@ function scene:createScene( event )
 	
 	local usersList = {}
 	for row in db:nrows("SELECT ixUser, sName FROM tblUsers") do
-		print("adding user "..row.ixUser.." - "..row.sName)
+		print("adding user "..row.ixUser.." - "..row.sName)		
 		usersList[row.ixUser] = row
 	end
 	
-	local highScoreData = {}
-	curRow = 1
-	for row in db:nrows("SELECT ixHighScore, ixUser, dScore, dtCreated FROM tblHighScores ORDER BY dScore DESC") do
-		if usersList[row.ixUser] == nil then
-			row.sName = "Anonymous" 
-		else 
-			row.sName = usersList[row.ixUser].sName 
-		end
-		highScoreData[curRow] = row
-		curRow = curRow + 1
-	end
 	local onListItemRelease = function(event)
 		--Todo:Open High Score in OpenFeint or play replay
-	end
-	group.list = tableView.newList{
-		data=highScoreData, 
-		default="highScoreListItem.png",
-		over="highScoreListItem_Over.PNG",
-		onRelease=onListItemRelease,
-		top=100 + display.screenOriginY,
-		bottom=bottomBoundary,
-		backgroundColor={ 0, 0, 0 },
-		callback=function(row) 
-		
-			local group = display.newGroup()
-			
-			group.nameText = display.newText(group, row.sName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 20)
-			group.nameText:setTextColor(255, 255, 100)
-			group.nameText.x = math.floor( group.nameText.width / 2) + 10
-			group.nameText.y = 20
-			
-			--[[
-			group.descriptionText = display.newText(group, row.description, 0, 0, native.systemFontBold, 12)
-			group.descriptionText:setTextColor(65, 65, 65)
-			group.descriptionText.x = math.floor( group.descriptionText.width / 2) + 10
-			group.descriptionText.y = group.nameText.y +  group.descriptionText.height * 1.5
-			--]]
-		
-		--	group.linkText = display.newText(group, row.link, 0, 0, native.systemFontBold, 10)
-		--	group.linkText:setTextColor(0, 0, 128)
-		--	group.linkText.x = math.floor( group.linkText.width / 2) + 10
-		--	group.linkText.y = 70 --group.height --  group.linkText.height 
-				
-			return group
-		end
-	}
-	group.list:addScrollBar(200, 200, 200)
-	
+	end	
 	
 	local backButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
@@ -95,10 +51,52 @@ function scene:createScene( event )
 		y = 30
 	}
 	backButton.isVisible = true
-	
+	--[[
+	local highScoreData = {}
+	curRow = 1
+	for row in db:nrows("SELECT ixHighScore, ixUser, dScore, dtCreated FROM tblHighScores ORDER BY dScore DESC") do
+		if usersList[row.ixUser] == nil then
+			row.sName = "Anonymous" 
+		else 
+			row.sName = usersList[row.ixUser].sName 
+		end
+		highScoreData[curRow] = row
+		curRow = curRow + 1
+	end
+	--]]
+	local list = widget.newTableView{
+		top = 100 + display.screenOriginY,
+		height = 220
+	}
+	--list:sync( highScoreData )
+	---[[
+	local curHeight = 100
+	for row in db:nrows("SELECT ixHighScore, ixUser, dScore, dtCreated FROM tblHighScores ORDER BY dScore DESC") do	
+		local function onRowRender( event )
+		local curRow = event.target
+			if usersList[row.ixUser] == nil then
+				row.sName = "Anonymous" 
+			else 
+				row.sName = usersList[row.ixUser].sName 
+			end
+			local text = display.newText( row.sName.." - "..string.format( "%i", row.dScore) .." - "..row.dtCreated, 0, 0, native.systemFontBold, 16)
+			text:setReferencePoint( display.CenterLeftReferencePoint )
+			text.x = 25
+			text.y = curRow.height * 0.5
+			--text.y = curHeight + (curRow.height * 0.5)
+			curHeight = curHeight + curRow.height
+		end
+		list:insertRow{
+			id = "index "..row.ixHighScore,
+			height = 20,
+			rowColor = { 0, 0, 0, 255 },
+			onRender = onRowRender
+		}
+	end
+	--]]
+	group:insert(list.view)
 	group:insert( bg )
 	group:insert(backButton)
-	group:insert(group.list)
 end
 
 function scene:enterScene( event )
