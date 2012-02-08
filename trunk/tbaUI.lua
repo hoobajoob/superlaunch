@@ -28,10 +28,10 @@ function newBar( params )
 		group:insert( bar )
 		
 		if params.beautyBar then
-			local topLine = display.newLine( left, top - 4, left + size, top - 4 )
+			local topLine = display.newLine( left - 2, top - 4, left + size + 2, top - 4 )
 			topLine.width = 3
 			topLine:setColor ( 200, 200, 200, 255 )
-			local bottomLine = display.newLine( left, top + width - 1, left + size, top + width - 1)
+			local bottomLine = display.newLine( left - 2, top + width - 1, left + size + 2, top + width - 1)
 			bottomLine.width = 3
 			bottomLine:setColor ( 200, 200, 200, 255 )
 			local leftLine = display.newLine( left - 1, top - 5, left - 1, top + width )
