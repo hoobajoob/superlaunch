@@ -12,7 +12,7 @@ local function onBackEvent( event )
 		storyboard.gotoScene("mainMenu")
 	end
 	return true
-end
+end	
 
 function scene:createScene( event )
 	local group = self.view
