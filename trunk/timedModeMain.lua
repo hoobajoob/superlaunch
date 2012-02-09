@@ -9,7 +9,7 @@ local function onBackEvent( event )
 	
 	if (keyName == "back" and phase == "up") then 
 		Runtime:removeEventListener( "key", onBackEvent )
-		storyboard.gotoScene("mainMenu")
+		storyboard.gotoScene("playMenu")
 	end
 	return true
 end
@@ -43,7 +43,7 @@ function scene:createScene( event )
 	
 	local backButtonPress = function( event )
 		Runtime:removeEventListener( "key", onBackEvent )
-		storyboard.gotoScene("mainMenu")
+		storyboard.gotoScene("playMenu")
 	end
 	
 	local backButton = ui.newButton{

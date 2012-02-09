@@ -2,7 +2,7 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
-
+local onBackEvent = {}
 
 function scene:createScene( event )
 	print( "creating superLaunch" )
@@ -817,6 +817,17 @@ function scene:createScene( event )
 			removeMainItems()			
 			goToMenu()
 		end
+		
+		function onBackEvent( event )
+			local phase = event.phase
+			local keyName = event.keyName
+			
+			if (keyName == "back" and phase == "up") then 
+				Runtime:removeEventListener( "key", onBackEvent )
+				backButtonPress( event )
+			end
+			return true
+		end	
 
 		local backButton = ui.newButton{
 			defaultSrc = "btn_back.png",
@@ -1199,6 +1210,7 @@ end
 function scene:enterScene( event )
 	print( "entering superLaunch" )
 	local group = self.view
+	Runtime:addEventListener( "key", onBackEvent )
 	ads.hide();
 end
 
@@ -1210,6 +1222,7 @@ function scene:exitScene( event )
 				timeBar.isVisible = false
 				timeBar = nil
 			end
+	Runtime:removeEventListener( "key", onBackEvent )
 end
 
 function scene:destroyScene( event )

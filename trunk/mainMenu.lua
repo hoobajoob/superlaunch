@@ -6,29 +6,7 @@ local ls = require( "loadingScreen" )
 
 local scene = storyboard.newScene()
 
--- Handler that gets notified when the alert closes
-local function onQuitComplete( event )
-		if "clicked" == event.action then
-				local i = event.index
-				if 1 == i then							
-					native.requestExit()
-				elseif 2 == i then
-					-- Do nothing; dialog will simply dismiss
-				end
-		end
-end
-	
--- Back Key listener
-local function onKeyEvent( event )
-	local phase = event.phase
-	local keyName = event.keyName
-
-	if (keyName == "back" and phase == "up") then 
-		local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
-									{ "YES", "NO" }, onQuitComplete )
-	end
-	return true
-end
+local onKeyEvent = {}
 	 
 --Handle the applicationExit event to close the db
 function onSystemEvent( event )
@@ -57,7 +35,29 @@ function scene:createScene( event )
 		fadeOut = true
 	}
 	print("creating mainmenu")
-	local group = self.view
+	local group = self.view	
+
+	-- Handler that gets notified when the alert closes
+	local function onQuitComplete( event )
+			if "clicked" == event.action then
+					local i = event.index
+					if 1 == i then							
+						native.requestExit()
+					end
+			end
+	end
+		
+	-- Back Key listener
+	function onKeyEvent:key( event )
+		local phase = event.phase
+		local keyName = event.keyName
+
+		if (keyName == "back" and phase == "up") then 
+			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
+										{ "YES", "NO" }, onQuitComplete )
+		end
+		return true
+	end	
 	
 	local bg = display.newImage( "background.png", true )
 	group:insert( bg )
@@ -157,8 +157,6 @@ function scene:enterScene( event )
 	local group = self.view
 	storyboard.removeScene( "superLaunch" )
 	-- Add the back key callback
-	if (onKeyEvent ~= nil) then print("onKeyEvent Exists") end
-	Runtime:removeEventListener( "key", onKeyEvent )
 	Runtime:addEventListener( "key", onKeyEvent )
 	
 	-- iPhone, iPod touch, iPad, android etc
@@ -177,6 +175,7 @@ end
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
+	Runtime:removeEventListener( "key", onKeyEvent )
 end
 
 -----------------------------------------------------------------------------------------
