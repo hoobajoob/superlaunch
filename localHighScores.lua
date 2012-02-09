@@ -4,16 +4,21 @@ local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget")
 -- Back Key listener
+-- Back Key listener
 local function onBackEvent( event )
 	local phase = event.phase
 	local keyName = event.keyName
 	
 	if (keyName == "back" and phase == "up") then 
-		Runtime:removeEventListener( "key", onBackEvent )
-		storyboard.gotoScene("highScores")
+		storyboard.gotoScene("mainMenu")
 	end
 	return true
 end	
+
+local function addKeyEvent()
+	print( "adding Key Listener" )
+	Runtime:addEventListener( "key", onBackEvent )
+end
 
 function scene:createScene( event )
 	local group = self.view
@@ -116,7 +121,7 @@ function scene:enterScene( event )
 	group:insert(list.view)
 	group:insert( bg )
 	group:insert(backButton)
-	Runtime:addEventListener( "key", onBackEvent );
+	timer.performWithDelay( 10, addKeyEvent )
 end
 
 function scene:exitScene( event )

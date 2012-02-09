@@ -3,10 +3,31 @@ local ui = require("ui")
 local storyboard = require( "storyboard" )
 local ls = require( "loadingScreen" )
 
-
 local scene = storyboard.newScene()
 
-local onKeyEvent = {}
+-- Handler that gets notified when the alert closes
+local function onQuitComplete( event )
+	if "clicked" == event.action then
+		local i = event.index
+		if 1 == i then							
+			native.requestExit()
+		end
+	end
+	return true
+end
+
+local function onKeyEvent( event )
+	if (event.keyName == "back" and event.phase == "up") then 
+		local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
+									{ "YES", "NO" }, onQuitComplete )
+	end
+	return true
+end	
+
+local function addKeyEvent()
+	print( "adding Key Listener" )
+	Runtime:addEventListener( "key", onKeyEvent )
+end
 	 
 --Handle the applicationExit event to close the db
 function onSystemEvent( event )
@@ -36,28 +57,6 @@ function scene:createScene( event )
 	}
 	print("creating mainmenu")
 	local group = self.view	
-
-	-- Handler that gets notified when the alert closes
-	local function onQuitComplete( event )
-			if "clicked" == event.action then
-					local i = event.index
-					if 1 == i then							
-						native.requestExit()
-					end
-			end
-	end
-		
-	-- Back Key listener
-	function onKeyEvent:key( event )
-		local phase = event.phase
-		local keyName = event.keyName
-
-		if (keyName == "back" and phase == "up") then 
-			local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
-										{ "YES", "NO" }, onQuitComplete )
-		end
-		return true
-	end	
 	
 	local bg = display.newImage( "background.png", true )
 	group:insert( bg )
@@ -71,23 +70,19 @@ function scene:createScene( event )
 	db:exec( tablesetup )
 	
 	local playButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("playMenu")
 	end
 	
 	local loginButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("localLogin")
 	end
 	
 	local highScoresButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("highScores")
 	end
 	
 	local helpButtonPress = function( event )
 		ads.hide()
-		Runtime:removeEventListener( "key", onKeyEvent )
 		storyboard.gotoScene("help")
 	end
 	
@@ -157,7 +152,7 @@ function scene:enterScene( event )
 	local group = self.view
 	storyboard.removeScene( "superLaunch" )
 	-- Add the back key callback
-	Runtime:addEventListener( "key", onKeyEvent )
+	timer.performWithDelay( 10, addKeyEvent )
 	
 	-- iPhone, iPod touch, iPad, android etc
 	ads.show( "banner", { x=0, y=0, interval=10 } )
