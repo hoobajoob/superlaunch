@@ -8,11 +8,15 @@ local function onBackEvent( event )
 	local keyName = event.keyName
 	
 	if (keyName == "back" and phase == "up") then 
-		Runtime:removeEventListener( "key", onBackEvent )
 		storyboard.gotoScene("mainMenu")
 	end
 	return true
 end	
+
+local function addKeyEvent()
+	print( "adding Key Listener" )
+	Runtime:addEventListener( "key", onBackEvent )
+end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -39,7 +43,6 @@ function scene:createScene( event )
 	end
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onBackEvent )
 		storyboard.gotoScene("mainMenu")
 	end
 	
@@ -86,7 +89,7 @@ function scene:enterScene( event )
 	print("entering playMenu")
 	-- INSERT code here (e.g. start timers, load audio, start listeners, etc.)
 	local group = self.view
-	Runtime:addEventListener( "key", onBackEvent )
+	timer.performWithDelay( 10, addKeyEvent )
 	-- Add the back key callback
 end
 

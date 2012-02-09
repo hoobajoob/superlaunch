@@ -4,6 +4,11 @@ local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local onBackEvent = {}
 
+local function addKeyEvent()
+	print( "adding Key Listener" )
+	Runtime:addEventListener( "key", onBackEvent )
+end
+
 function scene:createScene( event )
 	print( "creating superLaunch" )
 	local group = self.view
@@ -491,18 +496,6 @@ function scene:createScene( event )
 			blood.x = mainCharacter.x + 10; blood.y = mainCharacter.y
 		end
 		
-		local goToMenu = function ( event )
-			if menuButton ~= nil then
-				menuButton.isVisible = false
-				menuButton = nil
-			end
-			if restartButton ~= nil then
-				restartButton.isVisible = false
-				restartButton = nil
-			end
-			storyboard.gotoScene("mainMenu")
-		end
-		
 		local removeMainItems = function( event )	
 			while game.numChildren > 0	do
 				for i=1, game.numChildren do
@@ -520,6 +513,44 @@ function scene:createScene( event )
 			end
 		end
 		
+		local goToMenu = function ( event )
+			if menuButton ~= nil then
+				menuButton.isVisible = false
+				menuButton = nil
+			end
+			if restartButton ~= nil then
+				restartButton.isVisible = false
+				restartButton = nil
+			end
+			Runtime:removeEventListener( "key", onKeyEvent )	
+			Runtime:removeEventListener( "enterFrame", frameCheck )
+			Runtime:removeEventListener( "enterFrame", removeLifeLava )
+			Runtime:removeEventListener( "collision", onGlobalCollision )
+			Runtime:removeEventListener( "enterFrame", timeCheck )
+			Runtime:removeEventListener( "enterFrame", showAngle )
+			if timeBar ~= nil then
+				timeBar:setSize( 0 )
+				timeBar.isVisible = false
+				timeBar = nil
+			end
+			if lifeBar ~= nil then
+				lifeBar:setSize( 0 )
+				lifeBar.isVisible = false
+				lifeBar = nil
+			end
+			if boostBar ~= nil then
+				boostBar:setSize( 0 )
+				boostBar.isVisible = false
+				boostBar = nil
+			end
+			if mainCharacter ~= nil then
+				mainCharacter.isVisible = false
+				mainCharacter = nil
+			end
+			removeMainItems()	
+			storyboard.gotoScene("mainMenu")
+		end
+		
 		local function showDeath( deathType )
 			lifeBar:setSize( 0 )
 			boostBar:setSize ( 0 )
@@ -534,11 +565,6 @@ function scene:createScene( event )
 			jetpackButton.isVisible = false	
 			jetpackButton:removeSelf();
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
-			
-			local menuButtonPress = function ( event )
-				menuButton.isVisible = false
-				goToMenu()
-			end
 									
 			menuButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
@@ -787,44 +813,13 @@ function scene:createScene( event )
 				showDeath( "explosion" )
 			end
 		end
-	
-		local backButtonPress = function( event )
-			Runtime:removeEventListener( "key", onKeyEvent )	
-			Runtime:removeEventListener( "enterFrame", frameCheck )
-			Runtime:removeEventListener( "enterFrame", removeLifeLava )
-			Runtime:removeEventListener( "collision", onGlobalCollision )
-			Runtime:removeEventListener( "enterFrame", timeCheck )
-			Runtime:removeEventListener( "enterFrame", showAngle )
-			if timeBar ~= nil then
-				timeBar:setSize( 0 )
-				timeBar.isVisible = false
-				timeBar = nil
-			end
-			if lifeBar ~= nil then
-				lifeBar:setSize( 0 )
-				lifeBar.isVisible = false
-				lifeBar = nil
-			end
-			if boostBar ~= nil then
-				boostBar:setSize( 0 )
-				boostBar.isVisible = false
-				boostBar = nil
-			end
-			if mainCharacter ~= nil then
-				mainCharacter.isVisible = false
-				mainCharacter = nil
-			end
-			removeMainItems()			
-			goToMenu()
-		end
 		
 		function onBackEvent( event )
 			local phase = event.phase
 			local keyName = event.keyName
 			
-			if (keyName == "back" and phase == "up") then 
-				Runtime:removeEventListener( "key", onBackEvent )
-				backButtonPress( event )
+			if (keyName == "back" and phase == "up") then 				
+				goToMenu( event )
 			end
 			return true
 		end	
@@ -832,7 +827,7 @@ function scene:createScene( event )
 		local backButton = ui.newButton{
 			defaultSrc = "btn_back.png",
 			overSrc = "btn_back.png",
-			onRelease = backButtonPress,
+			onRelease = goToMenu,
 			emboss = true,
 			x = 470,
 			y = 30
@@ -1188,29 +1183,14 @@ function scene:createScene( event )
 		mainCharacter:addEventListener( "postCollision", mainCharacter )
 		
 		return game
-	end
-	
-	-- Back Key listener
-	local function onKeyEventSuperLaunch( event )
-		local phase = event.phase
-		local keyName = event.keyName
-
-		if (phase == "up" and keyName == "back") then 
-			Runtime:removeEventListener( "key", onKeyEvent );
-			timer.performWithDelay(100, moveBack("characterSelect", "moveFromLeft", {"superLaunch"}), 1)
-		end
-	end
-	
-	-- Add the back key callback
-	Runtime:addEventListener( "key", onKeyEventSuperLaunch );	
-	
+	end	
 	start()
 end
 
 function scene:enterScene( event )
 	print( "entering superLaunch" )
 	local group = self.view
-	Runtime:addEventListener( "key", onBackEvent )
+	timer.performWithDelay( 10, addKeyEvent )
 	ads.hide();
 end
 

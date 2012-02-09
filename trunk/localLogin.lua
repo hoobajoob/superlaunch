@@ -8,14 +8,20 @@ local function onBackEvent( event )
 	local keyName = event.keyName
 	
 	if (keyName == "back" and phase == "up") then 
-		Runtime:removeEventListener( "key", onBackEvent )
+		defaultField:removeSelf()
+		defaultField = nil	
 		storyboard.gotoScene("mainMenu")
 	end
 	return true
+end	
+
+local function addKeyEvent()
+	print( "adding Key Listener" )
+	Runtime:addEventListener( "key", onBackEvent )
 end
 
 function scene:createScene( event )
-	local group = self.view
+	local group = self.view	
 
 	local bg = display.newImage( "background.png", true )
 	
@@ -38,7 +44,6 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
-	
 	local defaultField, numberField -- forward reference (needed for Lua closure)
  
 	local function updateUser( stringName )
@@ -92,14 +97,12 @@ function scene:enterScene( event )
 			fieldHandler( function() return defaultField end ) )    -- passes the text field object
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
 		defaultField:removeSelf()
 		defaultField = nil
 		storyboard.gotoScene("mainMenu")
 	end
 	
 	local submitButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
 		if defaultField ~= nil then
 			if storyboard.username ~= defaultField.text then updateUser(tostring( defaultField.text )) end		
 			defaultField.isVisible = false
@@ -134,7 +137,7 @@ function scene:enterScene( event )
 	group:insert(backButton)
 	group:insert(submitButton)
 	-- Add the back key callback
-	Runtime:addEventListener( "key", onBackEvent );
+	timer.performWithDelay( 10, addKeyEvent )
 end
 
 function scene:exitScene( event )

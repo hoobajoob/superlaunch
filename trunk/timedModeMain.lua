@@ -8,10 +8,15 @@ local function onBackEvent( event )
 	local keyName = event.keyName
 	
 	if (keyName == "back" and phase == "up") then 
-		Runtime:removeEventListener( "key", onBackEvent )
+		
 		storyboard.gotoScene("playMenu")
 	end
 	return true
+end
+
+local function addKeyEvent()
+	print( "adding Key Listener" )
+	Runtime:addEventListener( "key", onBackEvent )
 end
 
 function scene:createScene( event )
@@ -42,7 +47,7 @@ function scene:createScene( event )
 		}
 	
 	local backButtonPress = function( event )
-		Runtime:removeEventListener( "key", onBackEvent )
+		
 		storyboard.gotoScene("playMenu")
 	end
 	
@@ -154,7 +159,7 @@ function scene:enterScene( event )
 	----Fix
 	scene.createScene( self )
 	-- Add the back key callback
-	Runtime:addEventListener( "key", onBackEvent );
+	timer.performWithDelay( 10, addKeyEvent )
 end
 
 function scene:exitScene( event )
