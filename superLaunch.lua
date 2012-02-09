@@ -3,6 +3,7 @@ local ui = require("ui")
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local onBackEvent = {}
+local frameCheck = {}
 
 local function addKeyEvent()
 	print( "adding Key Listener" )
@@ -657,7 +658,7 @@ function scene:createScene( event )
 		local tPrevious = system.getTimer()
 		local tNotMovingPrevious = system.getTimer()
 		local tAdShownPrevious = system.getTimer()
-		local function frameCheck( event )
+		function frameCheck( event )
 			
 			if not shootingForTheStarsAchieved and mainCharacter.y < -900 then
 				gameNetwork.request( "unlockAchievement", "1395992" )
