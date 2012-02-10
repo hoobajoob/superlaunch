@@ -964,6 +964,18 @@ function scene:createScene( event )
 		local function launchCharacter()
 			Runtime:removeEventListener ( "enterFrame", showAngle )
 			if mainCharacter ~= nil then
+				jetpackButton.isVisible = false
+				jetpackButton = nil
+				jetpackButton = ui.newButton{
+					defaultSrc = "jetPack.png",
+					x = 445,
+					y = 245,
+					overSrc = "jetPackOver.png",
+					onPress = startJets,
+					onRelease = endJets
+				}
+				jetpackButton.bodyName = "Jet Pack Button"
+				overlayDisplay:insert(jetpackButton)
 				angle = (storyboard.launchAngle - 7.5) * 50
 				power = storyboard.launchPower
 				display.getCurrentStage():setFocus( nil )
