@@ -4,6 +4,8 @@ local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local onBackEvent = {}
 local frameCheck = {}
+local applyJetpackBoost = {}
+local endJets
 
 local function addKeyEvent()
 	print( "adding Key Listener" )
@@ -38,7 +40,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 10
+	local timeLeft = 30
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -303,7 +305,7 @@ function scene:createScene( event )
 			if worldLength > 2 then					
 				if newToys == true then
 					toyX = addition + math.random( 10, 480 )
-					if math.random(100) < 83 then
+					if math.random(100) < 85 then
 						if math.random(5) < 3 then
 							local trampoline = display.newImage( "trampoline.png" )
 							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
@@ -371,7 +373,7 @@ function scene:createScene( event )
 					jetRefill:toFront()	
 				end
 				
-				if math.random(100) < 15 then				
+				if math.random(100) < 95 then				
 					local roosterPH = display.newImage( "rooster.png" )
 					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
 					roosterPH.bodyName = "rooster"
@@ -515,6 +517,12 @@ function scene:createScene( event )
 		end
 		
 		local goToMenu = function ( event )
+			if rooster ~= nil then
+				rooster:pause()
+				rooster.isVisible = false
+				rooster:removeSelf()
+				rooster = nil
+			end
 			if menuButton ~= nil then
 				menuButton.isVisible = false
 				menuButton = nil
@@ -565,6 +573,7 @@ function scene:createScene( event )
 			
 			jetpackButton.isVisible = false	
 			jetpackButton:removeSelf();
+			endJets()
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 									
 			menuButton = ui.newButton{
@@ -838,7 +847,7 @@ function scene:createScene( event )
 		
 		local jetpackSoundChannel
 		local tJetpack = system.getTimer()
-		local function applyJetpackBoost( event )			
+		function applyJetpackBoost:enterFrame( event )			
 			flame.x = mainCharacter.x - 20
 			flame.y = mainCharacter.y + 40
 			flame:toFront()
@@ -872,7 +881,7 @@ function scene:createScene( event )
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
-		local function endJets()
+		function endJets()
 			audio.stop( jetChannel )
 			flame.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
@@ -1093,17 +1102,16 @@ function scene:createScene( event )
 					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
 					event.other.isVisible = false
 					rooster.x = event.other.x; rooster.y = event.other.y
-					game.y = rooster.y - 240
-					rooster.isVisible = true
-					rooster:prepare()						
+					--game.y = rooster.y - 240	TODO: I still want the camera to move, but it's causing crashes.  WHYYYYY!!!!!!
+					rooster.isVisible = true	
 					rooster:toFront()
+					rooster:prepare()		
 					rooster:play()
 					Runtime:removeEventListener( "enterFrame", frameCheck )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					Runtime:removeEventListener( "collision", onGlobalCollision )
 					showDeath ( "bloody" )
 				elseif bodyName ~= nil and string.find( bodyName, "spikeWall" ) ~= nil then
-					print("removing event Listeners")
 					Runtime:removeEventListener( "enterFrame", frameCheck )
 					Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					Runtime:removeEventListener( "collision", onGlobalCollision )
