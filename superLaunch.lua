@@ -51,6 +51,7 @@ function scene:createScene( event )
 	local boostBar = nil
 	local timeCheck
 	local jetpackButton = nil
+	local jetpackButtonOver = nil
 	local shootingForTheStarsAchieved = false
 	local twentyThousandLeagueAchieved = false
 	
@@ -373,7 +374,7 @@ function scene:createScene( event )
 					jetRefill:toFront()	
 				end
 				
-				if math.random(100) < 95 then				
+				if math.random(100) < 10 then				
 					local roosterPH = display.newImage( "rooster.png" )
 					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
 					roosterPH.bodyName = "rooster"
@@ -855,6 +856,7 @@ function scene:createScene( event )
 			if boost > 0 then		
 				if tDelta > 150 and mainCharacter ~= nil then	
 					flame.isVisible = true
+					jetpackButtonOver.isVisible = true
 					tJetpack = event.time
 					if boost < 10 then
 						boost = 0
@@ -866,6 +868,7 @@ function scene:createScene( event )
 				end
 			else
 				flame.isVisible = false
+				jetpackButtonOver.isVisible = false
 			end
 		end
 		local jetChannel
@@ -877,19 +880,23 @@ function scene:createScene( event )
 		local function startJets()
 			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
 			if playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
-			flame.isVisible = true
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		function endJets()
 			audio.stop( jetChannel )
 			flame.isVisible = false
+			jetpackButtonOver.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		jetpackButton = display.newImage( "jetPack.png" )
 		overlayDisplay:insert(jetpackButton)
 		jetpackButton.x = 445; jetpackButton.y = 245
+		jetpackButtonOver = display.newImage( "jetPackOver.png" )
+		overlayDisplay:insert(jetpackButtonOver)
+		jetpackButtonOver.x = 445; jetpackButtonOver.y = 245
+		jetpackButtonOver.isVisible = false
 		
 		local tLava = system.getTimer()
 		local function removeLifeLava( event )
