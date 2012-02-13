@@ -1,0 +1,21 @@
+Superlaunch is a simple, yet surprisingly fun game where you launch your character as far as possible and try to achieve a high score.  You can also try for many other achievements when playing with OpenFeint enabled.
+
+First, you will come upon the character select screen.  Here you simply touch the character that you would like to launch across the screen.
+
+Following the character select, you will have a choice between the Slingshot Launch Mode and Hard Launch Mode.  In SlingShot Launch Mode, you will touch and hold the character, then drag back and up/down to create the angle and power desired.  When you let go, the character will be launched across the screen.  In Hard Launch Mode, you will be presented with a start button.  When you touch that button, you will need to pay close attention, for when the screen turns green and the word "POWER!!" is displayed, you want to press the screen as fast as possible.  The longer you wait, the more red the screen will turn and the less power your launch will have.  Next, the screen will show a vertical meter, with a bar moving from the bottom to the top and the word "ANGLE!!" at the top.  The angle of your launch will depend on the location of the bar when you touch the screen.  If the bar stops at the top, your launch will be completely vertical.  If the bar stops at the bottom, your launch will be just below horizontal.  After you have chosen the angle, your character will be launched.
+
+After you have launched your character, you will have a limited amount of jet fuel to power your jet pack.  You can use this by touching the Jet Pack Icon on the bottom right.  Be careful, though, it is limited and you will see the bar below the Jet Pack slowly diminish and turn red.  When you are out of jet fuel, you will not be able to use your Jet Pack unless your character picks up some more Jet Fuel.
+
+As your character flys through the air, you may come across the following items:
+Star: A star is your most helpful airborne item.  It will give your character a big boost, causing it to travel higher, faster and farther.
+Bacon: Bacon is also a helpful airborne item.  It does not give you as big of a boost as the star, but it replenishes a small amount of your live.
+Bomb: A bomb is a negative airborn item and it will reduce your life as well as cause your character to slow.
+
+As your character is sliding on the ground, you may come across the following items:
+Ramp: A ramp will cause your character to be redirected up in to the sky.
+Trampoline: A trampoline will bounce your character towards the sky in a more upward direction than a ramp.
+Keg: A keg will cause your character to stop immediately.  Your only option to continue forward is to use your jetpack to go up and over the keg.  If you are out of Jet Fuel, you are out of luck.
+
+Check the OpenFeint menu to see possible achievements and high scores, or check the local high scores menu to see all the scores for those who have played on your phone.
+
+GOOD LUCK AND GOOD LAUNCHING!!!!
