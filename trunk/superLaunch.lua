@@ -280,7 +280,7 @@ function scene:createScene( event )
 			local newToys = true
 			local dgrass
 			if worldLength > 1 and math.random(5) < 3 then
-				if math.random(5) < 3 then
+				if math.random(5) < 4 then
 					dgrass = display.newImage( "lava.png", true )
 					dgrass.bodyName = "lava"..worldLength
 					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
@@ -617,22 +617,6 @@ function scene:createScene( event )
 			if timeMode and timeLeft <= 0 then
 				local aggregatedScore = 0
 				table.sort( totalScore, function(a,b) return a>b end )  --Sort the top 4 scores in descending order
-				for i=1, #totalScore do
-					aggregatedScore = aggregatedScore + totalScore[i]
-					print("Score " .. i .. " = " .. totalScore[i])
-				end
-				local totalDisplay = ui.newLabel{
-						bounds = { display.contentWidth - 320, 200 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
-						text = string.format( "%i", aggregatedScore ),
-						--font = "Trebuchet-BoldItalic",
-						textColor = { 255, 225, 102, 255 },
-						size = 32,
-						align = "center"
-					}
-				totalDisplay.bodyName = "totalDisplay"
-				overlayDisplay:insert( totalDisplay )
-				score = 0
-				
 				
 				local usersList = {}
 				for row in db:nrows("SELECT ixUser, sName FROM tblUsers") do
@@ -642,7 +626,7 @@ function scene:createScene( event )
 				
 				local list = widget.newTableView{
 					left = 96,
-					top = 90 + display.screenOriginY,
+					top = 100 + display.screenOriginY,
 					topPadding = 20,
 					bottomPadding = 20,
 					width = 288,
@@ -683,6 +667,7 @@ function scene:createScene( event )
 						--curHeight = curHeight + row.height
 						event.view:insert( text )
 					end
+				score = 0
 					list:insertRow{
 						id = "index "..i,
 						height = 30,
@@ -1131,7 +1116,7 @@ function scene:createScene( event )
 			if ( event.phase == "began" ) then
 				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
 				local bodyName = event.other.bodyName
-				if self.bodyName == "lava" or bodyName == "lava" then
+				if string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil then
 					life = life - 1
 					lifeBar:setSize( life )
 					print("adding lava removal listener")
@@ -1184,7 +1169,7 @@ function scene:createScene( event )
 
 				elseif ( event.phase == "ended" ) then
 					--print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
-					if self.bodyName == "lava" or event.other.bodyName == "lava" then				
+					if string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil then				
 						Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					end
 				end
