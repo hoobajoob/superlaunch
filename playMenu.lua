@@ -27,15 +27,13 @@ function scene:createScene( event )
 	group:insert( bg )
 	
 	local classicButtonPress = function( event )
-		Runtime:removeEventListener( "key", onKeyEvent )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 		storyboard.arguments = "superLaunch"
 		storyboard.gotoScene("timedModeMain")
 	end
 	
-	local levelButtonPress = function( event )	
-		Runtime:removeEventListener( "key", onKeyEvent )
+	local levelButtonPress = function( event )
 		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
 		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 		storyboard.arguments = "levelMenu"

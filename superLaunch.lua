@@ -1,6 +1,7 @@
 module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
+local widget = require("widget")
 local scene = storyboard.newScene()
 local onBackEvent = {}
 local frameCheck = {}
@@ -33,14 +34,14 @@ function scene:createScene( event )
 	local explosionSound = audio.loadSound("grenade.mp3")
 	local boingSound = audio.loadSound("boing.ogg")
 
-	local swooshSound = audio.loadSound("swoosh.mp3")	
+	local swooshSound = audio.loadSound("swoosh.mp3")
 	local bounceSound = audio.loadSound("bounce.mp3")	
 	local owSound = audio.loadSound("ow.ogg")	
 	local jetSound = audio.loadSound("jetFuel.mp3")	
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 30
+	local timeLeft = 10
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -78,7 +79,7 @@ function scene:createScene( event )
 		local tTimeLeft = system.getTimer()
 		function timeCheck( event )
 			local tTimeLeftDelta = (event.time - tTimeLeft)
-			if timeMode and tTimeLeftDelta > 750 then
+			if timeMode and tTimeLeftDelta > 1000 then
 				tTimeLeft = event.time;
 				timeLeft = timeLeft - 1
 				timeBar:setSize( timeLeft )
@@ -518,12 +519,6 @@ function scene:createScene( event )
 		end
 		
 		local goToMenu = function ( event )
-			if rooster ~= nil then
-				rooster:pause()
-				rooster.isVisible = false
-				rooster:removeSelf()
-				rooster = nil
-			end
 			if menuButton ~= nil then
 				menuButton.isVisible = false
 				menuButton = nil
@@ -603,24 +598,25 @@ function scene:createScene( event )
 				start()
 			end
 			
-			if #totalScore == 5 then
-					local lowestScoreIndex = 1
-					local lowestScore = totalScore[1]
-					for i=2, #totalScore do
-						if lowestScore > totalScore[i] then
-							lowestScoreIndex = i
-							lowestScore = totalScore[i]
-						end
+			if #totalScore == 4 then
+				local lowestScoreIndex = 1
+				local lowestScore = totalScore[1]
+				for i=2, #totalScore do
+					if lowestScore > totalScore[i] then
+						lowestScoreIndex = i
+						lowestScore = totalScore[i]
 					end
-					if score > lowestScore then
-						totalScore[lowestScoreIndex] = score
-						print ("Replacing score "..lowestScore.." with "..score)
-					end
-				else
-					table.insert(totalScore, score)
 				end
+				if score > lowestScore then
+					totalScore[lowestScoreIndex] = score
+					print ("Replacing score "..lowestScore.." with "..score)
+				end
+			else
+				table.insert(totalScore, score)
+			end
 			if timeMode and timeLeft <= 0 then
 				local aggregatedScore = 0
+				table.sort( totalScore, function(a,b) return a>b end )  --Sort the top 4 scores in descending order
 				for i=1, #totalScore do
 					aggregatedScore = aggregatedScore + totalScore[i]
 					print("Score " .. i .. " = " .. totalScore[i])
@@ -633,23 +629,84 @@ function scene:createScene( event )
 						size = 32,
 						align = "center"
 					}
-					totalDisplay.bodyName = "totalDisplay"
-					overlayDisplay:insert( totalDisplay )
-					score = 0
-
-					--Setup the high score table if it doesn't exist
-					local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
-					db:exec( tablesetup )
-
-					--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
-					local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..storyboard.userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
-					print (tablefill)
-					db:exec( tablefill )
+				totalDisplay.bodyName = "totalDisplay"
+				overlayDisplay:insert( totalDisplay )
+				score = 0
+				
+				
+				local usersList = {}
+				for row in db:nrows("SELECT ixUser, sName FROM tblUsers") do
+					print("adding user "..row.ixUser.." - "..row.sName)		
+					usersList[row.ixUser] = row
+				end
+				
+				local list = widget.newTableView{
+					left = 96,
+					top = 90 + display.screenOriginY,
+					topPadding = 20,
+					bottomPadding = 20,
+					width = 288,
+					height = 192,
+					maskFile = "endScoreBackground.png",
+					bgColor = { 0, 0, 0, 255 }
+				}
+				
+				for i=1, #totalScore do
+					aggregatedScore = aggregatedScore + totalScore[i]
+					print("Score " .. i .. " = " .. totalScore[i])
+				end				
+				local function onRowRender( event )
+					local row = event.target
+						local text = display.newRetinaText( "Total. "..string.format( "%i",aggregatedScore), 0, 0, native.systemFontBold, 20 )
+						text:setReferencePoint( display.CenterLeftReferencePoint )
+						text.x = 25
+						text.y = row.height * 0.5
+						--text.y = curHeight + (row.height * 0.5)
+						--curHeight = curHeight + row.height
+						event.view:insert( text )
+					end
+					list:insertRow{
+						id = "index Header",
+						isCategory = isCategory,
+						height = 30,
+						rowColor = { 0, 0, 0, 255 },
+						onRender = onRowRender
+					}				
+				for i=1, #totalScore do					
+					local function onRowRender( event )
+					local row = event.target
+						local text = display.newRetinaText( i..". "..string.format( "%i",totalScore[i]), 0, 0, native.systemFontBold, 20 )
+						text:setReferencePoint( display.CenterLeftReferencePoint )
+						text.x = 25
+						text.y = row.height * 0.5
+						--text.y = curHeight + (row.height * 0.5)
+						--curHeight = curHeight + row.height
+						event.view:insert( text )
+					end
+					list:insertRow{
+						id = "index "..i,
+						height = 30,
+						rowColor = { 0, 0, 0, 255 },
+						onRender = onRowRender
+					}
+				end		
+				
+				overlayDisplay:insert(list.view)			
 					
-					--Insert in to OpenFeint high score
-					gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
-					if aggregatedScore > 49999 then gameNetwork.request( "unlockAchievement", "1395962" ) end
-					if aggregatedScore > 999999 then gameNetwork.request( "unlockAchievement", "1395982" ) end
+
+				--Setup the high score table if it doesn't exist
+				local tablesetup = [[CREATE TABLE IF NOT EXISTS tblHighScores (ixHighScore INTEGER PRIMARY KEY, ixUser, dScore, dtCreated);]]
+				db:exec( tablesetup )
+
+				--Add rows with a auto index in 'id'. You don't need to specify a set of values because we're populating all of them
+				local tablefill =[[INSERT INTO tblHighScores VALUES (NULL, ]]..storyboard.userIndex..[[, ]]..aggregatedScore..[[,']]..os.date("%x")..[[');]]
+				print (tablefill)
+				db:exec( tablefill )
+				
+				--Insert in to OpenFeint high score
+				gameNetwork.request( "setHighScore", { leaderboardID=highScoreLeaderboard, score=aggregatedScore, displayText=string.format( "%i", aggregatedScore) } )
+				if aggregatedScore > 49999 then gameNetwork.request( "unlockAchievement", "1395962" ) end
+				if aggregatedScore > 999999 then gameNetwork.request( "unlockAchievement", "1395982" ) end
 			else
 				restartButton = ui.newButton{
 					defaultSrc = "buttonRed.png",
@@ -684,7 +741,7 @@ function scene:createScene( event )
 			end
 			
 			if mainCharacter.x > score then
-				score = mainCharacter.x
+				score = mainCharacter.x / 2
 				scoreDisplay:setText( string.format( "%i", score ) )
 				if not twentyThousandLeagueAchieved and score > 19999 then
 					gameNetwork.request( "unlockAchievement", "1395952" )
