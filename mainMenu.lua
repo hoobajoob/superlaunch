@@ -17,7 +17,7 @@ local function onQuitComplete( event )
 end
 
 local function onKeyEvent( event )
-	if (event.keyName == "back" and event.phase == "up") then 
+	if (event.keyName == "back" and event.phase == "down") then 
 		local alert = native.showAlert( "SuperLaunch", "Are you sure you want to exit?", 
 									{ "YES", "NO" }, onQuitComplete )
 	end
