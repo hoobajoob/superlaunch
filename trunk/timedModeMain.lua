@@ -7,9 +7,8 @@ local function onBackEvent( event )
 	local phase = event.phase
 	local keyName = event.keyName
 	
-	if (keyName == "back" and phase == "up") then 
-		
-		storyboard.gotoScene("playMenu")
+	if (keyName == "back" and phase == "down") then		
+		storyboard.gotoScene("mainMenu")
 	end
 	return true
 end
@@ -48,7 +47,7 @@ function scene:createScene( event )
 	
 	local backButtonPress = function( event )
 		
-		storyboard.gotoScene("playMenu")
+		storyboard.gotoScene("mainMenu")
 	end
 	
 	local backButton = ui.newButton{
