@@ -17,9 +17,7 @@ function scene:createScene( event )
 	print( "creating superLaunch" )
 	local group = self.view
 	arguments = storyboard.arguments
-
-
-
+	
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
@@ -565,7 +563,8 @@ function scene:createScene( event )
 				showBlood()
 			end
 			mainCharacter:pause()
-			mainCharacter.bodyType = "static"
+			mainCharacter.bodyType = "static"			
+			Runtime:removeEventListener( "enterFrame", removeLifeLava )
 			
 			jetpackButton.isVisible = false	
 			jetpackButton:removeSelf();
@@ -926,7 +925,7 @@ function scene:createScene( event )
 		end
 		
 		function endJets()
-			audio.stop( jetChannel )
+			--audio.stop( jetChannel )
 			flame.isVisible = false
 			jetpackButtonOver.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
@@ -943,7 +942,6 @@ function scene:createScene( event )
 		local tLava = system.getTimer()
 		local function removeLifeLava( event )
 			local tDelta = (event.time - tLava)
-			print ( "lava Delta = "..tDelta)
 			if tDelta > 25 then	
 				tLavaPrevious = event.time
 				life = life - 1
@@ -1009,7 +1007,7 @@ function scene:createScene( event )
 					t.bodyName = "mainCharacterDynamic"
 					t.isFixedRotation = true
 					--t.angularDamping = 10
-					t:removeEventListener( "touch", onTouch )
+					t:removeEventListener( "touch", onTouch )		
 					t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
@@ -1053,7 +1051,9 @@ function scene:createScene( event )
 				print ( "Angle = "..angle.." and Power = "..power )
 				local xForce = power
 				local yForce = power / 100  * angle
-				print ( "xForce = "..xForce.." and yForce = "..yForce )
+				print ( "xForce = "..xForce.." and yForce = "..yForce )				
+				local backgroundMusic = audio.loadStream("main.wav")
+				backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 				t:applyLinearImpulse( xForce * 3 , -yForce * 3 , t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 			end
@@ -1169,7 +1169,7 @@ function scene:createScene( event )
 
 				elseif ( event.phase == "ended" ) then
 					--print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
-					if string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil then				
+					if bodyName ~= nil and (string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil) then				
 						Runtime:removeEventListener( "enterFrame", removeLifeLava )
 					end
 				end
@@ -1251,7 +1251,6 @@ function scene:createScene( event )
 
 		mainCharacter.postCollision = onLocalPostCollision
 		mainCharacter:addEventListener( "postCollision", mainCharacter )
-		
 		return game
 	end	
 	start()

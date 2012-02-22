@@ -24,6 +24,11 @@ local function onKeyEvent( event )
 	return true
 end	
 
+local function startMusic( )
+	local backgroundMusic = audio.loadStream("main.wav")
+	backgroundMusicChannel = audio.play( backgroundMusic, { channel=14, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
+end	
+
 local function addKeyEvent()
 	print( "adding Key Listener" )
 	Runtime:addEventListener( "key", onKeyEvent )
@@ -49,10 +54,12 @@ Runtime:addEventListener( "system", onSystemEvent )
 -----------------------------------------------------------------------------------------
 
 -- Called when the scene's view does not exist:
-function scene:createScene( event )
+function scene:createScene( event )		
+	local introMusic = audio.loadStream("intro.wav")
+	local introMusicChannel = audio.play( introMusic, { channel=1 }  ) 
 	local splash = ls.newLoadingScreen{
 		srcImage = "splashWIcons.png",
-		duration = 500,
+		duration = 3000,
 		fadeOut = true
 	}
 	print("creating mainmenu")
@@ -157,6 +164,7 @@ function scene:enterScene( event )
 	storyboard.removeScene( "superLaunch" )
 	-- Add the back key callback
 	timer.performWithDelay( 1, addKeyEvent )
+	timer.performWithDelay( 000, startMusic )
 	
 	-- iPhone, iPod touch, iPad, android etc
 	ads.show( "banner", { x=0, y=0, interval=10 } )
