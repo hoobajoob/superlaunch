@@ -39,7 +39,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 10
+	local timeLeft = 100
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -95,8 +95,8 @@ function scene:createScene( event )
 		physics.start()
 		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
-		--local slingShot
-		local slingShotString
+		local slingshot
+		local slingshotString
 		local life = 100
 		local explosion
 		local boost = 100
@@ -419,22 +419,18 @@ function scene:createScene( event )
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 		end
-		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250
-
-		slingshotString = display.newImage( "string.png" )
-		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 230
-		physics.addBody( slingshotString, "static", { friction=0.5 } )
-		slingshotString.bodyName = "slingShotString"
-		game:insert(slingshotString)
+		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250	
 		
-		--[[
 		slingshot = display.newImage( "slingshot.png" )
-		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
-		physics.addBody( slingshot, "static", { friction=0.5 } )
+		slingshot.x = 170; slingshot.y = groundReferencePoint - 225
+		--physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
+		slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+		slingshotString.width = 4
+		game:insert(slingshotString)
 		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
-		--]]
+		
 		------------------------------------------------------------
 		-- Simple score display
 
@@ -982,7 +978,14 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
+					slingshotString:removeSelf()
+					slingshotString = nil
+					slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+					slingshotString.width = 4
+					game:insert( slingshotString ) 
 				elseif "ended" == phase or "cancelled" == phase then
+					slingshotString:removeSelf()
+					slingshotString = nil
 					jetpackButton.isVisible = false
 					jetpackButton = nil
 					jetpackButton = ui.newButton{
@@ -997,8 +1000,6 @@ function scene:createScene( event )
 					overlayDisplay:insert(jetpackButton)
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
-					--slingshot:removeSelf()
-					slingshotString:removeSelf()
 					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
@@ -1036,8 +1037,6 @@ function scene:createScene( event )
 				power = storyboard.launchPower
 				display.getCurrentStage():setFocus( nil )
 				local t = mainCharacter
-				--slingshot:removeSelf()
-				--slingshotString:removeSelf()
 				if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 				t:prepare("mainCharacterSprite")
 				t:play()
