@@ -25,8 +25,10 @@ local function onKeyEvent( event )
 end	
 
 local function startMusic( )
-	local backgroundMusic = audio.loadStream("main.wav")
-	backgroundMusicChannel = audio.play( backgroundMusic, { channel=14, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
+	if playSounds then
+		local backgroundMusic = audio.loadStream("main.wav")
+		backgroundMusicChannel = audio.play( backgroundMusic, { channel=14, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
+	end
 end	
 
 local function addKeyEvent()
@@ -55,8 +57,10 @@ Runtime:addEventListener( "system", onSystemEvent )
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )		
-	local introMusic = audio.loadStream("intro.wav")
-	local introMusicChannel = audio.play( introMusic, { channel=1 }  ) 
+	if playSounds then
+		local introMusic = audio.loadStream("intro.wav")
+		local introMusicChannel = audio.play( introMusic, { channel=1 }  ) 
+	end
 	local splash = ls.newLoadingScreen{
 		srcImage = "splashWIcons.png",
 		duration = 3000,

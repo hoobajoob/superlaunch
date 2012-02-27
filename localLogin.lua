@@ -127,10 +127,11 @@ function scene:enterScene( event )
 	backButton.isVisible = true
 	
 	local submitButton = ui.newButton{
-		defaultSrc = "btn_achievements.png",
+		defaultSrc = "buttonRed.png",
 		x = 240,
 		y = 280,
-		overSrc = "btn_achievementsA.png",
+		overSrc = "buttonRedOver.png",
+		text = "Login",
 		onRelease = submitButtonPress,
 		emboss = true
 	}

@@ -118,7 +118,7 @@ function scene:enterScene( event )
 		}
 	end
 	--]]
-	group:insert(list.view)
+	group:insert(list)
 	group:insert( bg )
 	group:insert(backButton)
 	timer.performWithDelay( 10, addKeyEvent )
