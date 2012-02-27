@@ -46,6 +46,7 @@ function scene:createScene( event )
 	local menuButton = nil
 	local restartButton = nil
 	local timeBar = nil
+	local timeLabel = nil
 	local lifeBar = nil
 	local boostBar = nil
 	local timeCheck
@@ -73,6 +74,17 @@ function scene:createScene( event )
 		timeBar.bodyName = "timeBar"
 		timeBar:setSize( timeLeft )
 		timeBar.isVisible = true
+		
+		timeLabel = ui.newLabel{
+			bounds = { -25, 295 + display.screenOriginY, 100, 24 },
+			text = "Time Remaining",
+			--font = "Trebuchet-BoldItalic",
+			textColor = { 255, 225, 102, 255 },
+			size = 20,
+			align = "left"
+		}
+		timeLabel.bodyName = "timeLabel"
+		
 		print( "timeMode on")
 		local tTimeLeft = system.getTimer()
 		function timeCheck( event )
@@ -532,6 +544,10 @@ function scene:createScene( event )
 				timeBar.isVisible = false
 				timeBar = nil
 			end
+			if timeLabel ~= nil then
+				timeLabel.isVisible = false
+				timeLabel = nil
+			end
 			if lifeBar ~= nil then
 				lifeBar:setSize( 0 )
 				lifeBar.isVisible = false
@@ -731,8 +747,8 @@ function scene:createScene( event )
 			if (mainCharacter.x > -800) then
 				game.x = math.ceil(-mainCharacter.x) + 120
 			end
-			if (mainCharacter.x < -100 or mainCharacter.y < 220) then
-				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 220
+			if (mainCharacter.x < -100 or mainCharacter.y < 235) then
+				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 235
 			end
 			if mainCharacter ~= nil then
 				vx, vy = mainCharacter:getLinearVelocity()
@@ -929,10 +945,10 @@ function scene:createScene( event )
 		
 		jetpackButton = display.newImage( "jetPack.png" )
 		overlayDisplay:insert(jetpackButton)
-		jetpackButton.x = 445; jetpackButton.y = 245
+		jetpackButton.x = 445; jetpackButton.y = 235
 		jetpackButtonOver = display.newImage( "jetPackOver.png" )
 		overlayDisplay:insert(jetpackButtonOver)
-		jetpackButtonOver.x = 445; jetpackButtonOver.y = 245
+		jetpackButtonOver.x = 445; jetpackButtonOver.y = 235
 		jetpackButtonOver.isVisible = false
 		
 		local tLava = system.getTimer()
@@ -991,7 +1007,7 @@ function scene:createScene( event )
 					jetpackButton = ui.newButton{
 						defaultSrc = "jetPack.png",
 						x = 445,
-						y = 245,
+						y = 235,
 						overSrc = "jetPackOver.png",
 						onPress = startJets,
 						onRelease = endJets
@@ -1026,7 +1042,7 @@ function scene:createScene( event )
 				jetpackButton = ui.newButton{
 					defaultSrc = "jetPack.png",
 					x = 445,
-					y = 245,
+					y = 235,
 					overSrc = "jetPackOver.png",
 					onPress = startJets,
 					onRelease = endJets
@@ -1115,57 +1131,58 @@ function scene:createScene( event )
 			if ( event.phase == "began" ) then
 				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
 				local bodyName = event.other.bodyName
-				if string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil then
-					life = life - 1
-					lifeBar:setSize( life )
-					print("adding lava removal listener")
-					Runtime:addEventListener( "enterFrame", removeLifeLava )
-				elseif bodyName == "star" then
-					mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
-				elseif bodyName == "bacon" then
-					if life > 74 then
-						life = 100
-					else
-						life = life + 25
-					end			
-					lifeBar:setSize( life )
-					mainCharacter:applyLinearImpulse( -10, -75, mainCharacter.x + 9, mainCharacter.y )
-				elseif bodyName == "bomb" then
-					if life < 10 then
-						life = 0
-					else
-						life = life - 10
+				if bodyName ~= nil then
+					if string.find(bodyName, "lava") ~= nil then
+						life = life - 1
+						lifeBar:setSize( life )
+						print("adding lava removal listener")
+						Runtime:addEventListener( "enterFrame", removeLifeLava )
+					elseif bodyName == "star" then
+						mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
+					elseif bodyName == "bacon" then
+						if life > 74 then
+							life = 100
+						else
+							life = life + 25
+						end			
+						lifeBar:setSize( life )
+						mainCharacter:applyLinearImpulse( -10, -75, mainCharacter.x + 9, mainCharacter.y )
+					elseif bodyName == "bomb" then
+						if life < 10 then
+							life = 0
+						else
+							life = life - 10
+						end
+						lifeBar:setSize( life )
+						mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
+					elseif bodyName == "jetRefill" then
+						if boost > 74 then
+							boost = 100
+						else
+							boost = boost + 25
+						end
+						boostBar:setSize( boost )
+					elseif string.find(bodyName, "rooster") ~= nil then
+						if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+						transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
+						event.other.isVisible = false
+						rooster.x = event.other.x; rooster.y = event.other.y
+						--game.y = rooster.y - 240	TODO: I still want the camera to move, but it's causing crashes.  WHYYYYY!!!!!!
+						rooster.isVisible = true	
+						rooster:toFront()
+						rooster:prepare()		
+						rooster:play()
+						Runtime:removeEventListener( "enterFrame", frameCheck )
+						Runtime:removeEventListener( "enterFrame", removeLifeLava )
+						Runtime:removeEventListener( "collision", onGlobalCollision )
+						showDeath ( "bloody" )
+					elseif string.find( bodyName, "spikeWall" ) ~= nil then
+						Runtime:removeEventListener( "enterFrame", frameCheck )
+						Runtime:removeEventListener( "enterFrame", removeLifeLava )
+						Runtime:removeEventListener( "collision", onGlobalCollision )
+						showDeath ( "bloody" )					
 					end
-					lifeBar:setSize( life )
-					mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
-				elseif bodyName == "jetRefill" then
-					if boost > 75 then
-						boost = 100
-					else
-						boost = boost + 25
-					end
-					boostBar:setSize( boost )
-				elseif bodyName ~= nil and string.find(bodyName, "rooster") ~= nil then
-					if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
-					transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
-					event.other.isVisible = false
-					rooster.x = event.other.x; rooster.y = event.other.y
-					--game.y = rooster.y - 240	TODO: I still want the camera to move, but it's causing crashes.  WHYYYYY!!!!!!
-					rooster.isVisible = true	
-					rooster:toFront()
-					rooster:prepare()		
-					rooster:play()
-					Runtime:removeEventListener( "enterFrame", frameCheck )
-					Runtime:removeEventListener( "enterFrame", removeLifeLava )
-					Runtime:removeEventListener( "collision", onGlobalCollision )
-					showDeath ( "bloody" )
-				elseif bodyName ~= nil and string.find( bodyName, "spikeWall" ) ~= nil then
-					Runtime:removeEventListener( "enterFrame", frameCheck )
-					Runtime:removeEventListener( "enterFrame", removeLifeLava )
-					Runtime:removeEventListener( "collision", onGlobalCollision )
-					showDeath ( "bloody" )					
 				end
-
 				elseif ( event.phase == "ended" ) then
 					--print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
 					if bodyName ~= nil and (string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil) then				

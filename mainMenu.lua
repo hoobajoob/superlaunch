@@ -164,7 +164,7 @@ function scene:enterScene( event )
 	storyboard.removeScene( "superLaunch" )
 	-- Add the back key callback
 	timer.performWithDelay( 1, addKeyEvent )
-	timer.performWithDelay( 000, startMusic )
+	timer.performWithDelay( 6500, startMusic )
 	
 	-- iPhone, iPod touch, iPad, android etc
 	ads.show( "banner", { x=0, y=0, interval=10 } )
