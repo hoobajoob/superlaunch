@@ -1088,10 +1088,18 @@ function scene:createScene( event )
 				print ( "Angle = "..angle.." and Power = "..power )
 				local xForce = power
 				local yForce = power / 100  * angle
-				print ( "xForce = "..xForce.." and yForce = "..yForce )				
-				local backgroundMusic = audio.loadStream("main.wav")
-				backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
-				t:applyLinearImpulse( xForce * 3 , -yForce * 3 , t.x + 9, t.y)
+				print ( "xForce = "..xForce.." and yForce = "..yForce )
+				
+				local launchBoard = display.newImage( "launchBoard.png" )
+				launchBoard.y = 200
+				local xInterval = ( t.x - 170 ) / 100
+				for i=1,100 do
+					launchBoard.x = 170 + xInterval
+				end	
+				launchBoard.isVisible = false
+				launchBoard:removeSelf()
+				
+				t:applyLinearImpulse( xForce * 3.5 , -yForce * 3 , t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 			end
 		end
@@ -1129,6 +1137,11 @@ function scene:createScene( event )
 			end
 			mainCharacter.x = 190 + 50 * math.sin( angle );
 			mainCharacter.y = 75 + 50 * math.cos( angle );
+			slingshotString:removeSelf()
+			slingshotString = nil
+			slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+			slingshotString.width = 4
+			game:insert( slingshotString ) 
 		end
 	
 		if launchType == "hardLaunch" then
