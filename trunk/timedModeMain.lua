@@ -28,6 +28,9 @@ function scene:createScene( event )
 	local bottomBoundary = display.screenOriginY
 	
 	local Character = "noah"
+	local noahBackButton = nil
+	local babyBackButton = nil
+	local dogBackButton = nil
 	local noahButton = nil
 	local babyButton = nil
 	local dogButton = nil
@@ -37,7 +40,7 @@ function scene:createScene( event )
 	local playType = storyboard.arguments
 	
 	local mainLabel = ui.newLabel{
-			bounds = { display.contentWidth /2 - 105, 65 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
+			bounds = { display.contentWidth /2 - 105, 55 + display.screenOriginY, 100, 24 }, -- align label with right side of current screen
 			text = "Select a Character",
 			--font = "Trebuchet-BoldItalic",
 			textColor = { 0, 0, 0, 255 },
@@ -61,6 +64,9 @@ function scene:createScene( event )
 	backButton.isVisible = true
 	
 	local function showLaunchType()
+		noahBackButton.isVisible = false
+		babyBackButton.isVisible = false
+		dogBackButton.isVisible = false
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false
@@ -83,7 +89,12 @@ function scene:createScene( event )
 		character = "dog"
 		showLaunchType()
 	end
-
+	
+	
+	noahBackButton = display.newImageRect( "buttonRed.png", 100, 100 ) 
+	noahBackButton.x = 180; noahBackButton.y = 240
+	noahBackButton:addEventListener( "touch", noahButtonPress )
+	noahBackButton.isVisible = true	
 	noahButton = ui.newButton{
 					defaultSrc = "noah.png",
 					onRelease = noahButtonPress,
@@ -91,6 +102,11 @@ function scene:createScene( event )
 					x = 180,
 					y = 240
 				}
+				
+	babyBackButton = display.newImageRect( "buttonRed.png", 100, 100 ) 
+	babyBackButton.x = 320; babyBackButton.y = 240
+	babyBackButton.isVisible = true	
+	babyBackButton:addEventListener( "touch", babyButtonPress )
 	babyButton = ui.newButton{
 					defaultSrc = "baby.png",
 					onRelease = babyButtonPress,
@@ -98,6 +114,11 @@ function scene:createScene( event )
 					x = 320,
 					y = 240
 				}
+				
+	dogBackButton = display.newImageRect( "buttonRed.png", 100, 100 ) 
+	dogBackButton.x = 250; dogBackButton.y = 140
+	dogBackButton:addEventListener( "touch", dogButtonPress )
+	dogBackButton.isVisible = true	
 	dogButton = ui.newButton{
 					defaultSrc = "dog.png",
 					onRelease = dogButtonPress,
@@ -145,6 +166,9 @@ function scene:createScene( event )
 	group:insert( bg )
 	group:insert( mainLabel )
 	group:insert( backButton )
+	group:insert( noahBackButton )
+	group:insert( babyBackButton )
+	group:insert( dogBackButton )
 	group:insert( noahButton )
 	group:insert( babyButton )
 	group:insert( dogButton )

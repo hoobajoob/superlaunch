@@ -62,10 +62,10 @@ function scene:createScene( event )
 	local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 	db = sqlite3.open( path )   
 	---[[
-	if arguments ~= nil and # arguments > 1 and arguments[2] == true then						
+	if arguments ~= nil and # arguments > 1 and arguments[2] == true then
 		timeMode = true
 		timeBar = tbaUI.newBar{
-			bounds = { 0, 290 + display.screenOriginY, 5, 5 },
+			bounds = { 0, 305 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = timeLeft,
 			width = 5, 
@@ -76,14 +76,18 @@ function scene:createScene( event )
 		timeBar.isVisible = true
 		
 		timeLabel = ui.newLabel{
-			bounds = { -25, 295 + display.screenOriginY, 100, 24 },
+			bounds = { -25, 275 + display.screenOriginY, 100, 24 },
 			text = "Time Remaining",
 			--font = "Trebuchet-BoldItalic",
-			textColor = { 255, 225, 102, 255 },
+			textColor = { 10, 10, 10, 255 },
 			size = 20,
 			align = "left"
 		}
 		timeLabel.bodyName = "timeLabel"
+		local function hideTimeLabel()
+			timeLabel.isVisible = false
+		end		
+		timer.performWithDelay( 4000, hideTimeLabel )
 		
 		print( "timeMode on")
 		local tTimeLeft = system.getTimer()
@@ -101,6 +105,19 @@ function scene:createScene( event )
 		end
 		Runtime:addEventListener( "enterFrame", timeCheck )
 	end
+		
+	lifeLabel = ui.newLabel{
+		bounds = { 35, 20 + display.screenOriginY, 100, 24 },
+		text = "Life",
+		--font = "Trebuchet-BoldItalic",
+		textColor = { 10, 10, 10, 255 },
+		size = 20,
+		align = "left"
+	}
+	lifeLabel.bodyName = "lifeLabel"
+	local function hideLifeLabel()
+		lifeLabel.isVisible = false
+	end	
 	--]]
 	function start()
 		print("Starting Super Launch")
@@ -473,14 +490,15 @@ function scene:createScene( event )
 		}
 		lifeBar.bodyName = "lifeBar"
 		overlayDisplay:insert( lifeBar )
-		lifeBar:setSize( life )
+		lifeBar:setSize( life )	
+		timer.performWithDelay( 4000, hideLifeLabel )
 		
 		------------------------------------------------------------
 		-- boost display
 
 
 		boostBar = tbaUI.newBar{
-			bounds = { 400, 290 + display.screenOriginY, 5, 5 },
+			bounds = { 400, 305 + display.screenOriginY, 5, 5 },
 			lineColor = { 0, 255, 50, 255 },
 			size = boost,
 			width = 5, 
@@ -547,6 +565,10 @@ function scene:createScene( event )
 			if timeLabel ~= nil then
 				timeLabel.isVisible = false
 				timeLabel = nil
+			end
+			if lifeLabel ~= nil then
+				lifeLabel.isVisible = false
+				lifeLabel = nil
 			end
 			if lifeBar ~= nil then
 				lifeBar:setSize( 0 )
@@ -708,7 +730,7 @@ function scene:createScene( event )
 					defaultSrc = "buttonRed.png",
 					over = "buttonRedOver.png",
 					onPress = restartButtonPress,
-					text = "Restart",
+					text = "Relaunch",
 					emboss = true,
 					x = 240,
 					y = 195
@@ -760,10 +782,10 @@ function scene:createScene( event )
 			end
 			
 			if (mainCharacter.x > 0) then
-				if ( game.x + sky.x ) > sky.contentWidth then
+				if ( game.x + sky.x ) > sky.contentWidth - 40 then
 					sky:translate( -(sky.contentWidth * 2), 0)
 				end
-				if ( game.x + sky2.x ) > sky.contentWidth then
+				if ( game.x + sky2.x ) > sky.contentWidth - 40 then
 					sky2:translate( -(sky2.contentWidth * 2), 0)
 				end
 				
@@ -945,10 +967,10 @@ function scene:createScene( event )
 		
 		jetpackButton = display.newImage( "jetPack.png" )
 		overlayDisplay:insert(jetpackButton)
-		jetpackButton.x = 445; jetpackButton.y = 235
+		jetpackButton.x = 445; jetpackButton.y = 255
 		jetpackButtonOver = display.newImage( "jetPackOver.png" )
 		overlayDisplay:insert(jetpackButtonOver)
-		jetpackButtonOver.x = 445; jetpackButtonOver.y = 235
+		jetpackButtonOver.x = 445; jetpackButtonOver.y = 255
 		jetpackButtonOver.isVisible = false
 		
 		local tLava = system.getTimer()
@@ -1007,7 +1029,7 @@ function scene:createScene( event )
 					jetpackButton = ui.newButton{
 						defaultSrc = "jetPack.png",
 						x = 445,
-						y = 235,
+						y = 255,
 						overSrc = "jetPackOver.png",
 						onPress = startJets,
 						onRelease = endJets
@@ -1042,7 +1064,7 @@ function scene:createScene( event )
 				jetpackButton = ui.newButton{
 					defaultSrc = "jetPack.png",
 					x = 445,
-					y = 235,
+					y = 255,
 					overSrc = "jetPackOver.png",
 					onPress = startJets,
 					onRelease = endJets
