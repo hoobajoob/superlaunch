@@ -43,9 +43,17 @@ function scene:enterScene( event )
 	local function sendLaunchValues()
 		Runtime:removeEventListener( "enterFrame", reduceBackground )
 		valuesSent = true
-		storyboard.launchPower = 100 - ( (system.getTimer() - tNoPress) * .02 )
+		storyboard.launchPower = 100 - ( (system.getTimer() - tNoPress) * .016 )
 		print("sending launch power "..storyboard.launchPower)
 		storyboard.gotoScene(storyboard.nextScene)
+	end
+	
+	local function backgroundTouchedEarly( event )
+		background:removeEventListener( "touch", backgroundTouchedEarly )
+		background:setFillColor( 255, 0, 0, 255 )
+		launchLabel:setText( "TOO SOON!!!" )
+		tNoPress = system.getTimer() - 5000
+		timer.performWithDelay( 500, sendLaunchValues ) --prevents touch event from carrying over to superlaunch
 	end
 	
 	local function backgroundTouched( event )
@@ -58,22 +66,29 @@ function scene:enterScene( event )
 	end
 	
 	local function startPower( event )
-		background:setFillColor( 0, 255, 50 )
-		launchLabel:setText( "Launch!!!" )
-		background:addEventListener( "touch", backgroundTouched )
-		tNoPress = system.getTimer()
-		timer.performWithDelay( 5000, sendIfNotSent )
-		touchStart = system.getTimer()
-		Runtime:addEventListener( "enterFrame", reduceBackground )
+		background:removeEventListener( "touch", backgroundTouchedEarly )
+		if valuesSent == false then
+			background:setFillColor( 0, 255, 50 )
+			launchLabel:setText( "Launch!!!" )
+			background:addEventListener( "touch", backgroundTouched )
+			tNoPress = system.getTimer()
+			timer.performWithDelay( 5000, sendIfNotSent )
+			touchStart = system.getTimer()
+			Runtime:addEventListener( "enterFrame", reduceBackground )
+		end
 	end
 	
 	math.randomseed( os.time() )
 	math.random()
+	local function addEarlyTouchEvent()
+		background:addEventListener( "touch", backgroundTouchedEarly )	
+	end
 	
 	local function startLaunch()
 		background:removeEventListener( "touch", startLaunch )
 		background:setFillColor(0,0,0)
 		launchLabel:setText( "Get Ready" )
+		timer.performWithDelay( 100, addEarlyTouchEvent )
 		timer.performWithDelay(  math.random(2000,5000), startPower )
 	end
 	
