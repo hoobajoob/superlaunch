@@ -313,6 +313,13 @@ function scene:createScene( event )
 					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
 				else
 					newToys = false
+					local quickSandTop = display.newImage( "quickSandTop.png", true )
+					quickSandTop.x = addition; quickSandTop.y = groundReferencePoint - 70
+					physics.addBody( quickSandTop, "static", { friction=0, bounce=0 } )
+					quickSandTop.isSensor = true
+					quickSandTop.bodyName = "quickSandTop"..worldLength
+					game:insert( quickSandTop )
+					quickSandTop:toBack()
 					dgrass = display.newImage( "quickSand.png", true )
 					dgrass.bodyName = "quickSand"..worldLength
 					physics.addBody( dgrass, "static",
@@ -320,6 +327,7 @@ function scene:createScene( event )
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
+					quickSandTop.subSand = dgrass
 				end
 			else
 				dgrass = display.newImage( "grass.png", true )
@@ -1161,7 +1169,10 @@ function scene:createScene( event )
 
 
 		-- METHOD 1: Use table listeners to make a single object report collisions between "self" and "other"
-
+		local function objectToFront( curToFrontObject )			
+			storyboard.curToFrontObject:toFront()
+			print("objectToFront")
+		end
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
 				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
@@ -1172,6 +1183,10 @@ function scene:createScene( event )
 						lifeBar:setSize( life )
 						print("adding lava removal listener")
 						Runtime:addEventListener( "enterFrame", removeLifeLava )
+					elseif string.find(bodyName, "quickSandTop") ~= nil then
+						print("sending quicksand to front")
+						storyboard.curToFrontObject = event.other.subSand
+						Runtime:addEventListener( "enterFrame", objectToFront )
 					elseif bodyName == "star" then
 						mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
 					elseif bodyName == "bacon" then
@@ -1222,6 +1237,9 @@ function scene:createScene( event )
 					--print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
 					if bodyName ~= nil and (string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil) then				
 						Runtime:removeEventListener( "enterFrame", removeLifeLava )
+					elseif string.find(event.other.bodyName, "quickSandTop") ~= nil then
+						print("removing quicksand to front")
+						Runtime:removeEventListener( "enterFrame", objectToFront )
 					end
 				end
 		end
