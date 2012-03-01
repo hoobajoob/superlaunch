@@ -21,7 +21,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -440,12 +440,12 @@ function scene:createScene( event )
 			elseif character == "baby" then
 				sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
 			elseif character == "dog" then
-				sheet1 = sprite.newSpriteSheet( "dogSprite.png", 64, 80 )
+				mainCharacterShape = { 20,-25, 14,0, 15,20, 20,31, -15,32, -19,20, -24,-6, -19,-20 }
+				sheet1 = sprite.newSpriteSheet( "aryaSprite.png", 66, 68 )
 			end
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
-			mainCharacter = sprite.newSprite( spriteSet1 )	
-			if character == "dog" then mainCharacter:rotate(90) end
+			mainCharacter = sprite.newSprite( spriteSet1 )
 			
 			if #arguments > 2 then
 				launchType = arguments[3]

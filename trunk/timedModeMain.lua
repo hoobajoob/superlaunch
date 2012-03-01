@@ -120,7 +120,7 @@ function scene:createScene( event )
 	dogBackButton:addEventListener( "touch", dogButtonPress )
 	dogBackButton.isVisible = true	
 	dogButton = ui.newButton{
-					defaultSrc = "dog.png",
+					defaultSrc = "arya.png",
 					onRelease = dogButtonPress,
 					emboss = true,
 					x = 250,
