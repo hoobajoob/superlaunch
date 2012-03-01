@@ -7,6 +7,7 @@ local onBackEvent = {}
 local frameCheck = {}
 local applyJetpackBoost = {}
 local endJets
+local character
 
 local function addKeyEvent()
 	print( "adding Key Listener" )
@@ -21,7 +22,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -432,7 +433,7 @@ function scene:createScene( event )
 
 		if arguments ~= nil then
 			print ("Number of Arguments = " .. #arguments)
-			local character = arguments[1]
+			character = arguments[1]
 			print("Character is: "..character)
 			local sheet1
 			if character == "noah" then
@@ -440,7 +441,7 @@ function scene:createScene( event )
 			elseif character == "baby" then
 				sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
 			elseif character == "dog" then
-				mainCharacterShape = { 20,-25, 14,0, 15,20, 20,31, -15,32, -19,20, -24,-6, -19,-20 }
+				mainCharacterShape = { 8,-35, 35,-28, 30,10, 25,33, -35,33, -28,-8 }
 				sheet1 = sprite.newSpriteSheet( "aryaSprite.png", 66, 68 )
 			end
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -1049,7 +1050,11 @@ function scene:createScene( event )
 					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
-					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					if character == "dog" then
+						physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					else
+						physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					end
 					game:insert(t)
 					t.bodyName = "mainCharacterDynamic"
 					t.isFixedRotation = true
@@ -1086,7 +1091,11 @@ function scene:createScene( event )
 				if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 				t:prepare("mainCharacterSprite")
 				t:play()
-				physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				if character == "dog" then
+					physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				else
+					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				end
 				game:insert(t)
 				t.bodyName = "mainCharacterDynamic"
 				t.isFixedRotation = true
@@ -1171,7 +1180,6 @@ function scene:createScene( event )
 		-- METHOD 1: Use table listeners to make a single object report collisions between "self" and "other"
 		local function objectToFront( curToFrontObject )			
 			storyboard.curToFrontObject:toFront()
-			print("objectToFront")
 		end
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
