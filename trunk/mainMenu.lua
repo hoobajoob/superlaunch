@@ -26,7 +26,7 @@ local function onKeyEvent( event )
 end	
 
 local function startMusic( )
-	if playSounds then
+	if storyboard.playSounds then
 		local backgroundMusic = audio.loadStream("soundtrack.mp3")
 		backgroundMusicChannel = audio.play( backgroundMusic, { channel=14, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 	end
@@ -58,7 +58,7 @@ Runtime:addEventListener( "system", onSystemEvent )
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )		
-	if playSounds then
+	if storyboard.playSounds then
 		local introMusic = audio.loadStream("intro.mp3")
 		local introMusicChannel = audio.play( introMusic, { channel=1 }  ) 
 	end
@@ -90,16 +90,18 @@ function scene:createScene( event )
 	
 	local soundButtonPress = function( event )
 		if event.phase =="began" then
-			if playSounds == true then
+			if storyboard.playSounds == true then
 				audio.stop()
-				playSounds = false
+				storyboard.playSounds = false
 				soundButton = display.newImage( "soundOffButton.png", true )
+				group:insert(soundButton)
 				soundButton.x = 460; soundButton.y = 300
 			else
-				playSounds = true
+				storyboard.playSounds = true
 				startMusic()
 				soundButton:removeSelf()
 				soundButton = display.newImage( "soundButton.png", true )
+				group:insert(soundButton)
 				soundButton.x = 460; soundButton.y = 300
 			end
 		end
@@ -176,6 +178,7 @@ function scene:createScene( event )
 	group:insert(loginButton)
 	group:insert(highScoresButton)
 	group:insert(helpButton)
+	group:insert(soundButton)
 	
 	splash.loadingFinished()
 end

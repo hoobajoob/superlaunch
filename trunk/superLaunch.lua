@@ -524,7 +524,7 @@ function scene:createScene( event )
 			explosion = sprite.newSprite( explosionSpriteSet )
 			game:insert( explosion )
 			explosion.x = mainCharacter.x; explosion.y = mainCharacter.y
-			if playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
+			if storyboard.playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
 			explosion:play()
 		end
 
@@ -566,6 +566,7 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "collision", onGlobalCollision )
 			Runtime:removeEventListener( "enterFrame", timeCheck )
 			Runtime:removeEventListener( "enterFrame", showAngle )
+			Runtime:removeEventListener( "enterFrame", objectToFront )
 			if timeBar ~= nil then
 				timeBar:setSize( 0 )
 				timeBar.isVisible = false
@@ -963,7 +964,7 @@ function scene:createScene( event )
 		--]]
 		local function startJets()
 			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
-			if playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
+			if storyboard.playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
@@ -989,7 +990,7 @@ function scene:createScene( event )
 				tLavaPrevious = event.time
 				life = life - 1
 				lifeBar:setSize( life )
-				if playSounds then local owChannel = audio.play( owSound, { channel=4 }  ) end
+				if storyboard.playSounds then local owChannel = audio.play( owSound, { channel=4 }  ) end
 			end
 		end	
 
@@ -1047,7 +1048,7 @@ function scene:createScene( event )
 					overlayDisplay:insert(jetpackButton)
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
-					if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+					if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
 					if character == "dog" then
@@ -1088,7 +1089,7 @@ function scene:createScene( event )
 				power = storyboard.launchPower
 				display.getCurrentStage():setFocus( nil )
 				local t = mainCharacter
-				if playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+				if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 				t:prepare("mainCharacterSprite")
 				t:play()
 				if character == "dog" then
@@ -1221,7 +1222,7 @@ function scene:createScene( event )
 						end
 						boostBar:setSize( boost )
 					elseif string.find(bodyName, "rooster") ~= nil then
-						if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 						transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
 						event.other.isVisible = false
 						rooster.x = event.other.x; rooster.y = event.other.y
@@ -1310,15 +1311,15 @@ function scene:createScene( event )
 				local impactChannel
 				if bodyName ~= nil then
 					if string.find(bodyName, "lava") ~= nil or string.find(bodyName, "grass") ~= nil then
-						if playSounds then impactChannel = audio.play( boingSound, { channel=3 }  ) end
+						if storyboard.playSounds then impactChannel = audio.play( boingSound, { channel=3 }  ) end
 					elseif string.find(bodyName, "ramp") ~= nil then
-						if playSounds then impactChannel = audio.play( swooshSound, { channel=3 }  ) end
+						if storyboard.playSounds then impactChannel = audio.play( swooshSound, { channel=3 }  ) end
 					elseif string.find(bodyName, "trampoline") ~= nil then
-						if playSounds then impactChannel = audio.play( bounceSound, { channel=3 }  ) end
+						if storyboard.playSounds then impactChannel = audio.play( bounceSound, { channel=3 }  ) end
 					elseif string.find(bodyName, "keg") ~= nil then
-						if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 					elseif string.find(bodyName, "spikeWall") ~= nil then
-						if playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
+						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 					end
 				end
 			end--]]
