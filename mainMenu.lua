@@ -2,6 +2,7 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local ls = require( "loadingScreen" )
+local backgroundMusicChannel
 
 local scene = storyboard.newScene()
 
@@ -26,7 +27,7 @@ end
 
 local function startMusic( )
 	if playSounds then
-		local backgroundMusic = audio.loadStream("main.wav")
+		local backgroundMusic = audio.loadStream("soundtrack.mp3")
 		backgroundMusicChannel = audio.play( backgroundMusic, { channel=14, loops=-1, fadein=50 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 	end
 end	
@@ -58,7 +59,7 @@ Runtime:addEventListener( "system", onSystemEvent )
 -- Called when the scene's view does not exist:
 function scene:createScene( event )		
 	if playSounds then
-		local introMusic = audio.loadStream("intro.wav")
+		local introMusic = audio.loadStream("intro.mp3")
 		local introMusicChannel = audio.play( introMusic, { channel=1 }  ) 
 	end
 	local splash = ls.newLoadingScreen{
@@ -82,11 +83,31 @@ function scene:createScene( event )
 	
 	local playButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
-		local backgroundMusic = audio.loadStream("backgroundMusic.mp3")
-		--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=5000 }  )  -- play the background music on channel 1, loop infinitely, and fadein over 5 seconds 
 		storyboard.arguments = "superLaunch"
 		storyboard.gotoScene("timedModeMain")
 	end
+	local soundButton
+	
+	local soundButtonPress = function( event )
+		if event.phase =="began" then
+			if playSounds == true then
+				audio.stop()
+				playSounds = false
+				soundButton = display.newImage( "soundOffButton.png", true )
+				soundButton.x = 460; soundButton.y = 300
+			else
+				playSounds = true
+				startMusic()
+				soundButton:removeSelf()
+				soundButton = display.newImage( "soundButton.png", true )
+				soundButton.x = 460; soundButton.y = 300
+			end
+		end
+	end
+	
+	soundButton = display.newImage( "soundButton.png", true )
+	soundButton.x = 460; soundButton.y = 300
+	soundButton:addEventListener ( "touch", soundButtonPress )
 	
 	local loginButtonPress = function( event )
 		storyboard.gotoScene("localLogin")
