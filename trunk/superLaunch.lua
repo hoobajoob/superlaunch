@@ -22,7 +22,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -348,7 +348,7 @@ function scene:createScene( event )
 							local trampoline = display.newImage( "trampoline.png" )
 							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
 							trampoline.bodyName = "trampoline"..worldLength
-							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,13, -20,11, -20,9, 20,9 } } )	
+							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,13, -20,11, -20,10, 20,6 } } )	
 							game:insert( trampoline )	
 							trampoline:toFront()
 						else						
@@ -1245,7 +1245,7 @@ function scene:createScene( event )
 					--print( self.bodyName .. ": collision ended with " .. event.other.bodyName )
 					if bodyName ~= nil and (string.find(bodyName, "lava") ~= nil or string.find(self.bodyName, "lava") ~= nil) then				
 						Runtime:removeEventListener( "enterFrame", removeLifeLava )
-					elseif string.find(event.other.bodyName, "quickSandTop") ~= nil then
+					elseif event.other.bodyName ~= nil and string.find(event.other.bodyName, "quickSandTop") ~= nil then
 						print("removing quicksand to front")
 						Runtime:removeEventListener( "enterFrame", objectToFront )
 					end

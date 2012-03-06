@@ -28,7 +28,7 @@ highScoreLeaderboard = "1002786"
 storyboard.userName = "Anonymous"
 storyboard.userIndex = 0
 
-playSounds = false
+playSounds = true
 	
 local onSystem = function( event )
 	if event.type == "applicationSuspend" then
