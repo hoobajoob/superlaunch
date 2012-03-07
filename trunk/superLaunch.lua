@@ -86,7 +86,7 @@ function scene:createScene( event )
 		}
 		timeLabel.bodyName = "timeLabel"
 		local function hideTimeLabel()
-			timeLabel.isVisible = false
+			if timeLabel ~= nil then timeLabel.isVisible = false
 		end		
 		timer.performWithDelay( 4000, hideTimeLabel )
 		
@@ -117,7 +117,7 @@ function scene:createScene( event )
 	}
 	lifeLabel.bodyName = "lifeLabel"
 	local function hideLifeLabel()
-		lifeLabel.isVisible = false
+		if lifeLabel ~= nil then lifeLabel.isVisible = false
 	end	
 	--]]
 	function start()
