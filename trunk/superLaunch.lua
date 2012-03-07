@@ -22,7 +22,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -55,6 +55,7 @@ function scene:createScene( event )
 	local jetpackButtonOver = nil
 	local shootingForTheStarsAchieved = false
 	local twentyThousandLeagueAchieved = false
+	local removeLifeLava
 	
 	math.randomseed( os.time() )
 	math.random()	
@@ -123,10 +124,9 @@ function scene:createScene( event )
 	function start()
 		print("Starting Super Launch")
 		physics.start()
-		--physics.setDrawMode( "hybrid" )
 		worldLength = 0
-		local slingshot
-		local slingshotString
+		--local slingShot
+		local slingShotString
 		local life = 100
 		local explosion
 		local boost = 100
@@ -441,7 +441,7 @@ function scene:createScene( event )
 			elseif character == "baby" then
 				sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
 			elseif character == "dog" then
-				mainCharacterShape = { 8,-35, 35,-28, 30,10, 25,33, -35,33, -28,-8 }
+				--mainCharacterShape = { 8,-35, 35,-28, 30,10, 25,33, -35,33, -28,-8 }
 				sheet1 = sprite.newSpriteSheet( "aryaSprite.png", 66, 68 )
 			end
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -457,18 +457,22 @@ function scene:createScene( event )
 			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 		end
-		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250	
+		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250
+
+		slingshotString = display.newImage( "string.png" )
+		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 230
+		physics.addBody( slingshotString, "static", { friction=0.5 } )
+		slingshotString.bodyName = "slingShotString"
+		game:insert(slingshotString)
 		
+		--[[
 		slingshot = display.newImage( "slingshot.png" )
-		slingshot.x = 170; slingshot.y = groundReferencePoint - 225
-		--physics.addBody( slingshot, "static", { friction=0.5 } )
+		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
+		physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
-		slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
-		slingshotString.width = 4
-		game:insert(slingshotString)
 		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
-		
+		--]]
 		------------------------------------------------------------
 		-- Simple score display
 
@@ -719,7 +723,7 @@ function scene:createScene( event )
 					}
 				end		
 				
-				overlayDisplay:insert(list.view)			
+				overlayDisplay:insert(list)			
 					
 
 				--Setup the high score table if it doesn't exist
@@ -984,13 +988,17 @@ function scene:createScene( event )
 		jetpackButtonOver.isVisible = false
 		
 		local tLava = system.getTimer()
-		local function removeLifeLava( event )
-			local tDelta = (event.time - tLava)
-			if tDelta > 25 then	
-				tLavaPrevious = event.time
-				life = life - 1
-				lifeBar:setSize( life )
-				if storyboard.playSounds then local owChannel = audio.play( owSound, { channel=4 }  ) end
+		function removeLifeLava( event ) 
+			if lifeBar == nil then 
+				runtime:removeEventListener( "enterFrame", removeLifeLava )
+			else
+				local tDelta = (event.time - tLava)
+				if tDelta > 25 then	
+					tLavaPrevious = event.time
+					life = life - 1
+					lifeBar:setSize( life )
+					if storyboard.playSounds then local owChannel = audio.play( owSound, { channel=4 }  ) end
+				end
 			end
 		end	
 
@@ -1026,14 +1034,7 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
-					slingshotString:removeSelf()
-					slingshotString = nil
-					slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
-					slingshotString.width = 4
-					game:insert( slingshotString ) 
 				elseif "ended" == phase or "cancelled" == phase then
-					slingshotString:removeSelf()
-					slingshotString = nil
 					jetpackButton.isVisible = false
 					jetpackButton = nil
 					jetpackButton = ui.newButton{
@@ -1051,16 +1052,17 @@ function scene:createScene( event )
 					if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 					t:prepare("mainCharacterSprite")
 					t:play()
-					if character == "dog" then
-						physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					else
+					--if character == "dog" then
+					--	physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					--else
 						physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					end
+					--end
 					game:insert(t)
 					t.bodyName = "mainCharacterDynamic"
 					t.isFixedRotation = true
 					--t.angularDamping = 10
-					t:removeEventListener( "touch", onTouch )		
+					t:removeEventListener( "touch", onTouch )
+					slingshotString:removeSelf()
 					t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
@@ -1115,8 +1117,8 @@ function scene:createScene( event )
 					launchBoard.x = 170 + xInterval
 				end	
 				launchBoard.isVisible = false
-				launchBoard:removeSelf()
-				
+				launchBoard:removeSelf()				
+				slingshotString:removeSelf()
 				t:applyLinearImpulse( xForce * 3.5 , -yForce * 3 , t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 			end
@@ -1155,11 +1157,13 @@ function scene:createScene( event )
 			end
 			mainCharacter.x = 190 + 50 * math.sin( angle );
 			mainCharacter.y = 75 + 50 * math.cos( angle );
+			--[[
 			slingshotString:removeSelf()
 			slingshotString = nil
 			slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
 			slingshotString.width = 4
 			game:insert( slingshotString ) 
+			--]]
 		end
 	
 		if launchType == "hardLaunch" then
