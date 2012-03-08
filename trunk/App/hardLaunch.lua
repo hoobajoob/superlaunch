@@ -66,8 +66,8 @@ function scene:enterScene( event )
 	end
 	
 	local function startPower( event )
-		background:removeEventListener( "touch", backgroundTouchedEarly )
 		if valuesSent == false then
+			background:removeEventListener( "touch", backgroundTouchedEarly )
 			background:setFillColor( 0, 255, 50 )
 			launchLabel:setText( "Launch!!!" )
 			background:addEventListener( "touch", backgroundTouched )
