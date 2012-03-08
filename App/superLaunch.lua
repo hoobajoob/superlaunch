@@ -41,7 +41,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 5
+	local timeLeft = 100
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -643,7 +643,7 @@ function scene:createScene( event )
 				removeMainItems()
 				menuButton.isVisible = false
 				restartButton.isVisible = false
-				if launchType == "hardLaunch" then					
+				if launchType == "hardLaunch" then		
 					storyboard.gotoScene("hardLaunch")
 				else
 					start()
@@ -728,7 +728,7 @@ function scene:createScene( event )
 					}
 				end		
 				
-				overlayDisplay:insert(list.view)			
+				overlayDisplay:insert(list)			
 					
 
 				--Setup the high score table if it doesn't exist
@@ -1341,7 +1341,6 @@ function scene:createScene( event )
 		mainCharacter:addEventListener( "postCollision", mainCharacter )
 		return game
 	end	
-	timer.performWithDelay( 1, addKeyEvent )
 	ads.hide()
 end
 
@@ -1349,11 +1348,13 @@ function scene:enterScene( event )
 	print( "entering superLaunch" )
 	local group = self.view
 	storyboard.removeScene( "hardLaunch" )
+	timer.performWithDelay( 1, addKeyEvent )
 	start()
 end
 
 function scene:exitScene( event )
 	local group = self.view	
+	Runtime:removeEventListener( "key", onBackEvent )
 end
 
 function scene:destroyScene( event )
@@ -1363,6 +1364,7 @@ function scene:destroyScene( event )
 		timeBar.isVisible = false
 		timeBar = nil
 	end
+	Runtime:removeEventListener( "key", onBackEvent )
 end
 
 scene:addEventListener( "createScene", scene )

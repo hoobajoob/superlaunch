@@ -10,7 +10,7 @@ local function onBackEvent( event )
 	local keyName = event.keyName
 	
 	if (keyName == "back" and phase == "up") then 
-		storyboard.gotoScene("mainMenu")
+		storyboard.gotoScene("highScores")
 		return true
 	end
 end	

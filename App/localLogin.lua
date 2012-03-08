@@ -55,7 +55,6 @@ function scene:enterScene( event )
 		end
 		if storyboard.userIndex == 0 then
 			local tablefill = [[INSERT INTO tblUsers VALUES (NULL, ']]..storyboard.userName..[[');]]
-			native.showAlert( "Superlaunch", "Database Insert = " .. tablefill, { "OK" } )
 			db:exec( tablefill )
 			for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."'") do
 				storyboard.userIndex = row.ixUser break 
@@ -79,7 +78,6 @@ function scene:enterScene( event )
 							-- This event is called when the user stops editing a field:
 							-- for example, when they touch a different field or keyboard focus goes away
 					
-						native.showAlert( "Superlaunch", "Text entered = " .. tostring( getObj().text ), { "OK" } )
 						updateUser(tostring( getObj().text ))
 							
 							
@@ -111,8 +109,6 @@ function scene:enterScene( event )
 			defaultField:removeSelf()
 			defaultField = nil
 		end
-		native.showAlert( "SuperLaunch", "User Index is "..storyboard.userIndex.." and Username is "..storyboard.userName, 
-									{ "OK" } )
 		storyboard.gotoScene("mainMenu")
 	end
 	
