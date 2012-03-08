@@ -14,8 +14,8 @@ local function onBackEvent( event )
 			defaultField = nil	
 		end
 		storyboard.gotoScene("mainMenu")
+		return true
 	end
-	return true
 end	
 
 local function addKeyEvent()

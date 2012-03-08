@@ -10,8 +10,8 @@ local function onBackEvent( event )
 	
 	if (keyName == "back" and phase == "up") then 
 		storyboard.gotoScene("mainMenu")
+		return true
 	end
-	return true
 end	
 
 local function addKeyEvent()

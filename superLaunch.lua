@@ -920,8 +920,8 @@ function scene:createScene( event )
 			
 			if (keyName == "back" and phase == "up") then 				
 				goToMenu( event )
+				return true
 			end
-			return true
 		end	
 
 		local backButton = ui.newButton{
