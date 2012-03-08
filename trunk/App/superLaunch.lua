@@ -8,6 +8,7 @@ local frameCheck = {}
 local applyJetpackBoost = {}
 local endJets
 local character
+local start
 
 local function addKeyEvent()
 	print( "adding Key Listener" )
@@ -40,7 +41,7 @@ function scene:createScene( event )
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
-	local timeLeft = 100
+	local timeLeft = 5
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
 	local launchType = "slingShot"
@@ -539,6 +540,7 @@ function scene:createScene( event )
 		end
 		
 		local removeMainItems = function( event )	
+		print("removingmainitems")
 			while game.numChildren > 0	do
 				for i=1, game.numChildren do
 					if game[i] ~= nil then
@@ -641,8 +643,11 @@ function scene:createScene( event )
 				removeMainItems()
 				menuButton.isVisible = false
 				restartButton.isVisible = false
-				--director:changeScene("testChange", "crossFade", arguments)
-				start()
+				if launchType == "hardLaunch" then					
+					storyboard.gotoScene("hardLaunch")
+				else
+					start()
+				end
 			end
 			
 			if #totalScore == 4 then
@@ -723,7 +728,7 @@ function scene:createScene( event )
 					}
 				end		
 				
-				overlayDisplay:insert(list)			
+				overlayDisplay:insert(list.view)			
 					
 
 				--Setup the high score table if it doesn't exist
@@ -1217,6 +1222,7 @@ function scene:createScene( event )
 							life = life - 10
 						end
 						lifeBar:setSize( life )
+						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 						mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
 					elseif bodyName == "jetRefill" then
 						if boost > 74 then
@@ -1335,34 +1341,28 @@ function scene:createScene( event )
 		mainCharacter:addEventListener( "postCollision", mainCharacter )
 		return game
 	end	
-	start()
+	timer.performWithDelay( 1, addKeyEvent )
+	ads.hide()
 end
 
 function scene:enterScene( event )
 	print( "entering superLaunch" )
 	local group = self.view
-	timer.performWithDelay( 10, addKeyEvent )
-	ads.hide();
+	storyboard.removeScene( "hardLaunch" )
+	start()
 end
 
 function scene:exitScene( event )
 	local group = self.view	
-	Runtime:removeEventListener( "enterFrame", timeCheck )	
-			if timeBar ~= nil then
-				timeBar.setSize(0)
-				timeBar.isVisible = false
-				timeBar = nil
-			end
-	Runtime:removeEventListener( "key", onBackEvent )
 end
 
 function scene:destroyScene( event )
 	local group = self.view	
-			if timeBar ~= nil then
-				timeBar.setSize(0)
-				timeBar.isVisible = false
-				timeBar = nil
-			end
+	if timeBar ~= nil then
+		timeBar.setSize(0)
+		timeBar.isVisible = false
+		timeBar = nil
+	end
 end
 
 scene:addEventListener( "createScene", scene )
