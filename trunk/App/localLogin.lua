@@ -93,7 +93,7 @@ function scene:enterScene( event )
 	end
 	 
 	-- Create our Text Field
-	defaultField = native.newTextField( 10, 30, 180, 30,
+	defaultField = native.newTextField( 140, 140, 200, 40,
 			fieldHandler( function() return defaultField end ) )    -- passes the text field object
 	
 	local backButtonPress = function( event )
@@ -140,14 +140,15 @@ function scene:enterScene( event )
 end
 
 function scene:exitScene( event )
-	local group = self.view
-	
+	local group = self.view	
 	-- Add the back key callback
 	Runtime:removeEventListener( "key", onBackEvent );
+	native.setKeyboardFocus( nil )
 end
 
 function scene:destroyScene( event )
 	local group = self.view
+	native.setKeyboardFocus( nil )
 end
 
 scene:addEventListener( "createScene", scene )
