@@ -20,7 +20,7 @@ require "sqlite3"
 
 
 
-ads.init( "inmobi", "4028cba635ca529a0135f58da01602a0" )
+ads.init( "inneractive", "RecRoomRecords_Superlaunch_Android" )
 gameNetwork.init( "openfeint", "j6oZJXqa1ZMPXOFkezATA", "D0jJ5j57G1chPqXUQiv5m60hHlRwhzaXGgMNWUaQOI", "SuperLaunch", "405093" )
 
 highScoreLeaderboard = "1002786"
