@@ -118,7 +118,7 @@ function scene:enterScene( event )
 		onRelease = backButtonPress,
 		emboss = true,
 		x = 450,
-		y = 30
+		y = 80
 	}
 	backButton.isVisible = true
 	
