@@ -95,6 +95,7 @@ function scene:enterScene( event )
 	-- Create our Text Field
 	defaultField = native.newTextField( 140, 140, 200, 40,
 			fieldHandler( function() return defaultField end ) )    -- passes the text field object
+	group:insert( defaultField )
 	
 	local backButtonPress = function( event )
 		defaultField:removeSelf()
