@@ -6,7 +6,9 @@ local scene = storyboard.newScene()
 local onBackEvent = {}
 local frameCheck = {}
 local applyJetpackBoost = {}
+local applyLazars = {}
 local endJets
+local endLazars
 local character
 local start
 
@@ -38,6 +40,7 @@ function scene:createScene( event )
 	local bounceSound = audio.loadSound("bounce.mp3")	
 	local owSound = audio.loadSound("ow.ogg")	
 	local jetSound = audio.loadSound("jetFuel.mp3")	
+	local lazarSound = audio.loadSound("pew.mp3")	
 	local jetContinuousSound = audio.loadSound("jetFuelContinuous.mp3")	
 	--]]------
 	local totalScore = {}
@@ -54,6 +57,8 @@ function scene:createScene( event )
 	local timeCheck
 	local jetpackButton = nil
 	local jetpackButtonOver = nil
+	local lazarButton = nil
+	local lazarButtonOver = nil
 	local shootingForTheStarsAchieved = false
 	local twentyThousandLeagueAchieved = false
 	local removeLifeLava
@@ -131,8 +136,10 @@ function scene:createScene( event )
 		local life = 100
 		local explosion
 		local boost = 100
+		local lazarLevel = 40
 		local worldLength = 0
 		local showAngle
+		local objectToFront
 		mainContainerGroup = display.newGroup()
 		group:insert( mainContainerGroup )
 		game = display.newGroup()
@@ -620,6 +627,11 @@ function scene:createScene( event )
 			jetpackButton:removeSelf();
 			endJets()
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
+			
+			lazarButton.isVisible = false	
+			lazarButton:removeSelf();
+			endLazars()
+			Runtime:removeEventListener( "enterFrame", applyLazars )
 									
 			menuButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
@@ -941,6 +953,7 @@ function scene:createScene( event )
 		overlayDisplay:insert(backButton)
 		
 		local jetpackSoundChannel
+		local lazarSoundChannel
 		local tJetpack = system.getTimer()
 		function applyJetpackBoost:enterFrame( event )			
 			flame.x = mainCharacter.x - 20
@@ -965,23 +978,48 @@ function scene:createScene( event )
 				jetpackButtonOver.isVisible = false
 			end
 		end
-		local jetChannel
-		--[[
-		local function playJetContinuousSound()
-			jetChannel = audio.play( jetContinuousSound, ({ channel=4 }, onComplete=playJetContinuousSound) )
+		local tLazar = system.getTimer()
+		function applyLazars:enterFrame( event )
+			local tDelta = (event.time - tLazar)
+			if lazarLevel > 0 then		
+				if tDelta > 250 and mainCharacter ~= nil then
+					lazarButtonOver.isVisible = true
+					tLazar = event.time
+					lazarLevel = lazarLevel - 1
+					--lazarBar:setSize( lazarLevel )
+					local lazar = display.newImage( "lazar.png" )
+					local lazarShape = { -2,5, 2,5, 2,-5, -2,-5  }
+					physics.addBody( lazar, { density=-1, friction=0, bounce=0, shape=lazarShape } )
+					lazar.isVisible = true
+					game:insert( lazar )
+					lazar.x = mainCharacter.x + 10; lazar.y = mainCharacter.y
+					vx, vy = mainCharacter:getLinearVelocity()
+					lazar:applyLinearImpulse( 20 + vx, 0, lazar.x, lazar.y )
+				end
+			else
+				lazarButtonOver.isVisible = false
+			end
 		end
-		--]]
+		local jetChannel
+		local lazarChannel
 		local function startJets()
-			--jetChannel = audio.play( jetSound, ({ channel=4 }, onComplete=playJetContinuousSound  ) )
 			if storyboard.playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
 		function endJets()
-			--audio.stop( jetChannel )
 			flame.isVisible = false
 			jetpackButtonOver.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
+		end
+		local function startLazars()
+			if storyboard.playSounds then lazarChannel = audio.play( jetSound,{ channel=4 }) end
+			Runtime:addEventListener( "enterFrame", applyLazars )
+		end
+		
+		function endLazars()
+			lazarButtonOver.isVisible = false
+			Runtime:removeEventListener( "enterFrame", applyLazars )
 		end
 		
 		jetpackButton = display.newImage( "jetPack.png" )
@@ -991,6 +1029,14 @@ function scene:createScene( event )
 		overlayDisplay:insert(jetpackButtonOver)
 		jetpackButtonOver.x = 445; jetpackButtonOver.y = 255
 		jetpackButtonOver.isVisible = false
+		
+		lazarButton = display.newImage( "lazarGun.png" )
+		overlayDisplay:insert(lazarButton)
+		lazarButton.x = 445; lazarButton.y = 160
+		lazarButtonOver = display.newImage( "lazarGunOver.png" )
+		overlayDisplay:insert(lazarButtonOver)
+		lazarButtonOver.x = 445; lazarButtonOver.y = 160
+		lazarButtonOver.isVisible = false
 		
 		local tLava = system.getTimer()
 		function removeLifeLava( event ) 
@@ -1052,6 +1098,18 @@ function scene:createScene( event )
 					}
 					jetpackButton.bodyName = "Jet Pack Button"
 					overlayDisplay:insert(jetpackButton)
+					lazarButton.isVisible = false
+					lazarButton = nil
+					lazarButton = ui.newButton{
+						defaultSrc = "lazarGun.png",
+						x = 445,
+						y = 160,
+						overSrc = "lazarGunOver.png",
+						onPress = startLazars,
+						onRelease = endLazars
+					}
+					lazarButton.bodyName = "Lazar Button"
+					overlayDisplay:insert(lazarButton)
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
@@ -1092,6 +1150,18 @@ function scene:createScene( event )
 				}
 				jetpackButton.bodyName = "Jet Pack Button"
 				overlayDisplay:insert(jetpackButton)
+					lazarButton.isVisible = false
+					lazarButton = nil
+					lazarButton = ui.newButton{
+						defaultSrc = "lazarGun.png",
+						x = 445,
+						y = 160,
+						overSrc = "lazarGunOver.png",
+						onPress = startLazars,
+						onRelease = endLazars
+					}
+					lazarButton.bodyName = "Lazar Button"
+					overlayDisplay:insert(lazarButton)
 				angle = (storyboard.launchAngle - 7.5) * 50
 				power = storyboard.launchPower
 				display.getCurrentStage():setFocus( nil )
@@ -1099,11 +1169,11 @@ function scene:createScene( event )
 				if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
 				t:prepare("mainCharacterSprite")
 				t:play()
-				if character == "dog" then
-					physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
-				else
-					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-				end
+					--if character == "dog" then
+					--	physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					--else
+						physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					--end
 				game:insert(t)
 				t.bodyName = "mainCharacterDynamic"
 				t.isFixedRotation = true
@@ -1188,9 +1258,13 @@ function scene:createScene( event )
 
 
 		-- METHOD 1: Use table listeners to make a single object report collisions between "self" and "other"
-		local function objectToFront( curToFrontObject )			
-			storyboard.curToFrontObject:toFront()
-		end
+		function objectToFront( curToFrontObject )	
+			if storyboard.curToFrontObject ~= nil then		
+				storyboard.curToFrontObject:toFront()
+			else
+				Runtime:removeEventListener( "enterFrame", objectToFront )
+			end
+ 		end
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
 				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
@@ -1207,6 +1281,7 @@ function scene:createScene( event )
 						Runtime:addEventListener( "enterFrame", objectToFront )
 					elseif bodyName == "star" then
 						mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
+						event.other.isVisible = false
 					elseif bodyName == "bacon" then
 						if life > 74 then
 							life = 100
@@ -1215,6 +1290,7 @@ function scene:createScene( event )
 						end			
 						lifeBar:setSize( life )
 						mainCharacter:applyLinearImpulse( -10, -75, mainCharacter.x + 9, mainCharacter.y )
+						event.other.isVisible = false
 					elseif bodyName == "bomb" then
 						if life < 10 then
 							life = 0
@@ -1224,6 +1300,7 @@ function scene:createScene( event )
 						lifeBar:setSize( life )
 						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 						mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
+						event.other.isVisible = false
 					elseif bodyName == "jetRefill" then
 						if boost > 74 then
 							boost = 100
@@ -1231,6 +1308,7 @@ function scene:createScene( event )
 							boost = boost + 25
 						end
 						boostBar:setSize( boost )
+						event.other.isVisible = false
 					elseif string.find(bodyName, "rooster") ~= nil then
 						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 						transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
