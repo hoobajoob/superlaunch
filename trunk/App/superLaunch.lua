@@ -424,7 +424,6 @@ function scene:createScene( event )
 					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
 					roosterPH.bodyName = "rooster"
 					physics.addBody( roosterPH, "static", { friction=0, bounce=0} )
-					roosterPH.isSensor = true
 					game:insert( roosterPH )
 					roosterPH:toFront()
 				end
@@ -805,7 +804,7 @@ function scene:createScene( event )
 			end
 			if mainCharacter ~= nil then
 				vx, vy = mainCharacter:getLinearVelocity()
-				if vx < 35 and vy < 5 and tNotMovingDelta > 100 then
+				if vx < 25 and vx > -25 and vy < 5 and vy > -5 and tNotMovingDelta > 100 then
 					tNotMovingPrevious = event.time
 					life = life - 5
 					lifeBar:setSize( life )
@@ -1251,19 +1250,21 @@ function scene:createScene( event )
 			mainCharacter:addEventListener( "touch", onTouch )
 		end
 		
-		----------------------------------------------------------
-		-- Two collision types (run Corona Terminal to see output)
-		----------------------------------------------------------
-
-
-		-- METHOD 1: Use table listeners to make a single object report collisions between "self" and "other"
-		function objectToFront( curToFrontObject )	
+		function objectToFront( )	
 			if storyboard.curToFrontObject ~= nil then		
 				storyboard.curToFrontObject:toFront()
 			else
 				Runtime:removeEventListener( "enterFrame", objectToFront )
 			end
  		end
+		function stopExplosion( )	
+			if storyboard.explosion ~= nil then
+				storyboard.explosion:pause()
+				storyboard.explosion.isVisible = false
+				storyboard.explosion:removeSelf()
+			end
+ 		end
+		
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
 				--print( self.bodyName .. ": collision began with " .. event.other.bodyName )
@@ -1272,15 +1273,14 @@ function scene:createScene( event )
 					if string.find(bodyName, "lava") ~= nil then
 						life = life - 1
 						lifeBar:setSize( life )
-						print("adding lava removal listener")
 						Runtime:addEventListener( "enterFrame", removeLifeLava )
 					elseif string.find(bodyName, "quickSandTop") ~= nil then
-						print("sending quicksand to front")
 						storyboard.curToFrontObject = event.other.subSand
 						Runtime:addEventListener( "enterFrame", objectToFront )
 					elseif bodyName == "star" then
 						mainCharacter:applyLinearImpulse( 0, -150, mainCharacter.x + 9, mainCharacter.y )
 						event.other.isVisible = false
+						event.other:removeSelf()
 					elseif bodyName == "bacon" then
 						if life > 74 then
 							life = 100
@@ -1290,6 +1290,7 @@ function scene:createScene( event )
 						lifeBar:setSize( life )
 						mainCharacter:applyLinearImpulse( -10, -75, mainCharacter.x + 9, mainCharacter.y )
 						event.other.isVisible = false
+						event.other:removeSelf()
 					elseif bodyName == "bomb" then
 						if life < 10 then
 							life = 0
@@ -1298,8 +1299,21 @@ function scene:createScene( event )
 						end
 						lifeBar:setSize( life )
 						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
-						mainCharacter:applyLinearImpulse( -100, 20, mainCharacter.x, mainCharacter.y )
+						
+						local explosionSheet = sprite.newSpriteSheet( "starExpSpriteSmall.png", 60, 60 )
+						local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
+						sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 3 )
+						storyboard.explosion = sprite.newSprite( explosionSpriteSet )
+						game:insert( storyboard.explosion )
+						storyboard.explosion.x = event.other.x; storyboard.explosion.y = event.other.y
+						if storyboard.playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
+						storyboard.explosion:play()
+						timer.performWithDelay( 300, stopExplosion )
+			
+						mainCharacter:setLinearVelocity( 0, 0)
+						mainCharacter:applyLinearImpulse( -30, -60, mainCharacter.x, mainCharacter.y )
 						event.other.isVisible = false
+						event.other:removeSelf()
 					elseif bodyName == "jetRefill" then
 						if boost > 74 then
 							boost = 100
@@ -1308,6 +1322,7 @@ function scene:createScene( event )
 						end
 						boostBar:setSize( boost )
 						event.other.isVisible = false
+						event.other:removeSelf()
 					elseif string.find(bodyName, "rooster") ~= nil then
 						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 						transition.to(mainCharacter, {x = event.other.x  - 40, y= event.other.y + 30, time=0})
