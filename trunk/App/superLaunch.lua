@@ -25,7 +25,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -163,23 +163,27 @@ function scene:createScene( event )
 		local function createFirstSection()
 		
 			--Create Backwards Crap
-			---[[
+			--[[
 				borderBodyElement = { friction=0.5, bounce=0.3 }
 				local borderBottom = display.newRect( -820, 775, 480, 20 )
 				borderBottom:setFillColor( 0, 100, 100)		-- make invisible
 				physics.addBody( borderBottom, "static", borderBodyElement )
+				borderBottom.bodyName = "Border Bottom"
 				game:insert( borderBottom )
 
 				local borderLeft = display.newRect( -820, -200, 20, 975 )
 				borderLeft:setFillColor( 0, 100, 100)		-- make invisible
 				physics.addBody( borderLeft, "static", borderBodyElement )
+				borderLeft.bodyName = "Border Left"
 				game:insert( borderLeft )
----[[
+				
+				
 				local borderRight = display.newRect( -360, 300, 20, 800 )
 				borderRight:setFillColor( 0, 100, 100)		-- make invisible
 				physics.addBody( borderRight, "static", borderBodyElement )
+				borderRight.bodyName = "Border Right"
 				game:insert( borderRight )
-				--]]
+
 				local triangle = display.newImage("triangle.png")
 				triangle.x = -600; triangle.y = 160
 				
@@ -220,17 +224,24 @@ function scene:createScene( event )
 				physics.addBody( crate, { density=2, friction=0.5, bounce=0.4 } )
 				physics.addBody( crateB, { density=4, friction=0.5, bounce=0.4 } )
 				physics.addBody( crateC, { density=1, friction=0.5, bounce=0.4 } )
+				crate.bodyName = "crate"
+				crateB.bodyName = "crate"
+				crateC.bodyName = "crate"
 				game:insert( crate )
 				game:insert( crateB )
 				game:insert( crateC )
 
 				physics.addBody( triangle, { density=0.9, friction=0.5, bounce=0.3, shape=triangleShape } )
 				physics.addBody( triangle2, { density=0.9, friction=0.5, bounce=0.3, shape=triangleShape } )
+				triangle.bodyName = "triangle"
+				triangle2.bodyName = "triangle"
 				game:insert( triangle )
 				game:insert( triangle2 )
 
 				physics.addBody( pentagon, { density=0.9, friction=0.5, bounce=0.4, shape=pentagonShape } )
 				physics.addBody( pentagon2, { density=0.9, friction=0.5, bounce=0.4, shape=pentagonShape } )
+				pentagon.bodyName = "pentagon"
+				pentagon2.bodyName = "pentagon"
 				game:insert( pentagon )
 				game:insert( pentagon2 )
 
@@ -238,6 +249,10 @@ function scene:createScene( event )
 				physics.addBody( superball, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
 				physics.addBody( superball2, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
 				physics.addBody( superball3, { density=0.9, friction=0.5, bounce=0.8, radius=24 } )
+				soccerball.bodyName = "ball"
+				superball.bodyName = "ball"
+				superball2.bodyName = "ball"
+				superball3.bodyName = "ball"
 				game:insert( soccerball )
 				game:insert( superball )
 				game:insert( superball2 )
@@ -987,12 +1002,27 @@ function scene:createScene( event )
 					lazarLevel = lazarLevel - 1
 					--lazarBar:setSize( lazarLevel )
 					local lazar = display.newImage( "lazar.png" )
-					physics.addBody( lazar, "kinematic", { density=0, friction=0, bounce=0 } )
 					lazar.isVisible = true
+					physics.addBody( lazar, "kinematic", { density=0, friction=0, bounce=0 } )
+					lazar.bodyName = "lazar"
+					lazar.isBullet = true
 					game:insert( lazar )
-					lazar.x = mainCharacter.x + 10; lazar.y = mainCharacter.y
+					lazar.x = mainCharacter.x + 30; lazar.y = mainCharacter.y - 10
+					---[[
+					local lazarSensor = display.newImage( "lazar.png" )
+					physics.addBody( lazarSensor, "dynamic", { density=0.1, friction=0, bounce=0 } )
+					lazarSensor.bodyName = "lazarSensor"
+					lazarSensor.isSensor = true
+					lazarSensor.lazar = lazar
+					game:insert( lazarSensor )
+					lazarSensor.x = lazar.x; lazarSensor.y = lazar.y
+					--]]
+					local lazarJoint = physics.newJoint( "weld", lazar, lazarSensor, lazar.x, lazar.y )
+					lazarSensor.joint = lazarJoint
+					
 					vx, vy = mainCharacter:getLinearVelocity()
 					lazar:setLinearVelocity( 800 + vx, 0 )
+					lazarSensor:setLinearVelocity( 800 + vx, 0 )
 				end
 			else
 				lazarButtonOver.isVisible = false
@@ -1365,7 +1395,28 @@ function scene:createScene( event )
 		local tPrevious = system.getTimer()
 		local function onGlobalCollision( event )
 			if ( event.phase == "began" ) then
-				--aprint( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
+				
+				--print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
+				---[[
+				if event.object1 ~= nil and event.object1.bodyName == "lazarSensor" then
+				print ("removing lazar for collision with "..event.object2.bodyName)
+					event.object1.joint:removeSelf()
+					event.object1.joint = nil
+					event.object1.lazar:removeSelf()
+					event.object1.lazar = nil
+					event.object1:removeSelf()
+					event.object1 = nil
+				end
+				if event.object2 ~= nil and event.object2.bodyName == "lazarSensor" then
+				print ("removing lazar for collision with "..event.object1.bodyName)
+					event.object2.joint:removeSelf()
+					event.object2.joint = nil
+					event.object2.lazar:removeSelf()
+					event.object2.lazar = nil
+					event.object2:removeSelf()
+					event.object2 = nil
+				end
+				--]]
 			elseif ( event.phase == "ended" ) then
 
 				--print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision ended" )
@@ -1403,7 +1454,7 @@ function scene:createScene( event )
 			-- This new event type fires only after a collision has been completely resolved. You can use 
 			-- this to obtain the calculated forces from the collision. For example, you might want to 
 			-- destroy objects on collision, but only if the collision force is greater than some amount.
-			
+			--print( "postcollision with "..self.bodyName.." and "..event.other.bodyName)
 			---[[
 			bodyName = event.other.bodyName
 			if ( event.force > 20.0 ) then
