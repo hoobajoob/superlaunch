@@ -795,6 +795,21 @@ function scene:createScene( event )
 				shootingForTheStarsAchieved = true
 			end
 			
+			--remove lazar when off screen
+			for i=1, game.numChildren do
+				if game[i] ~= nil and game[i].bodyName ~= nil and game[i].bodyName == "lazarSensor" then
+					local lazar = game[i]
+					if lazar.x > mainCharacter.x + 400 then
+						lazar.joint:removeSelf()
+						lazar.joint = nil
+						lazar.lazar:removeSelf()
+						lazar.lazar = nil
+						lazar:removeSelf()
+						lazar = nil
+					end
+				end
+			end
+			
 			local tNotMovingDelta = (event.time - tNotMovingPrevious)
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
@@ -1021,8 +1036,7 @@ function scene:createScene( event )
 					lazarSensor.joint = lazarJoint
 					
 					vx, vy = mainCharacter:getLinearVelocity()
-					lazar:setLinearVelocity( 800 + vx, 0 )
-					lazarSensor:setLinearVelocity( 800 + vx, 0 )
+					lazar:setLinearVelocity( 800 + vx, vy )
 				end
 			else
 				lazarButtonOver.isVisible = false
