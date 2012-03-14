@@ -988,13 +988,12 @@ function scene:createScene( event )
 					lazarLevel = lazarLevel - 1
 					--lazarBar:setSize( lazarLevel )
 					local lazar = display.newImage( "lazar.png" )
-					local lazarShape = { -2,5, 2,5, 2,-5, -2,-5  }
-					physics.addBody( lazar, { density=-1, friction=0, bounce=0, shape=lazarShape } )
+					physics.addBody( lazar, "kinematic", { density=0, friction=0, bounce=0 } )
 					lazar.isVisible = true
 					game:insert( lazar )
 					lazar.x = mainCharacter.x + 10; lazar.y = mainCharacter.y
 					vx, vy = mainCharacter:getLinearVelocity()
-					lazar:applyLinearImpulse( 20 + vx, 0, lazar.x, lazar.y )
+					lazar:setLinearVelocity( 800 + vx, 0 )
 				end
 			else
 				lazarButtonOver.isVisible = false
