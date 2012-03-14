@@ -415,7 +415,7 @@ function scene:createScene( event )
 				bacon.isSensor = true
 				game:insert( bacon )
 				bacon:toFront()	
-				if math.random(100) < 15 then
+				if math.random(100) < 101 then
 					local bomb = display.newImage( "bomb.png" )
 					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
 					bomb.bodyName = "bomb"
@@ -1301,13 +1301,25 @@ function scene:createScene( event )
 				Runtime:removeEventListener( "enterFrame", objectToFront )
 			end
  		end
-		function stopExplosion( )	
+		
+		local function stopExplosion( )	
 			if storyboard.explosion ~= nil then
 				storyboard.explosion:pause()
 				storyboard.explosion.isVisible = false
 				storyboard.explosion:removeSelf()
 			end
  		end
+		local function startExplosion( xloc, yloc)						
+			local explosionSheet = sprite.newSpriteSheet( "starExpSpriteSmall.png", 60, 60 )
+			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
+			sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 1 )
+			storyboard.explosion = sprite.newSprite( explosionSpriteSet )
+			game:insert( storyboard.explosion )
+			storyboard.explosion.x = xloc; storyboard.explosion.y = yloc
+			if storyboard.playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
+			storyboard.explosion:play()
+			timer.performWithDelay( 300, stopExplosion )
+		end
 		
 		local function onLocalCollision( self, event )
 			if ( event.phase == "began" ) then
@@ -1344,15 +1356,7 @@ function scene:createScene( event )
 						lifeBar:setSize( life )
 						if storyboard.playSounds then impactChannel = audio.play( owSound, { channel=3 }  ) end
 						
-						local explosionSheet = sprite.newSpriteSheet( "starExpSpriteSmall.png", 60, 60 )
-						local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
-						sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 3 )
-						storyboard.explosion = sprite.newSprite( explosionSpriteSet )
-						game:insert( storyboard.explosion )
-						storyboard.explosion.x = event.other.x; storyboard.explosion.y = event.other.y
-						if storyboard.playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
-						storyboard.explosion:play()
-						timer.performWithDelay( 300, stopExplosion )
+						startExplosion( event.other.x, event.other.y )
 			
 						mainCharacter:setLinearVelocity( 0, 0)
 						mainCharacter:applyLinearImpulse( -30, -60, mainCharacter.x, mainCharacter.y )
@@ -1413,22 +1417,28 @@ function scene:createScene( event )
 				--print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
 				---[[
 				if event.object1 ~= nil and event.object1.bodyName == "lazarSensor" then
-				print ("removing lazar for collision with "..event.object2.bodyName)
 					event.object1.joint:removeSelf()
 					event.object1.joint = nil
 					event.object1.lazar:removeSelf()
 					event.object1.lazar = nil
 					event.object1:removeSelf()
 					event.object1 = nil
+					if event.object2.bodyName ~= nil then
+						startExplosion( event.object2.x, event.object2.y )
+						event.object2:removeSelf()
+					end
 				end
 				if event.object2 ~= nil and event.object2.bodyName == "lazarSensor" then
-				print ("removing lazar for collision with "..event.object1.bodyName)
 					event.object2.joint:removeSelf()
 					event.object2.joint = nil
 					event.object2.lazar:removeSelf()
 					event.object2.lazar = nil
 					event.object2:removeSelf()
 					event.object2 = nil
+					if event.object1.bodyName ~= nil then
+						startExplosion( event.object1.x, event.object1.y )
+						event.object1:removeSelf()
+					end
 				end
 				--]]
 			elseif ( event.phase == "ended" ) then
