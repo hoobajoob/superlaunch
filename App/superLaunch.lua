@@ -25,7 +25,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -54,6 +54,7 @@ function scene:createScene( event )
 	local timeLabel = nil
 	local lifeBar = nil
 	local boostBar = nil
+	local lazarBar = nil
 	local timeCheck
 	local jetpackButton = nil
 	local jetpackButtonOver = nil
@@ -136,7 +137,7 @@ function scene:createScene( event )
 		local life = 100
 		local explosion
 		local boost = 100
-		local lazarLevel = 40
+		local lazarLevel = 100
 		local worldLength = 0
 		local showAngle
 		local objectToFront
@@ -542,6 +543,17 @@ function scene:createScene( event )
 		boostBar.bodyName = "boostBar"
 		overlayDisplay:insert( boostBar )
 		boostBar:setSize( boost )
+		
+		lazarBar = tbaUI.newBar{
+			bounds = { 400, 205 + display.screenOriginY, 5, 5 },
+			lineColor = { 0, 255, 50, 255 },
+			size = lazarLevel,
+			width = 5, 
+			beautyBar = true
+		}
+		lazarBar.bodyName = "lazarBar"
+		overlayDisplay:insert( lazarBar )
+		lazarBar:setSize( lazarLevel )
 
 		local function showExplosion()		
 			local explosionSheet = sprite.newSpriteSheet( "starExpSprite.png", 264, 264 )
@@ -617,6 +629,11 @@ function scene:createScene( event )
 				boostBar.isVisible = false
 				boostBar = nil
 			end
+			if lazarBar ~= nil then
+				lazarBar:setSize( 0 )
+				lazarBar.isVisible = false
+				lazarBar = nil
+			end
 			if mainCharacter ~= nil then
 				mainCharacter.isVisible = false
 				mainCharacter = nil
@@ -628,6 +645,7 @@ function scene:createScene( event )
 		local function showDeath( deathType )
 			lifeBar:setSize( 0 )
 			boostBar:setSize ( 0 )
+			lazarBar:setSize ( 0 )
 			if deathType == "explosion" then
 				showExplosion()
 			elseif deathType == "bloody" then
@@ -994,13 +1012,18 @@ function scene:createScene( event )
 					flame.isVisible = true
 					jetpackButtonOver.isVisible = true
 					tJetpack = event.time
-					if boost < 10 then
+					if boost < 8 then
 						boost = 0
 					else
-						boost = boost - 10
+						boost = boost - 7
 					end
 					boostBar:setSize( boost )
-					mainCharacter:applyLinearImpulse( 10, -30, mainCharacter.x - 1, mainCharacter.y )
+					
+					vx, vy = mainCharacter:getLinearVelocity()
+					if vx < 0 then
+						mainCharacter:setLinearVelocity( vx / 80, vy )
+					end
+					mainCharacter:applyLinearImpulse( 10, -15, mainCharacter.x - 1, mainCharacter.y )
 				end
 			else
 				flame.isVisible = false
@@ -1014,29 +1037,39 @@ function scene:createScene( event )
 				if tDelta > 250 and mainCharacter ~= nil then
 					lazarButtonOver.isVisible = true
 					tLazar = event.time
-					lazarLevel = lazarLevel - 1
-					--lazarBar:setSize( lazarLevel )
-					local lazar = display.newImage( "lazar.png" )
-					lazar.isVisible = true
-					physics.addBody( lazar, "kinematic", { density=0, friction=0, bounce=0 } )
-					lazar.bodyName = "lazar"
-					lazar.isBullet = true
-					game:insert( lazar )
-					lazar.x = mainCharacter.x + 30; lazar.y = mainCharacter.y - 10
-					---[[
-					local lazarSensor = display.newImage( "lazar.png" )
-					physics.addBody( lazarSensor, "dynamic", { density=0.1, friction=0, bounce=0 } )
-					lazarSensor.bodyName = "lazarSensor"
-					lazarSensor.isSensor = true
-					lazarSensor.lazar = lazar
-					game:insert( lazarSensor )
-					lazarSensor.x = lazar.x; lazarSensor.y = lazar.y
-					--]]
-					local lazarJoint = physics.newJoint( "weld", lazar, lazarSensor, lazar.x, lazar.y )
-					lazarSensor.joint = lazarJoint
-					
-					vx, vy = mainCharacter:getLinearVelocity()
-					lazar:setLinearVelocity( 800 + vx, vy )
+					lazarLevel = lazarLevel - 4
+					lazarBar:setSize( lazarLevel )
+					local yAdd = -20
+					for i=1,3 do
+						local lazar = display.newImage( "lazar.png" )
+						lazar:rotate( yAdd )
+						lazar.isVisible = true
+						physics.addBody( lazar, "kinematic", { density=0, friction=0, bounce=0 } )
+						lazar.bodyName = "lazar"
+						lazar.isBullet = true
+						game:insert( lazar )
+						lazar.x = mainCharacter.x + 50; lazar.y = mainCharacter.y - 10 + yAdd
+						---[[
+						local lazarSensor = display.newImage( "lazar.png" )
+						lazarSensor:rotate( yAdd )
+						physics.addBody( lazarSensor, "dynamic", { density=0.1, friction=0, bounce=0 } )
+						lazarSensor.bodyName = "lazarSensor"
+						lazarSensor.isSensor = true
+						lazarSensor.lazar = lazar
+						game:insert( lazarSensor )
+						lazarSensor.x = lazar.x; lazarSensor.y = lazar.y
+						--]]
+						local lazarJoint = physics.newJoint( "weld", lazar, lazarSensor, lazar.x, lazar.y )
+						lazarSensor.joint = lazarJoint
+						
+						vx, vy = mainCharacter:getLinearVelocity()
+						if vx < 1000 then
+							lazar:setLinearVelocity( 1000, vy + ( yAdd * 3 ) )
+						else
+							lazar:setLinearVelocity( vx * 500000, vy + ( yAdd * 3 ) )
+						end
+						yAdd = yAdd + 20
+					end
 				end
 			else
 				lazarButtonOver.isVisible = false
@@ -1416,6 +1449,8 @@ function scene:createScene( event )
 				
 				--print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
 				---[[
+				ob1 = event.object1
+				ob2 = event.object2
 				if event.object1 ~= nil and event.object1.bodyName == "lazarSensor" then
 					event.object1.joint:removeSelf()
 					event.object1.joint = nil
@@ -1423,9 +1458,12 @@ function scene:createScene( event )
 					event.object1.lazar = nil
 					event.object1:removeSelf()
 					event.object1 = nil
-					if event.object2.bodyName ~= nil then
-						startExplosion( event.object2.x, event.object2.y )
-						event.object2:removeSelf()
+					if event.object2.bodyName ~= nil then				
+						bn = event.object2.bodyName
+						if string.find(bn, "rooster") ~= nil or string.find(bn, "bomb") ~= nil or string.find(bn, "keg") ~= nil or string.find(bn, "spikeWall") ~= nil then
+							startExplosion( event.object2.x, event.object2.y )
+							event.object2:removeSelf()
+						end
 					end
 				end
 				if event.object2 ~= nil and event.object2.bodyName == "lazarSensor" then
@@ -1436,8 +1474,11 @@ function scene:createScene( event )
 					event.object2:removeSelf()
 					event.object2 = nil
 					if event.object1.bodyName ~= nil then
-						startExplosion( event.object1.x, event.object1.y )
-						event.object1:removeSelf()
+						bn = event.object1.bodyName
+						if string.find(bn, "rooster") ~= nil or string.find(bn, "bomb") ~= nil or string.find(bn, "keg") ~= nil or string.find(bn, "spikeWall") ~= nil then
+							startExplosion( event.object1.x, event.object1.y )
+							event.object1:removeSelf()
+						end
 					end
 				end
 				--]]
