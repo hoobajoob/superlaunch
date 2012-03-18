@@ -1040,6 +1040,7 @@ function scene:createScene( event )
 					lazarLevel = lazarLevel - 4
 					lazarBar:setSize( lazarLevel )
 					local yAdd = -20
+					if storyboard.playSounds then lazarChannel = audio.play( lazarSound,{ channel=4 }) end
 					for i=1,3 do
 						local lazar = display.newImage( "lazar.png" )
 						lazar:rotate( yAdd )
@@ -1088,7 +1089,6 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		local function startLazars()
-			if storyboard.playSounds then lazarChannel = audio.play( jetSound,{ channel=4 }) end
 			Runtime:addEventListener( "enterFrame", applyLazars )
 		end
 		
@@ -1340,6 +1340,7 @@ function scene:createScene( event )
 				storyboard.explosion:pause()
 				storyboard.explosion.isVisible = false
 				storyboard.explosion:removeSelf()
+				storyboard.explosion = nil
 			end
  		end
 		local function startExplosion( xloc, yloc)						
@@ -1449,35 +1450,34 @@ function scene:createScene( event )
 				
 				--print( "Global report: " .. event.object1.bodyName .. " & " .. event.object2.bodyName .. " collision began" )
 				---[[
-				ob1 = event.object1
-				ob2 = event.object2
-				if event.object1 ~= nil and event.object1.bodyName == "lazarSensor" then
-					event.object1.joint:removeSelf()
-					event.object1.joint = nil
-					event.object1.lazar:removeSelf()
-					event.object1.lazar = nil
-					event.object1:removeSelf()
-					event.object1 = nil
-					if event.object2.bodyName ~= nil then				
-						bn = event.object2.bodyName
-						if string.find(bn, "rooster") ~= nil or string.find(bn, "bomb") ~= nil or string.find(bn, "keg") ~= nil or string.find(bn, "spikeWall") ~= nil then
-							startExplosion( event.object2.x, event.object2.y )
-							event.object2:removeSelf()
+				if event.object1 ~= nil and event.object2~= nil then
+					if event.object1 ~= nil and event.object1.bodyName == "lazarSensor" then
+						event.object1.joint:removeSelf()
+						event.object1.joint = nil
+						event.object1.lazar:removeSelf()
+						event.object1.lazar = nil
+						event.object1:removeSelf()
+						event.object1 = nil
+						if event.object2.bodyName ~= nil then			
+							bn = event.object2.bodyName
+							if string.find(bn, "rooster") ~= nil or string.find(bn, "bomb") ~= nil or string.find(bn, "keg") ~= nil or string.find(bn, "spikeWall") ~= nil then
+								startExplosion( event.object2.x, event.object2.y )
+								event.object2:removeSelf()
+							end
 						end
-					end
-				end
-				if event.object2 ~= nil and event.object2.bodyName == "lazarSensor" then
-					event.object2.joint:removeSelf()
-					event.object2.joint = nil
-					event.object2.lazar:removeSelf()
-					event.object2.lazar = nil
-					event.object2:removeSelf()
-					event.object2 = nil
-					if event.object1.bodyName ~= nil then
-						bn = event.object1.bodyName
-						if string.find(bn, "rooster") ~= nil or string.find(bn, "bomb") ~= nil or string.find(bn, "keg") ~= nil or string.find(bn, "spikeWall") ~= nil then
-							startExplosion( event.object1.x, event.object1.y )
-							event.object1:removeSelf()
+					elseif event.object2 ~= nil and event.object2.bodyName == "lazarSensor" then
+						event.object2.joint:removeSelf()
+						event.object2.joint = nil
+						event.object2.lazar:removeSelf()
+						event.object2.lazar = nil
+						event.object2:removeSelf()
+						event.object2 = nil
+						if event.object1.bodyName ~= nil then
+							bn = event.object1.bodyName
+							if string.find(bn, "rooster") ~= nil or string.find(bn, "bomb") ~= nil or string.find(bn, "keg") ~= nil or string.find(bn, "spikeWall") ~= nil then
+								startExplosion( event.object1.x, event.object1.y )
+								event.object1:removeSelf()
+							end
 						end
 					end
 				end
