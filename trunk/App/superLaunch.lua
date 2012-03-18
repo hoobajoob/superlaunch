@@ -25,7 +25,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -459,17 +459,44 @@ function scene:createScene( event )
 			character = arguments[1]
 			print("Character is: "..character)
 			local sheet1
+					
 			if character == "noah" then
-				sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )	
+				local chest = display.newImage( "chest.png" )
+				physics.addBody( chest, { density=3.0, friction=0.1, bounce=0 } )
+				chest.bodyName = "chest"
+				local skull = display.newImage( "skull.png" )
+				physics.addBody( skull, { density=3.0, friction=0.1, bounce=0 } )
+				skull.bodyName = "skull"
+				local csJoint = physics.newJoint( "pivot", chest, skull, 0,-5 )
+				local leftArm = display.newImage( "leftArm.png" )
+				physics.addBody( leftArm, { density=3.0, friction=0.1, bounce=0 } )
+				leftArm.bodyName = "leftArm"
+				local claJoint = physics.newJoint( "pivot", chest, leftArm, -6,-2 )
+				local rightArm = display.newImage( "rightArm.png" )
+				physics.addBody( rightArm, { density=3.0, friction=0.1, bounce=0 } )
+				rightArm.bodyName = "rightArm"
+				local craJoint = physics.newJoint( "pivot", chest, rightArm, 6,2 )
+				local leftLeg = display.newImage( "leftLeg.png" )
+				physics.addBody( leftLeg, { density=3.0, friction=0.1, bounce=0 } )
+				leftLeg.bodyName = "leftLeg"
+				local cllJoint = physics.newJoint( "pivot", chest, leftLeg, -6,6 )
+				local rightLeg = display.newImage( "rightLeg.png" )
+				physics.addBody( rightLeg, { density=3.0, friction=0.1, bounce=0 } )
+				rightLeg.bodyName = "rightLeg"
+				local crlJoint = physics.newJoint( "pivot", chest, rightLeg, 6,6 )
+				mainCharacter = chest
 			elseif character == "baby" then
 				sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
+				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
+				sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
+				mainCharacter = sprite.newSprite( spriteSet1 )
 			elseif character == "dog" then
 				--mainCharacterShape = { 8,-35, 35,-28, 30,10, 25,33, -35,33, -28,-8 }
 				sheet1 = sprite.newSpriteSheet( "aryaSprite.png", 66, 68 )
+				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
+				sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
+				mainCharacter = sprite.newSprite( spriteSet1 )
 			end
-			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
-			sprite.add( spriteSet1, "mainCharacterSprite", 1, 4, 500, 0 ) -- play 8 frames every 1000 ms	
-			mainCharacter = sprite.newSprite( spriteSet1 )
 			
 			if #arguments > 2 then
 				launchType = arguments[3]
@@ -1188,13 +1215,13 @@ function scene:createScene( event )
 					display.getCurrentStage():setFocus( nil )
 					t.isFocus = false
 					if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
-					t:prepare("mainCharacterSprite")
-					t:play()
-					--if character == "dog" then
-					--	physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					--else
+					if character == "noah" then
+						physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+					else
+						t:prepare("mainCharacterSprite")
+						t:play()
 						physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					--end
+					end
 					game:insert(t)
 					t.bodyName = "mainCharacterDynamic"
 					t.isFixedRotation = true
