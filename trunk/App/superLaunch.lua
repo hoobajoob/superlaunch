@@ -547,7 +547,7 @@ function scene:createScene( event )
 		---[[
 		slingshot = display.newImage( "slingshot.png" )
 		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
-		physics.addBody( slingshot, "static", { friction=0.5 } )
+		physics.addBody( slingshot, "static", { density=0, friction=.5, bounce=0 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
 		slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
