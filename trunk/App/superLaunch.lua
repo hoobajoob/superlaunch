@@ -543,19 +543,16 @@ function scene:createScene( event )
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 		end
 		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250
-
-		slingshotString = display.newImage( "string.png" )
-		slingshotString.x = 150; slingshotString.y = groundReferencePoint - 230
-		physics.addBody( slingshotString, "static", { friction=0.5 } )
-		slingshotString.bodyName = "slingShotString"
-		game:insert(slingshotString)
 		
-		--[[
+		---[[
 		slingshot = display.newImage( "slingshot.png" )
 		slingshot.x = 170; slingshot.y = groundReferencePoint - 220
 		physics.addBody( slingshot, "static", { friction=0.5 } )
 		slingshot.bodyName = "slingShot"
 		game:insert(slingshot)
+		slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+		slingshotString.width = 4
+		game:insert(slingshotString)
 		--joint = physics.newJoint( "pivot", slingshot, slingshotString, 160, 120 )
 		--]]
 		------------------------------------------------------------
@@ -1222,7 +1219,14 @@ function scene:createScene( event )
 					else
 						t.y = 245
 					end
+					slingshotString:removeSelf()
+					slingshotString = nil
+					slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+					slingshotString.width = 4
+					game:insert( slingshotString ) 
 				elseif "ended" == phase or "cancelled" == phase then
+					slingshotString:removeSelf()
+					slingshot:removeSelf()
 					jetpackButton.isVisible = false
 					jetpackButton = nil
 					jetpackButton = ui.newButton{
@@ -1262,7 +1266,6 @@ function scene:createScene( event )
 					t.isFixedRotation = true
 					--t.angularDamping = 10
 					t:removeEventListener( "touch", onTouch )
-					slingshotString:removeSelf()
 					t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
