@@ -164,7 +164,7 @@ function scene:createScene( event )
 		local function createFirstSection()
 		
 			--Create Backwards Crap
-			--[[
+			---[[
 				borderBodyElement = { friction=0.5, bounce=0.3 }
 				local borderBottom = display.newRect( -820, 775, 480, 20 )
 				borderBottom:setFillColor( 0, 100, 100)		-- make invisible
@@ -461,30 +461,65 @@ function scene:createScene( event )
 			local sheet1
 					
 			if character == "noah" then
-				local chest = display.newImage( "chest.png" )
-				physics.addBody( chest, { density=3.0, friction=0.1, bounce=0 } )
-				chest.bodyName = "chest"
-				local skull = display.newImage( "skull.png" )
-				physics.addBody( skull, { density=3.0, friction=0.1, bounce=0 } )
-				skull.bodyName = "skull"
-				local csJoint = physics.newJoint( "pivot", chest, skull, 0,-5 )
-				local leftArm = display.newImage( "leftArm.png" )
-				physics.addBody( leftArm, { density=3.0, friction=0.1, bounce=0 } )
-				leftArm.bodyName = "leftArm"
-				local claJoint = physics.newJoint( "pivot", chest, leftArm, -6,-2 )
-				local rightArm = display.newImage( "rightArm.png" )
-				physics.addBody( rightArm, { density=3.0, friction=0.1, bounce=0 } )
-				rightArm.bodyName = "rightArm"
-				local craJoint = physics.newJoint( "pivot", chest, rightArm, 6,2 )
-				local leftLeg = display.newImage( "leftLeg.png" )
-				physics.addBody( leftLeg, { density=3.0, friction=0.1, bounce=0 } )
-				leftLeg.bodyName = "leftLeg"
-				local cllJoint = physics.newJoint( "pivot", chest, leftLeg, -6,6 )
-				local rightLeg = display.newImage( "rightLeg.png" )
-				physics.addBody( rightLeg, { density=3.0, friction=0.1, bounce=0 } )
-				rightLeg.bodyName = "rightLeg"
-				local crlJoint = physics.newJoint( "pivot", chest, rightLeg, 6,6 )
-				mainCharacter = chest
+				skeleton = display.newGroup()
+				skeleton.chest = display.newImage( "chest.png" )
+				skeleton.chest.bodyName = "chest"
+				skeleton.skull = display.newImage( "skull.png" )
+				skeleton.skull.bodyName = "skull"
+				skeleton.leftArm = display.newImage( "leftArm.png" )
+				skeleton.leftArm.bodyName = "leftArm"
+				skeleton.rightArm = display.newImage( "rightArm.png" )
+				skeleton.rightArm.bodyName = "rightArm"
+				skeleton.leftLeg = display.newImage( "leftLeg.png" )
+				skeleton.leftLeg.bodyName = "leftLeg"
+				skeleton.rightLeg = display.newImage( "rightLeg.png" )
+				skeleton.rightLeg.bodyName = "rightLeg"
+				
+				physics.addBody( skeleton.chest, "dynamic", props )
+				physics.addBody( skeleton.skull, "dynamic", props )
+				physics.addBody( skeleton.leftArm, "dynamic", props )
+				physics.addBody( skeleton.rightArm, "dynamic", props )
+				physics.addBody( skeleton.leftLeg, "dynamic", props )
+				physics.addBody( skeleton.rightLeg, "dynamic", props )
+				--[[
+				local props = { friction=1, density=3, bounce=0.1 }
+
+				local function addBodies( groups, props )
+					for i=1, #groups do
+						local dg = groups[i]
+						for i=1, dg.numChildren do
+							if (dg[i].radius) then
+								props.radius = dg[i].radius
+							else
+								props.radius = nil
+							end
+							physics.addBody( dg[i], "dynamic", props )
+						end
+					end
+				end
+
+				addBodies( { skeleton }, props )
+				--]]
+				skeleton.throat = physics.newJoint( "pivot", skeleton.chest, skeleton.skull, skeleton.skull.x, skeleton.skull.y-skeleton.skull.height/2 )
+				skeleton.leftshoulder = physics.newJoint( "pivot", skeleton.chest, skeleton.leftArm, skeleton.leftArm.x, skeleton.leftArm.y-skeleton.leftArm.height/2 )
+				skeleton.rightshoulder = physics.newJoint( "pivot", skeleton.chest, skeleton.rightArm, skeleton.rightArm.x, skeleton.rightArm.y-skeleton.rightArm.height/2 )
+				skeleton.lefthip = physics.newJoint( "pivot", skeleton.chest, skeleton.leftLeg, skeleton.leftLeg.x, skeleton.leftLeg.y-skeleton.leftLeg.height/2 )
+				skeleton.righthip = physics.newJoint( "pivot", skeleton.chest, skeleton.rightLeg, skeleton.rightLeg.x, skeleton.rightLeg.y-skeleton.rightLeg.height/2 )
+								
+				function addRotationLimits( joints, limit )
+					for i=1, #joints do
+						local joint = joints[i]
+						joint.isLimitEnabled = true
+						joint:setRotationLimits( -limit, limit )
+					end
+				end
+
+				addRotationLimits(
+					{ skeleton.throat, skeleton.leftshoulder, skeleton.rightshoulder, skeleton.lefthip, skeleton.righthip },
+					45
+				)
+
+				mainCharacter = skeleton.chest
 			elseif character == "baby" then
 				sheet1 = sprite.newSpriteSheet( "babySprite.png", 44, 64 )
 				local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
