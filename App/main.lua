@@ -18,6 +18,8 @@ local ads = require("ads")
 local gameNetwork = require "gameNetwork"
 require "sqlite3"
 
+system.activate( "multitouch" )
+
 
 
 ads.init( "inneractive", "RecRoomRecords_Superlaunch_Android" )
