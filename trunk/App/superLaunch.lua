@@ -25,7 +25,7 @@ function scene:createScene( event )
 	require "sprite"
 	local tbaUI = require( "tbaUI" )
 	require('socket')
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
 	local mainCharacter
 	local flame
@@ -1144,6 +1144,7 @@ function scene:createScene( event )
 		
 		function endJets()
 			flame.isVisible = false
+			print( "removing flame listener")
 			jetpackButtonOver.isVisible = false
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
@@ -1153,6 +1154,7 @@ function scene:createScene( event )
 		
 		function endLazars()
 			lazarButtonOver.isVisible = false
+			print( "removing lazar listener")
 			Runtime:removeEventListener( "enterFrame", applyLazars )
 		end
 		
@@ -1371,23 +1373,44 @@ function scene:createScene( event )
 				end
 			end
 			mainCharacter.x = 190 + 50 * math.sin( angle );
-			mainCharacter.y = 75 + 50 * math.cos( angle );
-			--[[
-			slingshotString:removeSelf()
+			mainCharacter.y = 175 + 50 * math.cos( angle );			
+			if slingshotString ~= nil then slingshotString:removeSelf() end
 			slingshotString = nil
-			slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+			slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, 120, 270 ) 
 			slingshotString.width = 4
 			game:insert( slingshotString ) 
-			--]]
+		end
+			
+		local function startShowAngle()
+			Runtime:addEventListener ( "enterFrame", showAngle )
 		end
 	
 		if launchType == "hardLaunch" then
+			mainCharacter.y = mainCharacter.y + 100
+			mainCharacter.x = mainCharacter.x + 80
+			slingshotString:removeSelf()
+			slingshotString = nil
+			slingshot:removeSelf()
+			slingshot = nil
 			storyboard.launched = false
 			local power = storyboard.launchPower
 			Runtime:addEventListener ( "touch", setAngle )
 			timer.performWithDelay(5000, launchDefaultAngle )
 			storyboard.launchAngle = 7.5
-			Runtime:addEventListener ( "enterFrame", showAngle )
+		
+			local setAngleLabel = ui.newLabel{
+				bounds = { 260, display.screenOriginY, 100, 24 },
+				text = "Touch Screen\n   to set angle\n     and launch",
+				textColor = { 10, 10, 10, 255 },
+				size = 30,
+				align = "center"
+			}
+			setAngleLabel.bodyName = "setAngleLabel"
+			local function hidesetAngleLabel()
+				if setAngleLabel ~= nil then setAngleLabel.isVisible = false end
+			end		
+			timer.performWithDelay( 5000, hidesetAngleLabel )
+			timer.performWithDelay(1000, startShowAngle )
 		else
 			mainCharacter:addEventListener( "touch", onTouch )
 		end

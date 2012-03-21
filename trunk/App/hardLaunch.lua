@@ -16,7 +16,7 @@ function scene:createScene( event )
 		
 	launchLabel = ui.newLabel{
 			bounds = { display.contentWidth /2 - 45, 100 + display.screenOriginY, 100, 24 },
-			text = "Touch Screen\nto\nStart Launch Sequence",
+			text = "   Touch Screen\n      to\nStart Launch Sequence",
 			--font = "Trebuchet-BoldItalic",
 			textColor = { 255, 200, 100, 255 },
 			size = 33,
@@ -36,8 +36,12 @@ function scene:enterScene( event )
 	local valuesSent = false
 	
 	local function reduceBackground()
-		local change =  ( system.getTimer() - touchStart ) * .05 
+		local change =  ( system.getTimer() - touchStart ) * .2
 		background:setFillColor( change, 255 - change, 50, 255 - ( change / 1.5 ) )
+	end
+	
+	local function startReduceBackground()
+		Runtime:addEventListener( "enterFrame", reduceBackground )	
 	end
 	
 	local function sendLaunchValues()
@@ -57,8 +61,10 @@ function scene:enterScene( event )
 	end
 	
 	local function backgroundTouched( event )
-		background:removeEventListener( "touch", backgroundTouched )
-		timer.performWithDelay( 500, sendLaunchValues ) --prevents touch event from carrying over to superlaunch
+		if event.phase == "ended" then
+			background:removeEventListener( "touch", backgroundTouched )
+			timer.performWithDelay( 1, sendLaunchValues ) --prevents touch event from carrying over to superlaunch
+		end
 	end
 	
 	local function sendIfNotSent()
@@ -72,9 +78,9 @@ function scene:enterScene( event )
 			launchLabel:setText( "Launch!!!" )
 			background:addEventListener( "touch", backgroundTouched )
 			tNoPress = system.getTimer()
-			timer.performWithDelay( 5000, sendIfNotSent )
+			timer.performWithDelay( 1250, sendIfNotSent )
 			touchStart = system.getTimer()
-			Runtime:addEventListener( "enterFrame", reduceBackground )
+			timer.performWithDelay( 250, startReduceBackground )
 		end
 	end
 	
