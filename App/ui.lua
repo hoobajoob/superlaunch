@@ -176,7 +176,7 @@ local function newButtonHandler( self, event )
                         
                         if "ended" == phase then
                                 -- Only consider this a "click" if the user lifts their finger inside button's stageBounds
-                                if isWithinBounds then
+                                if not self.releaseOnlyInBounds or isWithinBounds then
                                         if onEvent then
                                                 buttonEvent.phase = "release"
                                                 buttonEvent.x = event.x - bounds.xMin
@@ -216,7 +216,7 @@ local function newButton( params )
                 sizeMultiply = 2
                 sizeDivide = 0.5                
         end
-        
+		
         if params.defaultSrc then
                 button = display.newGroup()
                 if isDisplayObject(params.defaultSrc) then
@@ -397,6 +397,10 @@ local function newButton( params )
         if params.id then
                 button._id = params.id
         end
+        
+		if params.releaseOnlyInBounds then
+			button.releaseOnlyInBounds = true
+		end
  
         return button
 end
