@@ -1139,6 +1139,7 @@ function scene:createScene( event )
 		local lazarChannel
 		local function startJets()
 			if storyboard.playSounds then jetChannel = audio.play( jetSound,{ channel=4 }) end
+			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 			Runtime:addEventListener( "enterFrame", applyJetpackBoost )
 		end
 		
@@ -1149,6 +1150,7 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
 		end
 		local function startLazars()
+			Runtime:removeEventListener( "enterFrame", applyLazars )
 			Runtime:addEventListener( "enterFrame", applyLazars )
 		end
 		
@@ -1163,7 +1165,7 @@ function scene:createScene( event )
 		jetpackButton.x = 445; jetpackButton.y = 255
 		jetpackButtonOver = display.newImage( "jetPackOver.png" )
 		overlayDisplay:insert(jetpackButtonOver)
-		jetpackButtonOver.x = 445; jetpackButtonOver.y = 255
+		jetpackButtonOver.x = jetpackButton.x; jetpackButtonOver.y = jetpackButton.y
 		jetpackButtonOver.isVisible = false
 		
 		lazarButton = display.newImage( "lazarGun.png" )
@@ -1171,7 +1173,7 @@ function scene:createScene( event )
 		lazarButton.x = 445; lazarButton.y = 160
 		lazarButtonOver = display.newImage( "lazarGunOver.png" )
 		overlayDisplay:insert(lazarButtonOver)
-		lazarButtonOver.x = 445; lazarButtonOver.y = 160
+		lazarButtonOver.x = lazarButton.x; lazarButtonOver.y = lazarButton.y
 		lazarButtonOver.isVisible = false
 		
 		local tLava = system.getTimer()
