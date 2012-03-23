@@ -98,7 +98,7 @@ function scene:createScene( event )
 		local function hideTimeLabel()
 			if timeLabel ~= nil then timeLabel.isVisible = false end
 		end		
-		timer.performWithDelay( 4000, hideTimeLabel )
+		--timer.performWithDelay( 4000, hideTimeLabel )
 		
 		print( "timeMode on")
 		local tTimeLeft = system.getTimer()
@@ -166,7 +166,7 @@ function scene:createScene( event )
 		local function createFirstSection()
 		
 			--Create Backwards Crap
-			---[[
+			--[[
 				borderBodyElement = { friction=0.5, bounce=0.3 }
 				local borderBottom = display.newRect( -820, 775, 480, 20 )
 				borderBottom:setFillColor( 0, 100, 100)		-- make invisible
@@ -588,7 +588,7 @@ function scene:createScene( event )
 		lifeBar.bodyName = "lifeBar"
 		overlayDisplay:insert( lifeBar )
 		lifeBar:setSize( life )	
-		timer.performWithDelay( 4000, hideLifeLabel )
+		--timer.performWithDelay( 4000, hideLifeLabel )
 		
 		------------------------------------------------------------
 		-- boost display
@@ -1533,6 +1533,28 @@ function scene:createScene( event )
 			hand.alpha = .8
 			hand.x = mainCharacter.x + 20; hand.y = mainCharacter.y + 30
 			hand.isVisible = false
+			
+			local function releaseJetPack()
+				endJets()
+				hand.isVisible = false
+			end
+			local function pressJetPack()
+				hand.x = jetpackButton.x + 20; hand.y = jetpackButton.y + 30
+				hand.isVisible = true
+				startJets()
+				timer.performWithDelay( 2000, releaseJetPack )
+			end
+			
+			local function releaseLazars()
+				endLazars()
+				hand.isVisible = false
+			end
+			local function pressLazars()
+				hand.x = lazarButton.x + 20; hand.y = lazarButton.y + 30
+				hand.isVisible = true
+				startLazars()
+				timer.performWithDelay( 2000, releaseLazars )
+			end
 			local function releaseLaunch()
 				
 				local t = mainCharacter
@@ -1577,10 +1599,12 @@ function scene:createScene( event )
 				game:insert(t)
 				t.bodyName = "mainCharacterDynamic"
 				t.isFixedRotation = true
-				hand:removeSelf()
-				hand = nil
+				hand.isVisible = false
 				t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
+				
+				timer.performWithDelay( 3000, pressJetPack )
+				timer.performWithDelay( 6000, pressLazars )
 			end
 			local function startLaunch()
 				local function moveCharacterBack()
