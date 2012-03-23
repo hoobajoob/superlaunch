@@ -129,7 +129,7 @@ function scene:createScene( event )
 		
 	local function slingShotButtonPress()
 		storyboard.arguments = {character, true, "slingShot"}
-		storyboard.gotoScene( "tutorial" )
+		storyboard.gotoScene( "superLaunch" )
 	end
 	local function hardLaunchButtonPress()
 		storyboard.arguments = {character, true, "hardLaunch"}

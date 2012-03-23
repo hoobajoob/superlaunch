@@ -50,14 +50,18 @@ function scene:enterScene( event )
  
 	local function updateUser( stringName )
 		storyboard.userName = stringName
-		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."'") do
-			storyboard.userIndex = row.ixUser break 
+		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
+			storyboard.userIndex = row.ixUser
 		end
+		local tablefill = [[UPDATE tblUsers SET fLatestUser = 0 WHERE fLatestUser = 1;]]
+		db:exec( tablefill )
+		local tablefill = [[UPDATE tblUsers SET fLatestUser = 1 WHERE ixUser = ]]..storyboard.userIndex..[[;]]
+		db:exec( tablefill )
 		if storyboard.userIndex == 0 then
-			local tablefill = [[INSERT INTO tblUsers VALUES (NULL, ']]..storyboard.userName..[[');]]
+			local tablefill = [[INSERT INTO tblUsers VALUES (NULL, ']]..storyboard.userName..[[', 1, 1);]]
 			db:exec( tablefill )
-			for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."'") do
-				storyboard.userIndex = row.ixUser break 
+			for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
+				storyboard.userIndex = row.ixUser 
 			end
 		end
 	end
