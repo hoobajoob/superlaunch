@@ -164,6 +164,13 @@ function scene:createScene( event )
 		local rooster = sprite.newSprite( roosterSpriteSet )	
 		game:insert( rooster )
 		rooster.isVisible = false
+		
+		local explosionSheet = sprite.newSpriteSheet( "starExpSpriteSmall.png", 60, 60 )
+		local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
+		sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 1 )
+		storyboard.explosion = sprite.newSprite( explosionSpriteSet )
+		game:insert( storyboard.explosion )
+		storyboard.explosion.isVisible = false
 						
 		-- Sky and ground graphics
 		local function createFirstSection()
@@ -901,6 +908,10 @@ function scene:createScene( event )
 				hand.isVisible = false
 				hand = nil
 			end
+			if storyboard.explosion ~= nil then
+				storyboard.explosion.isVisible = false
+				storyboard.explosion = nil
+			end
 			removeMainItems()	
 		end
 		
@@ -1512,7 +1523,6 @@ function scene:createScene( event )
 					Runtime:addEventListener( "enterFrame", frameCheck )
 				end
 			end
-
 			-- Important to return true. This tells the system that the event
 			-- should not be propagated to listeners of any objects underneath.
 			return true
@@ -1671,19 +1681,14 @@ function scene:createScene( event )
 			if storyboard.explosion ~= nil then
 				storyboard.explosion:pause()
 				storyboard.explosion.isVisible = false
-				storyboard.explosion:removeSelf()
-				storyboard.explosion = nil
 			end
  		end
 
-		local function startExplosion( xloc, yloc)						
-			local explosionSheet = sprite.newSpriteSheet( "starExpSpriteSmall.png", 60, 60 )
-			local explosionSpriteSet = sprite.newSpriteSet(explosionSheet, 1, 2)
-			sprite.add( explosionSpriteSet, "explosionSprite", 1, 2, 2500, 1 )
-			storyboard.explosion = sprite.newSprite( explosionSpriteSet )
-			game:insert( storyboard.explosion )
-			storyboard.explosion.x = xloc; storyboard.explosion.y = yloc
+		local function startExplosion( xloc, yloc)
 			if storyboard.playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
+			storyboard.explosion.x = xloc; storyboard.explosion.y = yloc
+			storyboard.explosion.isVisible = true
+			storyboard.explosion:prepare()
 			storyboard.explosion:play()
 			timer.performWithDelay( 300, stopExplosion )
 		end
