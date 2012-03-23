@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<levelData>
+	<level id="1">
+	  <name>level 1</name>
+	  <land>1,1,2,2,1,1,1,1,1,1,2,1,1,1,1,1,1,2,1,2,2,2,1,1,1,1,1,1</land>
+	  <ramps>650</ramps>
+	  <trampolines></trampolines>
+	  <spikeWalls>1900</spikeWalls>
+	  <kegs>1600</kegs>
+	  <roosters>2200,2500</roosters>
+	  <stars></stars>
+	  <bacon></bacon>
+	  <jetRefills></jetRefills>
+	  <bombs></bombs>
+	  <finish>10000</finish>
+	</level>
+</levelData>
