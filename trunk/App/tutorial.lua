@@ -1196,97 +1196,7 @@ function scene:createScene( event )
 				end
 			end
 		end	
-
-		local function onTouch( event )
-			local t = event.target
-
-			local phase = event.phase
-			if "began" == phase then
-				-- Make target the top-most object
-				local parent = t.parent
-				parent:insert( t )
-				display.getCurrentStage():setFocus( t )
-				-- Spurious events can be sent to the target, e.g. the user presses 
-				-- elsewhere on the screen and then moves the finger over the target.
-				-- To prevent this, we add this flag. Only when it's true will "move"
-				-- events be sent to the target.
-				t.isFocus = true
-
-				-- Store initial position
-				t.x0 = event.x - t.x
-				t.y0 = event.y - t.y
-			elseif t.isFocus then
-				if "moved" == phase then
-					-- Make object move (we subtract t.x0,t.y0 so that moves are
-					-- relative to initial grab point, rather than object "snapping").
-					if event.x>1 then
-						t.x = event.x - t.x0
-					else
-						t.x = 1
-					end					
-					if event.y< 245 then
-						t.y = event.y - t.y0
-					else
-						t.y = 245
-					end
-					slingshotString:removeSelf()
-					slingshotString = nil
-					slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
-					slingshotString.width = 4
-					game:insert( slingshotString ) 
-				elseif "ended" == phase or "cancelled" == phase then
-					slingshotString:removeSelf()
-					slingshot:removeSelf()
-					jetpackButton.isVisible = false
-					jetpackButton = nil
-					jetpackButton = ui.newButton{
-						defaultSrc = "jetPack.png",
-						x = jetpackButtonx,
-						y = jetpackButtony,
-						overSrc = "jetPackOver.png",
-						onPress = startJets,
-						onRelease = endJets
-					}
-					jetpackButton.alpha = jetpackButtonAlpha
-					jetpackButton.bodyName = "Jet Pack Button"
-					overlayDisplay:insert(jetpackButton)
-					lazarButton.isVisible = false
-					lazarButton = nil
-					lazarButton = ui.newButton{
-						defaultSrc = "lazarGun.png",
-						x = lazarButtonx,
-						y = lazarButtony,
-						overSrc = "lazarGunOver.png",
-						onPress = startLazars,
-						onRelease = endLazars
-					}
-					lazarButton.alpha = lazarButtonAlpha
-					lazarButton.bodyName = "Lazar Button"
-					overlayDisplay:insert(lazarButton)
-					display.getCurrentStage():setFocus( nil )
-					t.isFocus = false
-					if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
-					if character == "noah" then
-						physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					else
-						t:prepare("mainCharacterSprite")
-						t:play()
-						physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-					end
-					game:insert(t)
-					t.bodyName = "mainCharacterDynamic"
-					t.isFixedRotation = true
-					--t.angularDamping = 10
-					t:removeEventListener( "touch", onTouch )
-					t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
-					Runtime:addEventListener( "enterFrame", frameCheck )
-				end
-			end
-
-			-- Important to return true. This tells the system that the event
-			-- should not be propagated to listeners of any objects underneath.
-			return true
-		end
+		
 		local function launchCharacter()
 			Runtime:removeEventListener ( "enterFrame", showAngle )
 			if mainCharacter ~= nil then
@@ -1395,36 +1305,6 @@ function scene:createScene( event )
 			
 		local function startShowAngle()
 			Runtime:addEventListener ( "enterFrame", showAngle )
-		end
-	
-		if launchType == "hardLaunch" then
-			mainCharacter.y = mainCharacter.y + 100
-			mainCharacter.x = mainCharacter.x + 80
-			slingshotString:removeSelf()
-			slingshotString = nil
-			slingshot:removeSelf()
-			slingshot = nil
-			storyboard.launched = false
-			local power = storyboard.launchPower
-			Runtime:addEventListener ( "touch", setAngle )
-			timer.performWithDelay(5000, launchDefaultAngle )
-			storyboard.launchAngle = 7.5
-		
-			local setAngleLabel = ui.newLabel{
-				bounds = { 260, display.screenOriginY, 100, 24 },
-				text = "Touch Screen\n   to set angle\n     and launch",
-				textColor = { 10, 10, 10, 255 },
-				size = 30,
-				align = "center"
-			}
-			setAngleLabel.bodyName = "setAngleLabel"
-			local function hidesetAngleLabel()
-				if setAngleLabel ~= nil then setAngleLabel.isVisible = false end
-			end		
-			timer.performWithDelay( 5000, hidesetAngleLabel )
-			timer.performWithDelay(1000, startShowAngle )
-		else
-			mainCharacter:addEventListener( "touch", onTouch )
 		end
 		
 		function objectToFront( )	
@@ -1647,6 +1527,179 @@ function scene:createScene( event )
 
 		mainCharacter.postCollision = onLocalPostCollision
 		mainCharacter:addEventListener( "postCollision", mainCharacter )
+		
+		local function startTutorial()
+			local hand = display.newImage( "hand.png" )
+			hand.alpha = .8
+			hand.x = mainCharacter.x + 20; hand.y = mainCharacter.y + 30
+			hand.isVisible = false
+			local function releaseLaunch()
+				
+				local t = mainCharacter
+				
+				slingshotString:removeSelf()
+				slingshot:removeSelf()
+				jetpackButton.isVisible = false
+				jetpackButton = nil
+				jetpackButton = ui.newButton{
+					defaultSrc = "jetPack.png",
+					x = jetpackButtonx,
+					y = jetpackButtony,
+					overSrc = "jetPackOver.png",
+					onPress = startJets,
+					onRelease = endJets
+				}
+				jetpackButton.alpha = jetpackButtonAlpha
+				jetpackButton.bodyName = "Jet Pack Button"
+				overlayDisplay:insert(jetpackButton)
+				lazarButton.isVisible = false
+				lazarButton = nil
+				lazarButton = ui.newButton{
+					defaultSrc = "lazarGun.png",
+					x = lazarButtonx,
+					y = lazarButtony,
+					overSrc = "lazarGunOver.png",
+					onPress = startLazars,
+					onRelease = endLazars
+				}
+				lazarButton.alpha = lazarButtonAlpha
+				lazarButton.bodyName = "Lazar Button"
+				overlayDisplay:insert(lazarButton)
+				display.getCurrentStage():setFocus( nil )
+				if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+				if character == "noah" then
+					physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				else
+					t:prepare("mainCharacterSprite")
+					t:play()
+					physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+				end
+				game:insert(t)
+				t.bodyName = "mainCharacterDynamic"
+				t.isFixedRotation = true
+				hand:removeSelf()
+				hand = nil
+				t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
+				Runtime:addEventListener( "enterFrame", frameCheck )
+			end
+			local function startLaunch()
+				local function moveCharacterBack()
+					mainCharacter.x = mainCharacter.x - 1.2
+					mainCharacter.y = mainCharacter.y + 1
+					hand.x = hand.x - 1.2
+					hand.y = hand.y + 1
+					slingshotString:removeSelf()
+					slingshotString = nil
+					slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+					slingshotString.width = 4
+					game:insert( slingshotString ) 
+				end
+				for i=1,120 do
+					timer.performWithDelay( i*10, moveCharacterBack )
+				end
+				timer.performWithDelay( 2000, releaseLaunch )
+			end
+			
+			local function showHand()
+				hand.isVisible = true
+			end
+			
+			timer.performWithDelay( 2500, showHand )
+			timer.performWithDelay( 3000, startLaunch )
+			
+			local function onTouch( event )
+				local t = event.target
+
+				local phase = event.phase
+				if "began" == phase then
+					-- Make target the top-most object
+					local parent = t.parent
+					parent:insert( t )
+					display.getCurrentStage():setFocus( t )
+					-- Spurious events can be sent to the target, e.g. the user presses 
+					-- elsewhere on the screen and then moves the finger over the target.
+					-- To prevent this, we add this flag. Only when it's true will "move"
+					-- events be sent to the target.
+					t.isFocus = true
+
+					-- Store initial position
+					t.x0 = event.x - t.x
+					t.y0 = event.y - t.y
+				elseif t.isFocus then
+					if "moved" == phase then
+						-- Make object move (we subtract t.x0,t.y0 so that moves are
+						-- relative to initial grab point, rather than object "snapping").
+						if event.x>1 then
+							t.x = event.x - t.x0
+						else
+							t.x = 1
+						end					
+						if event.y< 245 then
+							t.y = event.y - t.y0
+						else
+							t.y = 245
+						end
+						slingshotString:removeSelf()
+						slingshotString = nil
+						slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
+						slingshotString.width = 4
+						game:insert( slingshotString ) 
+					elseif "ended" == phase or "cancelled" == phase then
+						slingshotString:removeSelf()
+						slingshot:removeSelf()
+						jetpackButton.isVisible = false
+						jetpackButton = nil
+						jetpackButton = ui.newButton{
+							defaultSrc = "jetPack.png",
+							x = jetpackButtonx,
+							y = jetpackButtony,
+							overSrc = "jetPackOver.png",
+							onPress = startJets,
+							onRelease = endJets
+						}
+						jetpackButton.alpha = jetpackButtonAlpha
+						jetpackButton.bodyName = "Jet Pack Button"
+						overlayDisplay:insert(jetpackButton)
+						lazarButton.isVisible = false
+						lazarButton = nil
+						lazarButton = ui.newButton{
+							defaultSrc = "lazarGun.png",
+							x = lazarButtonx,
+							y = lazarButtony,
+							overSrc = "lazarGunOver.png",
+							onPress = startLazars,
+							onRelease = endLazars
+						}
+						lazarButton.alpha = lazarButtonAlpha
+						lazarButton.bodyName = "Lazar Button"
+						overlayDisplay:insert(lazarButton)
+						display.getCurrentStage():setFocus( nil )
+						t.isFocus = false
+						if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
+						if character == "noah" then
+							physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
+						else
+							t:prepare("mainCharacterSprite")
+							t:play()
+							physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
+						end
+						game:insert(t)
+						t.bodyName = "mainCharacterDynamic"
+						t.isFixedRotation = true
+						--t.angularDamping = 10
+						t:removeEventListener( "touch", onTouch )
+						t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
+						Runtime:addEventListener( "enterFrame", frameCheck )
+					end
+				end
+				
+				-- Important to return true. This tells the system that the event
+				-- should not be propagated to listeners of any objects underneath.
+				return true
+			end
+			
+		end
+		startTutorial()
 		return game
 	end	
 	ads.hide()
