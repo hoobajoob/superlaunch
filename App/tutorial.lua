@@ -171,6 +171,8 @@ function scene:createScene( event )
 		
 			--Create Backwards Crap
 			--[[
+
+
 				borderBodyElement = { friction=0.5, bounce=0.3 }
 				local borderBottom = display.newRect( -820, 775, 480, 20 )
 				borderBottom:setFillColor( 0, 100, 100)		-- make invisible
@@ -265,6 +267,7 @@ function scene:createScene( event )
 				game:insert( superball2 )
 				game:insert( superball3 )
 			--]]
+
 		
 			sky = display.newImage( "sky.png", true )
 			game:insert( sky )
@@ -515,8 +518,136 @@ function scene:createScene( event )
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		createAllObjects()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		
+
+
+
+
+
+
+
+
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
 		if arguments ~= nil then
@@ -815,15 +946,31 @@ function scene:createScene( event )
 			endLazars()
 			Runtime:removeEventListener( "enterFrame", applyLazars )
 									
+
+
 			menuButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				over = "buttonRedOver.png",
+
 				onPress = goToSuperlaunch,
 				text = "Continue",
 				emboss = true,
 				x = 240,
+
 				y = 85
 			}
+
+
+
+
+
+
+
+
+
+
+
+
 			menuButton.isVisible = true
 			menuButton.bodyName = "menuButton"
 			--overlayDisplay:insert(menuButton)
@@ -837,7 +984,11 @@ function scene:createScene( event )
 				removeMainItems()
 				menuButton.isVisible = false
 				restartButton.isVisible = false
+
+
+
 				start()
+
 			end
 			
 			if #totalScore == 4 then
@@ -978,6 +1129,7 @@ function scene:createScene( event )
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
 			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
+
 				mainCharacter:toFront();
 			end
 			
@@ -990,7 +1142,7 @@ function scene:createScene( event )
 				end
 			end
 			if (mainCharacter.x > -800) then
-				game.x = math.ceil(-mainCharacter.x) + 120
+				game.x = math.ceil(-mainCharacter.x) + 160
 			end
 			if (mainCharacter.x < -100 or mainCharacter.y < 235) then
 				game.y = -mainCharacter.y - math.fmod(-mainCharacter.y, 2) + 235
@@ -1281,6 +1433,97 @@ function scene:createScene( event )
 			end
 		end	
 		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		local function launchCharacter()
 			Runtime:removeEventListener ( "enterFrame", showAngle )
 			if mainCharacter ~= nil then
@@ -1390,6 +1633,36 @@ function scene:createScene( event )
 		local function startShowAngle()
 			Runtime:addEventListener ( "enterFrame", showAngle )
 		end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		
 		function objectToFront( )	
 			if storyboard.curToFrontObject ~= nil then		
@@ -1710,15 +1983,15 @@ function scene:createScene( event )
 				t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 				
-				local boostBubble = function()	return showBubble( 320, 100, "Press the Jetpack Button\nto use boost.\nBoost increases\nheight and speed.", 3000 ) end
+				local boostBubble = function()	return showBubble( 60, 100, "Press the Jetpack Button\nto use boost.\nBoost increases\nheight and speed.", 3000 ) end
 				table.insert( timerEvents, timer.performWithDelay( 5000, boostBubble ) )
 				table.insert( timerEvents, timer.performWithDelay( 6000, pressJetPack ) )
-				local lazarBubble = function()	return showBubble( 320, 100, "Press the Lazer Cannon\nButton to use lazars.\nLazars remove harmful\nobjects from your path.", 4500 ) end
+				local lazarBubble = function()	return showBubble( 420, 100, "Press the Lazer Cannon\nButton to use lazars.\nLazars remove harmful\nobjects from your path.", 4500 ) end
 				table.insert( timerEvents, timer.performWithDelay( 8500, lazarBubble ) )
-				table.insert( timerEvents, timer.performWithDelay( 9000, pressLazars ) )
-				table.insert( timerEvents, timer.performWithDelay( 11000, pressLazars ) )
-				table.insert( timerEvents, timer.performWithDelay( 13000, pressLazars ) )
-				local deathBubble = function()	return showBubble( 320, 100, "Your launch is over when\nyou lose momentum\nor run out of life.", 4500 ) end
+				table.insert( timerEvents, timer.performWithDelay( 9250, pressLazars ) )
+				table.insert( timerEvents, timer.performWithDelay( 11250, pressLazars ) )
+				table.insert( timerEvents, timer.performWithDelay( 13250, pressLazars ) )
+				local deathBubble = function()	return showBubble( 240, 100, "Your launch is over when\nyou lose momentum\nor run out of life.", 4000 ) end
 				table.insert( timerEvents, timer.performWithDelay( 13500, deathBubble ) )
 			end
 			local function startLaunch()
@@ -1746,98 +2019,6 @@ function scene:createScene( event )
 			showBubble( 320, 100, "To Start, drag character\nto set angle,\nthen release to launch.", 4500 )
 			table.insert( timerEvents, timer.performWithDelay( 2500, showHand ) )
 			table.insert( timerEvents, timer.performWithDelay( 5000, startLaunch ) )
-			
-			local function onTouch( event )
-				local t = event.target
-
-				local phase = event.phase
-				if "began" == phase then
-					-- Make target the top-most object
-					local parent = t.parent
-					parent:insert( t )
-					display.getCurrentStage():setFocus( t )
-					-- Spurious events can be sent to the target, e.g. the user presses 
-					-- elsewhere on the screen and then moves the finger over the target.
-					-- To prevent this, we add this flag. Only when it's true will "move"
-					-- events be sent to the target.
-					t.isFocus = true
-
-					-- Store initial position
-					t.x0 = event.x - t.x
-					t.y0 = event.y - t.y
-				elseif t.isFocus then
-					if "moved" == phase then
-						-- Make object move (we subtract t.x0,t.y0 so that moves are
-						-- relative to initial grab point, rather than object "snapping").
-						if event.x>1 then
-							t.x = event.x - t.x0
-						else
-							t.x = 1
-						end					
-						if event.y< 245 then
-							t.y = event.y - t.y0
-						else
-							t.y = 245
-						end
-						slingshotString:removeSelf()
-						slingshotString = nil
-						slingshotString = display.newLine( mainCharacter.x, mainCharacter.y, slingshot.x, slingshot.y ) 
-						slingshotString.width = 4
-						game:insert( slingshotString ) 
-					elseif "ended" == phase or "cancelled" == phase then
-						slingshotString:removeSelf()
-						slingshot:removeSelf()
-						jetpackButton.isVisible = false
-						jetpackButton = nil
-						jetpackButton = ui.newButton{
-							defaultSrc = "jetPack.png",
-							x = jetpackButtonx,
-							y = jetpackButtony,
-							overSrc = "jetPackOver.png",
-							onPress = startJets,
-							onRelease = endJets
-						}
-						jetpackButton.alpha = jetpackButtonAlpha
-						jetpackButton.bodyName = "Jet Pack Button"
-						overlayDisplay:insert(jetpackButton)
-						lazarButton.isVisible = false
-						lazarButton = nil
-						lazarButton = ui.newButton{
-							defaultSrc = "lazarGun.png",
-							x = lazarButtonx,
-							y = lazarButtony,
-							overSrc = "lazarGunOver.png",
-							onPress = startLazars,
-							onRelease = endLazars
-						}
-						lazarButton.alpha = lazarButtonAlpha
-						lazarButton.bodyName = "Lazar Button"
-						overlayDisplay:insert(lazarButton)
-						display.getCurrentStage():setFocus( nil )
-						t.isFocus = false
-						if storyboard.playSounds then local swooshChannel = audio.play( swooshSound, { channel=2 }  ) end
-						if character == "noah" then
-							physics.addBody( t, { density=2.2, friction=0.1, bounce=0, shape=mainCharacterShape } )
-						else
-							t:prepare("mainCharacterSprite")
-							t:play()
-							physics.addBody( t, { density=5.0, friction=0.1, bounce=0, shape=mainCharacterShape } )
-						end
-						game:insert(t)
-						t.bodyName = "mainCharacterDynamic"
-						t.isFixedRotation = true
-						--t.angularDamping = 10
-						t:removeEventListener( "touch", onTouch )
-						t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
-						Runtime:addEventListener( "enterFrame", frameCheck )
-					end
-				end
-				
-				-- Important to return true. This tells the system that the event
-				-- should not be propagated to listeners of any objects underneath.
-				return true
-			end
-			
 		end
 		startTutorial()
 		return game

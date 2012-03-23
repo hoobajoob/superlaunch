@@ -78,8 +78,51 @@ function scene:createScene( event )
 	db = sqlite3.open( path )   
 	
 	--Setup the user table if it doesn't exist
-	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName);]]
+	local tablesetup = [[CREATE TABLE IF NOT EXISTS tblUsers (ixUser INTEGER PRIMARY KEY, sName, fTutorial INTEGER, fLatestUser INTEGER);]]
 	db:exec( tablesetup )
+	
+	local fTutorialExists = false
+	local fLatestUserExists = false
+	for row in db:nrows("SELECT * FROM tblUsers LIMIT 1") do
+		if row.fTutorial ~= nil then fTutorialExists = true end
+		if row.fLatestUser ~= nil then fLatestUserExists = true end
+	end
+	
+	if not fTutorialExists then
+		print("adding fTutorial column")
+		tablesetup = [[ALTER TABLE tblUsers ADD COLUMN fTutorial INTEGER DEFAULT 1 NOT NULL]]
+		db:exec( tablesetup )
+	end
+	if not fLatestUserExists then
+		print("adding fLatestUser column")
+		tablesetup = [[ALTER TABLE tblUsers ADD COLUMN fLatestUser INTEGER DEFAULT 0 NOT NULL]]
+		db:exec( tablesetup )
+	end
+	
+	for row in db:nrows("SELECT ixUser, sName, fTutorial FROM tblUsers WHERE fLatestUser = 1 LIMIT 1") do
+		storyboard.userIndex = row.ixUser
+		storyboard.userName = row.sName
+		if row.fTutorial == 1 then storyboard.tutorialEnabled = true end
+	end
+	
+	if storyboard.userIndex == 0 then	
+		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
+			storyboard.userIndex = row.ixUser 
+		end
+		local tablefill = [[UPDATE tblUsers SET fLatestUser = 1 WHERE ixUser = ]]..storyboard.userIndex..[[;]]
+		db:exec( tablefill )
+	end
+	
+	if storyboard.userIndex == 0 then		
+		local tablefill = [[INSERT INTO tblUsers VALUES (NULL, ']]..storyboard.userName..[[', 1, 1);]]
+		db:exec( tablefill )
+		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
+			storyboard.userIndex = row.ixUser 
+		end
+		storyboard.tutorialEnabled = true
+	end
+	
+	if storyboard.userIndex == 0 then print( "Database Error: Failed to retrieve User Information" ) end
 	
 	local playButtonPress = function( event )
 		Runtime:removeEventListener( "key", onKeyEvent )
