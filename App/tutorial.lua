@@ -2,6 +2,8 @@ module(..., package.seeall)
 local ui = require("ui")
 local storyboard = require( "storyboard" )
 local widget = require("widget")
+local xml = require( "xml" ).newParser()
+
 local scene = storyboard.newScene()
 local onBackEvent = {}
 local frameCheck = {}
@@ -11,6 +13,7 @@ local endJets
 local endLazars
 local character
 local start
+local timerEvents = {}
 
 local function addKeyEvent()
 	print( "adding Key Listener" )
@@ -30,6 +33,7 @@ function scene:createScene( event )
 	local lazarButtonx = 465; local lazarButtony = 200;	local lazarButtonAlpha = .5
 	local jetpackButtonx = 15; local jetpackButtony = 200; local jetpackButtonAlpha = .5
 	local mainCharacter
+	local hand
 	local flame
 	local mainContainerGroup
 	local game
@@ -328,131 +332,190 @@ function scene:createScene( event )
 			grass.bodyName = "grass1"
 		end
 		
-		local function AddSection()
-			worldLength = worldLength + 1
-			local addition = (worldLength* 960 )
-			local newToys = true
-			local dgrass
-			if worldLength > 1 and math.random(5) < 3 then
-				if math.random(5) < 4 then
-					dgrass = display.newImage( "lava.png", true )
-					dgrass.bodyName = "lava"..worldLength
-					physics.addBody( dgrass, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-				else
-					newToys = false
-					local quickSandTop = display.newImage( "quickSandTop.png", true )
-					quickSandTop.x = addition; quickSandTop.y = groundReferencePoint - 70
-					physics.addBody( quickSandTop, "static", { friction=0, bounce=0 } )
-					quickSandTop.isSensor = true
-					quickSandTop.bodyName = "quickSandTop"..worldLength
-					game:insert( quickSandTop )
-					quickSandTop:toBack()
-					dgrass = display.newImage( "quickSand.png", true )
-					dgrass.bodyName = "quickSand"..worldLength
-					physics.addBody( dgrass, "static",
+		local function createAllObjects()
+
+
+
+
+
+
+			local levelData = xml:loadFile( "tutorialData.xml" )
+			local curLevel
+			for i=1, #levelData.child do
+				if levelData.child[i].properties["id"] == "1" then
+					curLevel = levelData.child[i]
+					print("Level Found!!")
+					break
+				end
+			end
+			for i=1, #curLevel.child do
+				local curNode = curLevel.child[i]
+				if curNode.name == "land" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local ground
+						if curData[i] == "1" then
+							print("adding Grass")
+							ground = display.newImage( "grass.png", true )
+							ground.bodyName = "grass"..worldLength
+							physics.addBody( ground, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
+						elseif curData[i] == "2" then
+							ground = display.newImage( "lava.png", true )
+							ground.bodyName = "lava"..worldLength
+							physics.addBody( ground, "static", { friction=0.7, bounce=0.2, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )						
+
+
+						elseif curData[i] == "3" then
+							ground = display.newImage( "quickSand.png", true )
+							ground.bodyName = "quickSand"..worldLength
+							physics.addBody( ground, "static",
 									  { friction=0.9, bounce=0, shape={ -360,60, -480,60, -480,-30, -360,0 }},
 									  { friction=1.5, bounce=0, shape={ 360,60, -360,60, -360,0, 360,0 }},
 									  { friction=0.9, bounce=0, shape={ 480,60, 360,60, 360,0, 480,-30 }}
 									)
-					quickSandTop.subSand = dgrass
-				end
-			else
-				dgrass = display.newImage( "grass.png", true )
-				dgrass.bodyName = "grass"..worldLength
-				physics.addBody( dgrass, "static", { friction=0.1, bounce=0.25, shape={ 480,60, -480,60, -480,-30, 480,-30 } } )
-			end
-			dgrass.x = addition; dgrass.y = groundReferencePoint - 20
-			game:insert( dgrass )
-			dgrass:toBack()
-			sky:toBack()
-			sky2:toBack()
-			if worldLength > 2 then					
-				if newToys == true then
-					toyX = addition + math.random( 10, 480 )
-					if math.random(100) < 85 then
-						if math.random(5) < 3 then
-							local trampoline = display.newImage( "trampoline.png" )
-							trampoline.x = toyX; trampoline.y = groundReferencePoint - 60
-							trampoline.bodyName = "trampoline"..worldLength
-							physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,13, -20,11, -20,10, 20,6 } } )	
-							game:insert( trampoline )	
-							trampoline:toFront()
-						else						
-							local ramp = display.newImage( "ramp.png" )
-							ramp.x = toyX; ramp.y = groundReferencePoint - 75
-							ramp.bodyName = "ramp"..worldLength
-							physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
-							game:insert( ramp )	
-							ramp:toFront()	
-
 						end
-					else 
-						if math.random(5) < 3 then
-							local spikeWall = display.newImage( "spikewall.png" )
-							spikeWall.x = toyX; spikeWall.y = groundReferencePoint - 90
-							spikeWall.bodyName = "spikeWall"..worldLength
-							physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
-							game:insert( spikeWall )
-							spikeWall:toFront()	
-						else
-							local keg = display.newImage( "keg.png" )
-							keg.x = toyX; keg.y = groundReferencePoint - 75
-							keg.bodyName = "keg"..worldLength
-							physics.addBody( keg, "static", { friction=1, bounce=0 } )
-							game:insert( keg )
-							keg:toFront()	
-						end
+						
+						ground.x = addition; ground.y = groundReferencePoint - 20
+						game:insert( ground )
+						addition = addition + 960
 					end
-				end
-				local star = display.newImage( "star.png" )
-				star.x = addition + math.random( 40, 920 ); star.y = math.random( -500, 140 )
-				star.bodyName = "star"
-				physics.addBody( star, "static", { friction=0, bounce=0 } )
-				star.isSensor = true
-				game:insert( star )
-				star:toFront()	
-				local bacon = display.newImage( "bacon.png" )
-				bacon.x = addition + math.random( 40, 920 ); bacon.y = math.random( -500, 140 )
-				bacon.bodyName = "bacon"
-				physics.addBody( bacon, "static", { friction=0, bounce=0 } )
-				bacon.isSensor = true
-				game:insert( bacon )
-				bacon:toFront()	
-				if math.random(100) < 101 then
-					local bomb = display.newImage( "bomb.png" )
-					bomb.x = addition + math.random( 40, 920 ); bomb.y = math.random( -500, 140 )
-					bomb.bodyName = "bomb"
-					physics.addBody( bomb, "static", { friction=0, bounce=0 } )
-					bomb.isSensor = true
-					game:insert( bomb )
-					bomb:toFront()	
-				end
-				if math.random(100) < 50 then
-					local jetRefill = display.newImage( "jetRefill.png" )
-					jetRefill.x = addition + math.random( 40, 920 ); jetRefill.y = math.random( -500, 140 )
-					jetRefill.bodyName = "jetRefill"
-					physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
-					jetRefill.isSensor = true
-					game:insert( jetRefill )
-					jetRefill:toFront()	
-				end
+				elseif curNode.name == "ramps" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local ramp = display.newImage( "ramp.png" )
+						ramp.x = curData[i] * 5; ramp.y = groundReferencePoint - 75
+						ramp.bodyName = "ramp"..addition
+						physics.addBody( ramp, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+						game:insert( ramp )	
+						ramp:toFront()	
+						addition = addition + 960
+					end
+				elseif curNode.name == "trampolines" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local trampoline = display.newImage( "trampoline.png" )
+						trampoline.x = curData[i] * 5; trampoline.y = groundReferencePoint - 60
+						trampoline.bodyName = "trampoline"..addition
+						physics.addBody( trampoline, "static", { friction=0, bounce=5, shape={ 20,13, -20,11, -20,9, 20,9 } } )	
+						game:insert( trampoline )	
+						trampoline:toFront()						
+						addition = addition + 960
+					end
+				elseif curNode.name == "spikeWalls" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local spikeWall = display.newImage( "spikewall.png" )
+						spikeWall.x = curData[i] * 5; spikeWall.y = groundReferencePoint - 90
+						spikeWall.bodyName = "spikeWall"..addition
+						physics.addBody( spikeWall, "static", { density=10, friction=1, bounce=0, shape={ -20,-43, 38,40, 22,40, -36,-43 } } )
+						game:insert( spikeWall )	
+						spikeWall:toFront()	
+						addition = addition + 960
+					end
 				
-				if math.random(100) < 10 then				
-					local roosterPH = display.newImage( "rooster.png" )
-					roosterPH.x = addition + math.random( 40, 920 ); roosterPH.y = groundReferencePoint - 100
-					roosterPH.bodyName = "rooster"
-					physics.addBody( roosterPH, "static", { friction=0, bounce=0} )
-					game:insert( roosterPH )
-					roosterPH:toFront()
+				elseif curNode.name == "kegs" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local keg = display.newImage( "keg.png" )
+
+						keg.x = curData[i] * 5; keg.y = groundReferencePoint - 75
+						keg.bodyName = "keg"..addition
+						physics.addBody( keg, "static", { friction=0, bounce=.2, shape={ 40,25, -40,25, 40,-31 } } )	
+
+						game:insert( keg )	
+						keg:toFront()	
+						addition = addition + 960
+					end
+				
+				elseif curNode.name == "roosters" then
+					local addition = 1120
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do
+						local roosterPH = display.newImage( "rooster.png" )
+
+						roosterPH.x = curData[i] * 5; roosterPH.y = groundReferencePoint - 100
+						roosterPH.bodyName = "rooster"..addition
+						physics.addBody( roosterPH, "static", { friction=0, bounce=0} )
+
+						game:insert( roosterPH )	
+						roosterPH:toFront()	
+						addition = addition + 960
+					end
+				
+
+				elseif curNode.name == "stars" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local star = display.newImage( "star.png" )
+
+						star.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); star.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						star.x = star.x * 5
+						star.bodyName = "star"
+						physics.addBody( star, "static", { friction=0, bounce=0 } )
+						star.isSensor = true
+						game:insert( star )
+						star:toFront()	
+					end
+				
+
+				elseif curNode.name == "bacon" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local bacon = display.newImage( "bacon.png" )
+
+
+						bacon.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); bacon.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						bacon.x = bacon.x * 5
+						bacon.bodyName = "bacon"
+						physics.addBody( bacon, "static", { friction=0, bounce=0 } )
+						bacon.isSensor = true
+						game:insert( bacon )
+						bacon:toFront()	
+					end
+				
+
+				elseif curNode.name == "jetRefills" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local jetRefill = display.newImage( "jetRefill.png" )
+
+						jetRefill.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); jetRefill.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						jetRefill.x = jetRefill.x * 5
+						jetRefill.bodyName = "jetRefill"
+						physics.addBody( jetRefill, "static", { friction=0, bounce=0 } )
+						jetRefill.isSensor = true
+						game:insert( jetRefill )
+						jetRefill:toFront()	
+					end
+				
+				elseif curNode.name == "bombs" then
+					local curData = tbaUI.fromCSV( curNode.value )
+					for i=1, #curData do						
+						local bomb = display.newImage( "bomb.png" )
+						bomb.x = curData[i]:sub(1, (curData[i]:find(',')) - 1); bomb.y = curData[i]:sub((curData[i]:find(',')) + 1)
+						bomb.x = bomb.x * 5
+						bomb.bodyName = "bomb"
+						physics.addBody( bomb, "static", { friction=0, bounce=0 } )
+						bomb.isSensor = true
+						game:insert( bomb )
+						bomb:toFront()	
+					end
+				
 				end
 			end
 		end
 		
 		createFirstSection()
-		
-		for i=1,2 do
-			AddSection()
-		end	
+
+
+
+
+		createAllObjects()
 		
 		mainCharacterShape = { 15,-22, 16,0, 14,20, 10,31, -10,32, -14,20, -19,-6, -14,-20 }
 
@@ -649,9 +712,20 @@ function scene:createScene( event )
 					end
 				end
 			end
+		
+			print( "there are "..#timerEvents.." timer events" )
+			while #timerEvents > 0 do
+				for i=1, #timerEvents do
+					if timerEvents[i] ~= nil then
+						print( "removing Timer Event" )
+						timer.cancel( timerEvents[i] )
+						table.remove( timerEvents, i )
+					end
+				end
+			end
 		end
 		
-		local goToMenu = function ( event )
+		local clearAll = function ( event )
 			if menuButton ~= nil then
 				menuButton.isVisible = false
 				menuButton = nil
@@ -667,6 +741,8 @@ function scene:createScene( event )
 			Runtime:removeEventListener( "enterFrame", timeCheck )
 			Runtime:removeEventListener( "enterFrame", showAngle )
 			Runtime:removeEventListener( "enterFrame", objectToFront )
+			Runtime:removeEventListener( "enterFrame", applyJetpackBoost )
+			Runtime:removeEventListener( "enterFrame", applyLazars )
 			if timeBar ~= nil then
 				timeBar:setSize( 0 )
 				timeBar.isVisible = false
@@ -699,8 +775,21 @@ function scene:createScene( event )
 				mainCharacter.isVisible = false
 				mainCharacter = nil
 			end
+			if hand ~= nil then
+				hand.isVisible = false
+				hand = nil
+			end
 			removeMainItems()	
-			storyboard.gotoScene("mainMenu")
+		end
+		
+		local function goToMenu()
+			clearAll()
+			storyboard.gotoScene("mainMenu")		
+		end
+		
+		local function goToSuperlaunch()
+			clearAll()
+			storyboard.gotoScene("superlaunch")		
 		end
 		
 		local function showDeath( deathType )
@@ -729,11 +818,11 @@ function scene:createScene( event )
 			menuButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				over = "buttonRedOver.png",
-				onPress = goToMenu,
-				text = "Return To Menu",
+				onPress = goToSuperlaunch,
+				text = "Continue",
 				emboss = true,
 				x = 240,
-				y = 55
+				y = 85
 			}
 			menuButton.isVisible = true
 			menuButton.bodyName = "menuButton"
@@ -748,11 +837,7 @@ function scene:createScene( event )
 				removeMainItems()
 				menuButton.isVisible = false
 				restartButton.isVisible = false
-				if launchType == "hardLaunch" then		
-					storyboard.gotoScene("hardLaunch")
-				else
-					start()
-				end
+				start()
 			end
 			
 			if #totalScore == 4 then
@@ -854,7 +939,7 @@ function scene:createScene( event )
 					defaultSrc = "buttonRed.png",
 					over = "buttonRedOver.png",
 					onPress = restartButtonPress,
-					text = "Relaunch",
+					text = "Replay",
 					emboss = true,
 					x = 240,
 					y = 195
@@ -893,7 +978,6 @@ function scene:createScene( event )
 			local tDelta = (event.time - tPrevious)
 			local tAddShown = (event.time - tAdShownPrevious)
 			if mainCharacter.x > 0 and mainCharacter.x > ( worldLength - 2 ) * 960 then
-				AddSection()
 				mainCharacter:toFront();
 			end
 			
@@ -1529,20 +1613,43 @@ function scene:createScene( event )
 		mainCharacter:addEventListener( "postCollision", mainCharacter )
 		
 		local function startTutorial()
-			local hand = display.newImage( "hand.png" )
+			hand = display.newImage( "hand.png" )
 			hand.alpha = .8
 			hand.x = mainCharacter.x + 20; hand.y = mainCharacter.y + 30
 			hand.isVisible = false
+			
+			local bubbleContainer = display.newGroup()
+			overlayDisplay:insert( bubbleContainer )
+			local bubble = display.newImage( "tutorialBubble.png" )
+			bubble.isVisible = false
+			bubbleContainer:insert( bubble )
+			bubble.text = display.newText( bubbleContainer, "test", 10, 10, native.systemFont, 16 )
+			bubble.text:setTextColor( 50, 50, 50 )
+			bubble.text.isVisible = false
+			
+			local function hideBubble()
+				bubble.text.isVisible = false
+				bubble.isVisible = false
+			end
+			
+			local function showBubble( locx, locy, displayText, duration )
+				bubble.text.text = displayText
+				bubble.x = locx; bubble.y = locy
+				bubble.text.x = bubble.x; bubble.text.y = bubble.y
+				bubble.isVisible = true
+				bubble.text.isVisible = true
+				table.insert( timerEvents, timer.performWithDelay( duration, hideBubble ) )
+			end
 			
 			local function releaseJetPack()
 				endJets()
 				hand.isVisible = false
 			end
 			local function pressJetPack()
-				hand.x = jetpackButton.x + 20; hand.y = jetpackButton.y + 30
+				hand.x = jetpackButton.x + 50; hand.y = jetpackButton.y + 90
 				hand.isVisible = true
 				startJets()
-				timer.performWithDelay( 2000, releaseJetPack )
+				table.insert( timerEvents, timer.performWithDelay( 1500, releaseJetPack ) )
 			end
 			
 			local function releaseLazars()
@@ -1550,10 +1657,10 @@ function scene:createScene( event )
 				hand.isVisible = false
 			end
 			local function pressLazars()
-				hand.x = lazarButton.x + 20; hand.y = lazarButton.y + 30
+				hand.x = lazarButton.x + 50; hand.y = lazarButton.y + 90
 				hand.isVisible = true
 				startLazars()
-				timer.performWithDelay( 2000, releaseLazars )
+				table.insert( timerEvents, timer.performWithDelay( 500, releaseLazars ) )
 			end
 			local function releaseLaunch()
 				
@@ -1603,8 +1710,16 @@ function scene:createScene( event )
 				t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 				
-				timer.performWithDelay( 3000, pressJetPack )
-				timer.performWithDelay( 6000, pressLazars )
+				local boostBubble = function()	return showBubble( 320, 100, "Press the Jetpack Button\nto use boost.\nBoost increases\nheight and speed.", 3000 ) end
+				table.insert( timerEvents, timer.performWithDelay( 5000, boostBubble ) )
+				table.insert( timerEvents, timer.performWithDelay( 6000, pressJetPack ) )
+				local lazarBubble = function()	return showBubble( 320, 100, "Press the Lazer Cannon\nButton to use lazars.\nLazars remove harmful\nobjects from your path.", 4500 ) end
+				table.insert( timerEvents, timer.performWithDelay( 8500, lazarBubble ) )
+				table.insert( timerEvents, timer.performWithDelay( 9000, pressLazars ) )
+				table.insert( timerEvents, timer.performWithDelay( 11000, pressLazars ) )
+				table.insert( timerEvents, timer.performWithDelay( 13000, pressLazars ) )
+				local deathBubble = function()	return showBubble( 320, 100, "Your launch is over when\nyou lose momentum\nor run out of life.", 4500 ) end
+				table.insert( timerEvents, timer.performWithDelay( 13500, deathBubble ) )
 			end
 			local function startLaunch()
 				local function moveCharacterBack()
@@ -1619,17 +1734,18 @@ function scene:createScene( event )
 					game:insert( slingshotString ) 
 				end
 				for i=1,120 do
-					timer.performWithDelay( i*10, moveCharacterBack )
+					table.insert( timerEvents, timer.performWithDelay( i*10, moveCharacterBack ) )
 				end
-				timer.performWithDelay( 2000, releaseLaunch )
+				table.insert( timerEvents, timer.performWithDelay( 2000, releaseLaunch ) )
 			end
 			
 			local function showHand()
 				hand.isVisible = true
 			end
 			
-			timer.performWithDelay( 2500, showHand )
-			timer.performWithDelay( 3000, startLaunch )
+			showBubble( 320, 100, "To Start, drag character\nto set angle,\nthen release to launch.", 4500 )
+			table.insert( timerEvents, timer.performWithDelay( 2500, showHand ) )
+			table.insert( timerEvents, timer.performWithDelay( 5000, startLaunch ) )
 			
 			local function onTouch( event )
 				local t = event.target
