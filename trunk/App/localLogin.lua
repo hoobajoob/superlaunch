@@ -50,8 +50,9 @@ function scene:enterScene( event )
  
 	local function updateUser( stringName )
 		storyboard.userName = stringName
-		for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
+		for row in db:nrows("SELECT ixUser, sName, fTutorial FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
 			storyboard.userIndex = row.ixUser
+			if row.fTutorial = 1 then storyboard.tutorialEnabled = true end
 		end
 		local tablefill = [[UPDATE tblUsers SET fLatestUser = 0 WHERE fLatestUser = 1;]]
 		db:exec( tablefill )
@@ -63,6 +64,7 @@ function scene:enterScene( event )
 			for row in db:nrows("SELECT ixUser, sName FROM tblUsers WHERE sName = '"..storyboard.userName.."' LIMIT 1") do
 				storyboard.userIndex = row.ixUser 
 			end
+			storyboard.tutorialEnabled = true
 		end
 	end
  
@@ -99,6 +101,8 @@ function scene:enterScene( event )
 	-- Create our Text Field
 	defaultField = native.newTextField( 140, 140, 200, 40,
 			fieldHandler( function() return defaultField end ) )    -- passes the text field object
+	defaultField.size = 26
+	defaultField.text = storyboard.userName
 	group:insert( defaultField )
 	
 	local backButtonPress = function( event )

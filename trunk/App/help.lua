@@ -34,7 +34,7 @@ function scene:createScene( event )
 	local myText = display.newText("\n\n\nMove Up to Scroll", 0, 0, native.systemFontBold, 16)
 	myText:setTextColor(0, 0, 0)
 	myText.x = math.floor(display.contentWidth*0.5)
-	myText.y = 48
+	myText.y = 108
 	scrollView:insert(myText)
 	 	
 	-- add some text to the scrolling screen
@@ -93,10 +93,31 @@ function scene:createScene( event )
 			}
 	emailButton.isVisible = true
 	
+	local tutorialOnButtonPress = function( event )		
+		--Open GameData.sqlite.  If the file doesn't exist it will be created
+		local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
+		db = sqlite3.open( path )
+		local tablefill = [[UPDATE tblUsers SET fTutorial = 1 WHERE ixUser = ]]..storyboard.userIndex..[[;]]
+		db:exec( tablefill )
+		storyboard.tutorialEnabled = true
+	end	
+	
+	local tutorialOnButton = ui.newButton{
+				defaultSrc = "buttonRed.png",
+				x = 240,
+				y = 90,
+				overSrc = "buttonRedOver.png",
+				onRelease = tutorialOnButtonPress,
+				text = "Turn Tutorial On",
+				emboss = true
+			}
+	tutorialOnButton.isVisible = true
+	
 	group:insert( background )
 	group:insert( scrollView )
 	group:insert( backButton )
 	group:insert( emailButton )
+	group:insert( tutorialOnButton )
 end
 
 function scene:enterScene( event )

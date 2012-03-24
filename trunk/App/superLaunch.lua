@@ -1090,11 +1090,13 @@ function scene:createScene( event )
 				if aggregatedScore > 49999 then gameNetwork.request( "unlockAchievement", "1395962" ) end
 				if aggregatedScore > 999999 then gameNetwork.request( "unlockAchievement", "1395982" ) end
 			else
+				local restartButtonText = "Relaunch"
+				if storyboard.tutorialEnabled then restartButtonText = "Replay" end
 				restartButton = ui.newButton{
 					defaultSrc = "buttonRed.png",
 					over = "buttonRedOver.png",
 					onPress = restartButtonPress,
-					text = "Relaunch",
+					text = restartButtonText,
 					emboss = true,
 					x = 240,
 					y = 195
@@ -1687,6 +1689,7 @@ function scene:createScene( event )
 		local function startExplosion( xloc, yloc)
 			if storyboard.playSounds then local explosionChannel = audio.play( explosionSound, { channel=2 }  ) end
 			storyboard.explosion.x = xloc; storyboard.explosion.y = yloc
+			storyboard.explosion:toFront()
 			storyboard.explosion.isVisible = true
 			storyboard.explosion:prepare()
 			storyboard.explosion:play()
