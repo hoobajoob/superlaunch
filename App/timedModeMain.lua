@@ -70,9 +70,14 @@ function scene:createScene( event )
 		noahButton.isVisible = false
 		babyButton.isVisible = false
 		dogButton.isVisible = false
+		--[[
 		mainLabel.setText("Select Launch Type")
 		slingShotButton.isVisible = true
 		hardLaunchButton.isVisible = true
+		--]]
+		storyboard.arguments = {character, true, "superLaunch"}
+		storyboard.nextScene = playType
+		storyboard.gotoScene(playType)
 	end
 	
 	local function noahButtonPress()
@@ -134,11 +139,7 @@ function scene:createScene( event )
 	local function hardLaunchButtonPress()
 		storyboard.arguments = {character, true, "hardLaunch"}
 		storyboard.nextScene = playType
-		if playType == "superLaunch" then
-			storyboard.gotoScene( "hardLaunch" )		
-		else
-			storyboard.gotoScene(playType)
-		end
+		storyboard.gotoScene(playType)
 	end
 	
 	slingShotButton = ui.newButton{

@@ -13,6 +13,7 @@ local endLazars
 local character
 local start
 local timerEvents = {}
+local launchType = "slingShot"
 
 local function addKeyEvent()
 	print( "adding Key Listener" )
@@ -29,8 +30,8 @@ function scene:createScene( event )
 	require('socket')
 	--physics.setDrawMode( "hybrid" )
 	local groundReferencePoint = 335
-	local lazarButtonx = 465; local lazarButtony = 200;	local lazarButtonAlpha = .5
-	local jetpackButtonx = 15; local jetpackButtony = 200; local jetpackButtonAlpha = .5
+	local lazarButtonx = 430; local lazarButtony = 70;	local lazarButtonAlpha = .5
+	local jetpackButtonx = 50; local jetpackButtony = 70; local jetpackButtonAlpha = .5
 	local mainCharacter
 	local hand
 	local flame
@@ -52,7 +53,9 @@ function scene:createScene( event )
 	local timeLeft = 100
 	local startingSkyX1 = -45
 	local startingSkyX2 = 515
-	local launchType = "slingShot"
+	if #arguments > 2 then
+		launchType = arguments[3]
+	end
 	local menuButton = nil
 	local restartButton = nil
 	local timeBar = nil
@@ -729,9 +732,6 @@ function scene:createScene( event )
 				mainCharacter = sprite.newSprite( spriteSet1 )
 			end
 			
-			if #arguments > 2 then
-				launchType = arguments[3]
-			end
 		else
 			local sheet1 = sprite.newSpriteSheet( "noahSprite.png", 64, 64 )
 			local spriteSet1 = sprite.newSpriteSet(sheet1, 1, 4)
@@ -739,6 +739,7 @@ function scene:createScene( event )
 			mainCharacter = sprite.newSprite( spriteSet1 )	
 		end
 		mainCharacter.x = 160; mainCharacter.y = groundReferencePoint - 250
+		mainCharacter.visible = false
 		
 		---[[
 		slingshot = display.newImage( "slingshot.png" )
@@ -1038,21 +1039,21 @@ function scene:createScene( event )
 				end				
 				local function onRowRender( event )
 					local row = event.target
-						local text = display.newRetinaText( "Total. "..string.format( "%i",aggregatedScore), 0, 0, native.systemFontBold, 20 )
-						text:setReferencePoint( display.CenterLeftReferencePoint )
-						text.x = 25
-						text.y = row.height * 0.5
-						--text.y = curHeight + (row.height * 0.5)
-						--curHeight = curHeight + row.height
-						event.view:insert( text )
-					end
-					list:insertRow{
-						id = "index Header",
-						isCategory = isCategory,
-						height = 30,
-						rowColor = { 0, 0, 0, 255 },
-						onRender = onRowRender
-					}				
+					local text = display.newRetinaText( "Total. "..string.format( "%i",aggregatedScore), 0, 0, native.systemFontBold, 20 )
+					text:setReferencePoint( display.CenterLeftReferencePoint )
+					text.x = 25
+					text.y = row.height * 0.5
+					--text.y = curHeight + (row.height * 0.5)
+					--curHeight = curHeight + row.height
+					event.view:insert( text )
+				end
+				list:insertRow{
+					id = "index Header",
+					isCategory = isCategory,
+					height = 30,
+					rowColor = { 0, 0, 0, 255 },
+					onRender = onRowRender
+				}				
 				for i=1, #totalScore do					
 					local function onRowRender( event )
 					local row = event.target
@@ -1589,7 +1590,7 @@ function scene:createScene( event )
 				end	
 				launchBoard.isVisible = false
 				launchBoard:removeSelf()				
-				slingshotString:removeSelf()
+				--slingshotString:removeSelf()
 				t:applyLinearImpulse( xForce * 3.5 , -yForce * 3 , t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 			end
@@ -1986,10 +1987,10 @@ function scene:createScene( event )
 				t:applyLinearImpulse( 2 * (170 - t.x) , 1.6 * (groundReferencePoint - 200 - t.y), t.x + 9, t.y)
 				Runtime:addEventListener( "enterFrame", frameCheck )
 				
-				local boostBubble = function()	return showBubble( 60, 100, "Press the Jetpack Button\nto use boost.\nBoost increases\nheight and speed.", 3000 ) end
+				local boostBubble = function()	return showBubble( 60, 200, "Press the Jetpack Button\nto use boost.\nBoost increases\nheight and speed.", 3000 ) end
 				table.insert( timerEvents, timer.performWithDelay( 5000, boostBubble ) )
 				table.insert( timerEvents, timer.performWithDelay( 6000, pressJetPack ) )
-				local lazarBubble = function()	return showBubble( 420, 100, "Press the Lazer Cannon\nButton to use lazars.\nLazars remove harmful\nobjects from your path.", 4500 ) end
+				local lazarBubble = function()	return showBubble( 420, 200, "Press the Lazer Cannon\nButton to use lazars.\nLazars remove harmful\nobjects from your path.", 4500 ) end
 				table.insert( timerEvents, timer.performWithDelay( 8500, lazarBubble ) )
 				table.insert( timerEvents, timer.performWithDelay( 9250, pressLazars ) )
 				table.insert( timerEvents, timer.performWithDelay( 11250, pressLazars ) )
@@ -2001,6 +2002,7 @@ function scene:createScene( event )
 				local function moveCharacterBack()
 					mainCharacter.x = mainCharacter.x - 1.2
 					mainCharacter.y = mainCharacter.y + 1
+					mainCharacter:toFront()
 					hand.x = hand.x - 1.2
 					hand.y = hand.y + 1
 					slingshotString:removeSelf()
@@ -2019,7 +2021,7 @@ function scene:createScene( event )
 				hand.isVisible = true
 			end
 			
-			showBubble( 320, 100, "To Start, drag character\nto set angle,\nthen release to launch.", 4500 )
+			showBubble( 320, 190, "To Start, drag character\nto set angle,\nthen release to launch.", 8000 )
 			table.insert( timerEvents, timer.performWithDelay( 2500, showHand ) )
 			table.insert( timerEvents, timer.performWithDelay( 5000, startLaunch ) )
 		end
@@ -2027,6 +2029,7 @@ function scene:createScene( event )
 		return game
 	end	
 	ads.hide()
+	if launchType == "hardLaunch" then storyboard.gotoScene("hardLaunch") end
 end
 
 function scene:enterScene( event )

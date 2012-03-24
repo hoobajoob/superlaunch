@@ -22,6 +22,10 @@ end
 
 function scene:createScene( event )
 	local group = self.view
+end
+
+function scene:enterScene( event )
+	local group = self.view
 	
 	local background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
 	
@@ -93,16 +97,26 @@ function scene:createScene( event )
 			}
 	emailButton.isVisible = true
 	
+	local tutorialOnButton
+	
 	local tutorialOnButtonPress = function( event )		
 		--Open GameData.sqlite.  If the file doesn't exist it will be created
 		local path = system.pathForFile("GameData.sqlite", system.DocumentsDirectory)
 		db = sqlite3.open( path )
-		local tablefill = [[UPDATE tblUsers SET fTutorial = 1 WHERE ixUser = ]]..storyboard.userIndex..[[;]]
+		local insertValue = 1
+		if storyboard.tutorialEnabled == true then
+			insertValue = 0
+			storyboard.tutorialEnabled = false
+			tutorialOnButton:setText( "Turn Tutorial On")
+		else
+			storyboard.tutorialEnabled = true
+			tutorialOnButton:setText( "Turn Tutorial Off" )
+		end
+		local tablefill = [[UPDATE tblUsers SET fTutorial = ]]..insertValue..[[ WHERE ixUser = ]]..storyboard.userIndex..[[;]]
 		db:exec( tablefill )
-		storyboard.tutorialEnabled = true
 	end	
 	
-	local tutorialOnButton = ui.newButton{
+	tutorialOnButton = ui.newButton{
 				defaultSrc = "buttonRed.png",
 				x = 240,
 				y = 90,
@@ -111,6 +125,9 @@ function scene:createScene( event )
 				text = "Turn Tutorial On",
 				emboss = true
 			}
+	if storyboard.tutorialEnabled == true then
+		tutorialOnButton:setText( "Turn Tutorial Off" )
+	end
 	tutorialOnButton.isVisible = true
 	
 	group:insert( background )
@@ -118,10 +135,6 @@ function scene:createScene( event )
 	group:insert( backButton )
 	group:insert( emailButton )
 	group:insert( tutorialOnButton )
-end
-
-function scene:enterScene( event )
-	local group = self.view
 	timer.performWithDelay( 10, addKeyEvent )
 end
 
