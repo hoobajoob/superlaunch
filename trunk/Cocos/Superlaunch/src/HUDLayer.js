@@ -1,4 +1,4 @@
-var StatusLayer = cc.Layer.extend({
+var HUDLayer = cc.Layer.extend({
     labelTime:null,
     labelDistance:null,
     lifeBar:null,
@@ -10,6 +10,14 @@ var StatusLayer = cc.Layer.extend({
     distanceLabel:"Meters",
     boostLabel:"Boost",
     lazarLabel:"Lazar",
+    lazarButton:null,
+    lazarButtonX:410,
+    lazarButtonY:50,
+    lazarButtonAlpha:.5,
+    boostButton:null,
+    boostButtonX:50,
+    boostButtonY:50,
+    boostButtonAlpha:.5,
 
     ctor:function () {
         this._super();
@@ -34,9 +42,17 @@ var StatusLayer = cc.Layer.extend({
         this.lifeBar.setPosition(cc.p(winsize.width / 2, 20));
         this.addChild(this.lifeBar);
 
+        this.boostButton = cc.Sprite.create(res.jetPack);
+        this.boostButton.attr({x:this.boostButtonX, y:this.boostButtonY, a:this.boostButtonAlpha});
+        this.addChild(this.boostButton);
+
         this.boostBar = cc.LabelTTF.create("100" + this.boostLabel, "Helvetica", 20);
         this.boostBar.setPosition(cc.p(winsize.width - 70, 20));
         this.addChild(this.boostBar);
+
+        this.lazarButton = cc.Sprite.create(res.lazarGun);
+        this.lazarButton.attr({x:this.lazarButtonX, y:this.lazarButtonY, a:this.lazarButtonAlpha});
+        this.addChild(this.lazarButton);
 
         this.lazarBar = cc.LabelTTF.create("100" + this.lazarLabel, "Helvetica", 20);
         this.lazarBar.setPosition(cc.p(70, 20));

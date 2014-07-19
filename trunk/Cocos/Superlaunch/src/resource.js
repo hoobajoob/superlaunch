@@ -22,7 +22,7 @@ var res = {
     jetPack : "res/jetPack",
     jetPackOver : "res/jetPackOver.png",
     lazarGun : "res/lazarGun.png",
-    lazarGunOver : "res/lazarGunOver.png",
+    lazarGunOver : "res/lazarGunOver.png"
 };
 
 var g_resources = [
@@ -47,7 +47,7 @@ var g_resources = [
     res.aryaSprite_plist,
     res.restart_n,
     res.blood,
-    res.jetpack,
+    res.jetPack,
     res.jetPackOver,
     res.lazarGun,
     res.lazarGunOver

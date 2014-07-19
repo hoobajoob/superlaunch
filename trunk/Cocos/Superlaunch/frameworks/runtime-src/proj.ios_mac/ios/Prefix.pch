@@ -1,5 +1,5 @@
 //
-// Prefix header for all source files of the 'Superlaunch' target in the 'Superlaunch' project
+// Prefix header for all source files of the 'MyJSGame' target in the 'MyJSGame' project
 //
 
 #ifdef __OBJC__
