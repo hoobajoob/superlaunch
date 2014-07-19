@@ -5,7 +5,7 @@ var GamePlayLayer = cc.Layer.extend({
     sprite:null,
     onBackEvent:{},
     frameCheck:{},
-    applyJetpackBoost:{},
+    applyBoost:{},
     applyLazars:{},
     endJets:null,
     endLazars:null,

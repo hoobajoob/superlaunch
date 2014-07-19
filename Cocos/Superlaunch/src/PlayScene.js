@@ -9,7 +9,7 @@ var PlayScene = cc.Scene.extend({
         //add the three layers in the correct order
         this.addChild(new BackgroundLayer());
         this.addChild(new GamePlayLayer(this.space));
-        this.addChild(new HUDLayer());
+        //this.addChild(new HUDLayer());
 
         this.scheduleUpdate();
     },

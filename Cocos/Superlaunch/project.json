@@ -17,6 +17,7 @@
         "src/PlayScene.js",
         "src/HUDLayer.js",
         "src/GamePlayLayer.js",
-        "src/globals.js"
+        "src/globals.js",
+        "src/GameOverLayer.js"
     ]
 }
