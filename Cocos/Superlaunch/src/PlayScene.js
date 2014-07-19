@@ -1,7 +1,5 @@
 var PlayScene = cc.Scene.extend({
     space:null,
-    totalScore:{},
-    timeLeft:100,
 
     onEnter:function () {
         this._super();
@@ -9,7 +7,7 @@ var PlayScene = cc.Scene.extend({
         //add the three layers in the correct order
         this.addChild(new BackgroundLayer());
         this.addChild(new GamePlayLayer(this.space));
-        //this.addChild(new HUDLayer());
+        this.addChild(new StatusLayer());
 
         this.scheduleUpdate();
     },
