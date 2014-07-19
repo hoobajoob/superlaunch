@@ -5,7 +5,7 @@ var GamePlayLayer = cc.Layer.extend({
     sprite:null,
     onBackEvent:{},
     frameCheck:{},
-    applyBoost:{},
+    applyJetpackBoost:{},
     applyLazars:{},
     endJets:null,
     endLazars:null,
@@ -16,6 +16,8 @@ var GamePlayLayer = cc.Layer.extend({
     mainCharacter:null,
     hand:null,
     flame:null,
+    totalScore:{},
+    timeLeft:100,
     startingSkyX1:-45,
     startingSkyX2:515,
 

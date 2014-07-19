@@ -18,11 +18,8 @@ var res = {
     aryaSprite_png : "res/aryaSprite.png",
     aryaSprite_plist : "res/aryaSprite.plist",
     restart_n : "res/splash.png",
-    blood : "res/blood",
-    jetPack : "res/jetPack",
-    jetPackOver : "res/jetPackOver.png",
-    lazarGun : "res/lazarGun.png",
-    lazarGunOver : "res/lazarGunOver.png"
+    jetPack : "res/jetPack.png",
+    lazarGun : "res/lazarGun.png"
 };
 
 var g_resources = [
@@ -46,11 +43,8 @@ var g_resources = [
     res.aryaSprite_png,
     res.aryaSprite_plist,
     res.restart_n,
-    res.blood,
     res.jetPack,
-    res.jetPackOver,
-    res.lazarGun,
-    res.lazarGunOver
+    res.lazarGun
 
     //plist
 
