@@ -1,13 +1,18 @@
 var PlayScene = cc.Scene.extend({
     space:null,
+    gamePlayLayer:null,
+    gameLayer:null,
+    shapesToRemove:[],
 
     onEnter:function () {
         this._super();
         this.initPhysics();
+        this.gameLayer = cc.Layer.create();
         //add the three layers in the correct order
-        this.addChild(new BackgroundLayer());
-        this.addChild(new GamePlayLayer(this.space));
-        this.addChild(new StatusLayer());
+        this.gameLayer.addChild(new BackgroundLayer(), 0, TagOfLayer.Background);
+        this.gameLayer.addChild(new GamePlayLayer(this.space), 0, TagOfLayer.GamePlay);
+        this.addChild(this.gameLayer);
+        this.addChild(new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay)), 0, TagOfLayer.Status);
 
         this.scheduleUpdate();
     },
@@ -30,5 +35,17 @@ var PlayScene = cc.Scene.extend({
     update:function(dt) {
         //chipmunk step
         this.space.step(dt);
+
+        // Simulation cpSpaceAddPostStepCallback
+        for(var i = 0; i < this.shapesToRemove.length; i++) {
+            var shape = this.shapesToRemove[i];
+            this.gameLayer.getChildByTag(TagOfLayer.background).removeObjectByShape(shape);
+        }
+        this.shapesToRemove = [];
+
+        var animationLayer = this.gameLayer.getChildByTag(TagOfLayer.GamePlay);
+        var eyeX = animationLayer.getEyeX();
+
+        this.gameLayer.setPosition(cc.p(-eyeX,0));
     }
 });
