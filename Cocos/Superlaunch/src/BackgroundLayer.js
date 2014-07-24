@@ -24,11 +24,11 @@ var BackgroundLayer = cc.Layer.extend({
         //create the background image and position it at the center of screen
         var centerPos = cc.p(winsize.width / 2, winsize.height / 2);
         this.map00 = cc.Sprite.create(res.sky_png);
-        this.map00.setPosition(centerPos - 45);
+        this.map00.setPosition(centerPos);
         this.addChild(this.map00);
         this.mapWidth = this.map00.getContentSize().width;
         this.map01 = cc.Sprite.create(res.sky_png);
-        this.map01.setPosition(cc.p(centerPos + 515, winsize.height / 2));
+        this.map01.setPosition(cc.p(this.map00.getContentSize().width, winsize.height / 2));
         this.addChild(this.map01);
         if (this.mapLoad) {
             this.loadObjects(this.map00, 0);
@@ -43,7 +43,7 @@ var BackgroundLayer = cc.Layer.extend({
     },
 
     checkAndReload:function (eyeX) {
-        var newMapIndex = parseInt(eyeX / this.mapWidth);
+        var newMapIndex = parseInt((eyeX + 240) / this.mapWidth);
         if (this.mapIndex == newMapIndex) {
             return false;
         }
@@ -162,7 +162,7 @@ var BackgroundLayer = cc.Layer.extend({
         if (xRand <= (10 / 480)){ xRand = 10} else { xRand = xRand * 480};
         var yRand = Math.random();
         if (yRand <= (40 / 480)){ yRand = 40} else { yRand = yRand * 480};
-        var result = cc.p(posX + 960 + xRand, yRand);
+        var result = cc.p(posX + 960 + xRand, cc.director.getWinSize().height / 2);
         return result;
     },
 
