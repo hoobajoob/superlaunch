@@ -55,7 +55,7 @@ var PlayScene = cc.Scene.extend({
         // Simulation cpSpaceAddPostStepCallback
         for(var i = 0; i < this.shapesToRemove.length; i++) {
             var shape = this.shapesToRemove[i];
-            this.gameLayer.getChildByTag(TagOfLayer.background).removeObjectByShape(shape);
+            this.gameLayer.getChildByTag(TagOfLayer.Background).removeObjectByShape(shape);
         }
         this.shapesToRemove = [];
 

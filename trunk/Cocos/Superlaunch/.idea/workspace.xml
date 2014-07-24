@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Created method for adding background objects and working on random creation of objects">
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Superlaunch.iws" />
@@ -45,15 +45,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="38" selection-start="1289" selection-end="1289" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1326">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="SimpleRecognizer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/SimpleRecognizer.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -72,10 +63,19 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="PlayScene.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="55" column="29" selection-start="1961" selection-end="1961" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="115" column="0" selection-start="3517" selection-end="3517" vertical-scroll-proportion="0.3309091" vertical-offset="1864" max-vertical-offset="3332">
+            <state line="42" column="6" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.18545455" vertical-offset="663" max-vertical-offset="3332">
               <folding />
             </state>
           </provider>
@@ -136,11 +136,11 @@
         <option value="$PROJECT_DIR$/main.js" />
         <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/Star.js" />
-        <option value="$PROJECT_DIR$/src/PlayScene.js" />
         <option value="$PROJECT_DIR$/project.json" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
+        <option value="$PROJECT_DIR$/src/PlayScene.js" />
         <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
       </list>
     </option>
@@ -454,7 +454,11 @@
       <created>1406167683708</created>
       <updated>1406167683708</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification.">
+      <created>1406170472490</created>
+      <updated>1406170472490</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -479,7 +483,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -488,7 +492,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32736155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24925224" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3469591" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4117647" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4117647" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3709091" sideWeight="0.5005025" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -536,22 +540,16 @@
     <MESSAGE value="Integrated moving background and attempt at making buttons functional." />
     <MESSAGE value="Adding Images" />
     <MESSAGE value="Created method for adding background objects and working on random creation of objects" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created method for adding background objects and working on random creation of objects" />
+    <MESSAGE value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/BackgroundLayer.js</url>
-          <line>115</line>
-          <option name="timeStamp" value="34" />
-        </line-breakpoint>
-      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="35" />
+      <option name="time" value="36" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -848,13 +846,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="0" selection-start="291" selection-end="291" vertical-scroll-proportion="0.0" vertical-offset="87" max-vertical-offset="1224">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="38" selection-start="1289" selection-end="1289" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1326">
@@ -869,9 +860,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="29" selection-start="1961" selection-end="1961" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="115" column="0" selection-start="3517" selection-end="3517" vertical-scroll-proportion="0.3309091" vertical-offset="1864" max-vertical-offset="3332">
+        <state line="42" column="6" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.18545455" vertical-offset="663" max-vertical-offset="3332">
           <folding />
         </state>
       </provider>
