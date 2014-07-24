@@ -41,7 +41,7 @@ var GamePlayLayer = cc.Layer.extend({
         //3. set the position of the runner
         this.body.p = cc.p(g_runnerStartX, g_groundHeight + contentSize.height / 2);
         //4. apply impulse to the body
-        this.body.applyImpulse(cp.v(10, 0), cp.v(0, 0));//run speed
+        this.body.applyImpulse(cp.v(200, 0), cp.v(0, 0));//run speed
         //5. add the created body to space
         this.space.addBody(this.body);
         //6. create the shape for the body

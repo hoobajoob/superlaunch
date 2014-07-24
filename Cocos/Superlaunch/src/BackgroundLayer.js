@@ -7,13 +7,14 @@ var BackgroundLayer = cc.Layer.extend({
     objects:[],
     mapLoad:false,
     newToys:true,
+    spriteSheet:null,
 
     ctor:function (space, mapLoad) {
         this._super();
-        this.init();
         this.objects = [];
         this.space = space;
         this.mapLoad = mapLoad;
+        this.init();
     },
 
     init:function () {
@@ -50,11 +51,24 @@ var BackgroundLayer = cc.Layer.extend({
         if (0 == newMapIndex % 2) {
             // change mapSecond
             this.map01.setPositionX(this.mapWidth * (newMapIndex + 1));
-            this.loadObjects(this.map01, newMapIndex + 1);
+            if (this.mapLoad){
+               this.loadObjects(this.map01, newMapIndex + 1);
+            }
+            else
+            {
+                this.loadRandomObjects(eyeX);
+            }
         } else {
             // change mapFirst
             this.map00.setPositionX(this.mapWidth * (newMapIndex + 1));
-            this.loadObjects(this.map00, newMapIndex + 1);
+            if (this.mapLoad){
+
+                this.loadObjects(this.map00, newMapIndex + 1);
+            }
+            else
+            {
+                this.loadRandomObjects(eyeX);
+            }
         }
         this.removeObjects(newMapIndex - 1);
         this.mapIndex = newMapIndex;
@@ -95,20 +109,61 @@ var BackgroundLayer = cc.Layer.extend({
 
     loadRandomObjects:function (xScreen) {
         //randomize first location
-        math.random();
+        Math.random();
         //Load objects in the near future
         if (this.newToys){
-            var curRand = math.random();
-            if (curRand <= (10 / 480)){ curRand = 10} else { curRand = curRand * 480};
-            var xLocation = xScreen + 960 + curRand;
-            if (math.random() < (3/5))
+            //Insert Star
+            var star = new BackgroundObject(this,
+                this.space, this.genRandomPos(xScreen),
+                SpriteTag.star);
+            this.objects.push(star);
+            //Todo:Insert Bacon
+            if (Math.random() < .85)
             {
-                if (math.random() < (4/5))
+                if (Math.random() < (3/5))
                 {
-
+                    //Todo:Insert Trampoline
+                    //Just genRandomX
+                }
+                else
+                {
+                    //Todo:Insert Ramp
+                    //Just genRandomX
                 }
             }
+            else
+            {
+                if (Math.random < 3/5)
+                {
+                    //Todo:Insert Spikewall
+                }
+                else
+                {
+                    //Todo:Insert Keg
+                }
+            }
+            if (Math.random < 1/5)
+            {
+                //Todo:Insert Bomb
+            }
+            if (Math.random < 1/2)
+            {
+                //Todo:Insert JetRefill
+            }
+            if (Math.random < 1/10)
+            {
+                //Todo:Insert Rooster
+            }
         }
+    },
+
+    genRandomPos:function(posX){
+        var xRand = Math.random();
+        if (xRand <= (10 / 480)){ xRand = 10} else { xRand = xRand * 480};
+        var yRand = Math.random();
+        if (yRand <= (40 / 480)){ yRand = 40} else { yRand = yRand * 480};
+        var result = cc.p(posX + 960 + xRand, yRand);
+        return result;
     },
 
     removeObjects:function (mapIndex) {
