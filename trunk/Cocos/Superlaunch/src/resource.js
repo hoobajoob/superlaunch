@@ -25,7 +25,8 @@ var res = {
     lazar : "res/lazar.png",
     jetRefill : "res/jetRefill.png",
     keg : "res/keg.png",
-    flame : "res/flame.png"
+    flame : "res/flame.png",
+    star : "res/star.png"
 };
 
 var g_resources = [
@@ -56,7 +57,8 @@ var g_resources = [
     res.lazar,
     res.jetRefill,
     res.keg,
-    res.flame
+    res.flame,
+    res.star
 
     //plist
 
