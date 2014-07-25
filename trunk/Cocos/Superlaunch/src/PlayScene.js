@@ -3,6 +3,7 @@ var PlayScene = cc.Scene.extend({
     gamePlayLayer:null,
     gameLayer:null,
     shapesToRemove:[],
+    impulsesToApply:[],
 
     onEnter:function () {
         this._super();
@@ -40,7 +41,9 @@ var PlayScene = cc.Scene.extend({
 
     collisionStarBegin:function (arbiter, space) {
         var shapes = arbiter.getShapes();
-        // shapes[0] is runner
+        // shapes[0] is character
+        //TODO:Find a way to pass the shape directly from handler
+        this.impulsesToApply.push([cp.v(20,200), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
     },
 
@@ -59,6 +62,8 @@ var PlayScene = cc.Scene.extend({
         }
         this.shapesToRemove = [];
 
+        this.gameLayer.getChildByTag(TagOfLayer.GamePlay).applyImpulses(this.impulsesToApply);
+        this.impulsesToApply = [];
         var animationLayer = this.gameLayer.getChildByTag(TagOfLayer.GamePlay);
         var eyeX = animationLayer.getEyeX();
 
