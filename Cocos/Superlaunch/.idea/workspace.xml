@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Tweaked background image insertion and refresh.  To work on y-plane later">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -27,19 +27,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="CCClass.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/platform/CCClass.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="171" column="26" selection-start="6507" selection-end="6507" vertical-scroll-proportion="0.0" vertical-offset="2331" max-vertical-offset="5389">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="CCDebugger.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="283" column="0" selection-start="19676" selection-end="19676" vertical-scroll-proportion="0.0" vertical-offset="4718" max-vertical-offset="6120">
+            <state line="283" column="17" selection-start="19693" selection-end="19693" vertical-scroll-proportion="0.0" vertical-offset="4711" max-vertical-offset="6120">
               <folding />
             </state>
           </provider>
@@ -49,6 +40,15 @@
         <entry file="file://$PROJECT_DIR$/src/SimpleRecognizer.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="4" column="1" selection-start="56" selection-end="56" vertical-scroll-proportion="0.0" vertical-offset="553" max-vertical-offset="1275">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="75" column="75" selection-start="2295" selection-end="2295" vertical-scroll-proportion="0.0" vertical-offset="1128" max-vertical-offset="1428">
               <folding />
             </state>
           </provider>
@@ -66,7 +66,16 @@
       <file leaf-file-name="PlayScene.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="29" selection-start="1961" selection-end="1961" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
+            <state line="18" column="6" selection-start="718" selection-end="718" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1309">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="chipmunk.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/external/chipmunk/chipmunk.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4809" column="32" selection-start="158308" selection-end="158308" vertical-scroll-proportion="0.0" vertical-offset="81653" max-vertical-offset="101524">
               <folding />
             </state>
           </provider>
@@ -75,43 +84,7 @@
       <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="6" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.18545455" vertical-offset="663" max-vertical-offset="3332">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameOverLayer.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/GameOverLayer.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="47" selection-start="230" selection-end="230" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="476">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BackgroundObject.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="26" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0" vertical-offset="818" max-vertical-offset="1428">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="globals.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/globals.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="2" selection-start="425" selection-end="425" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="391">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="project.json" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/project.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="32" selection-start="483" selection-end="483" vertical-scroll-proportion="-13.076923" vertical-offset="0" max-vertical-offset="493">
+            <state line="181" column="4" selection-start="5458" selection-end="5755" vertical-scroll-proportion="11.189091" vertical-offset="0" max-vertical-offset="3332">
               <folding />
             </state>
           </provider>
@@ -139,9 +112,9 @@
         <option value="$PROJECT_DIR$/project.json" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
       </list>
     </option>
   </component>
@@ -458,7 +431,11 @@
       <created>1406170472490</created>
       <updated>1406170472490</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Tweaked background image insertion and refresh.  To work on y-plane later">
+      <created>1406171381813</created>
+      <updated>1406171381813</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -494,7 +471,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3469591" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4117647" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3709091" sideWeight="0.5005025" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36928105" sideWeight="0.5005025" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -506,18 +483,18 @@
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32736155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.41205212" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4117647" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3709091" sideWeight="0.5005025" order="9" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36928105" sideWeight="0.5005025" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32899022" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24925224" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3469591" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -541,7 +518,8 @@
     <MESSAGE value="Adding Images" />
     <MESSAGE value="Created method for adding background objects and working on random creation of objects" />
     <MESSAGE value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
+    <MESSAGE value="Tweaked background image insertion and refresh.  To work on y-plane later" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tweaked background image insertion and refresh.  To work on y-plane later" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -549,7 +527,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="36" />
+      <option name="time" value="39" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -688,7 +666,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/scenes/CCLoaderScene.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="104" column="19" selection-start="3832" selection-end="3832" vertical-scroll-proportion="0.0" vertical-offset="1668" max-vertical-offset="2329" />
+        <state line="104" column="19" selection-start="3832" selection-end="3832" vertical-scroll-proportion="0.0" vertical-offset="1668" max-vertical-offset="2329">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/js-bindings/bindings/auto/api/jsb_cocos2dx_auto_api.js">
@@ -769,13 +749,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/SimpleRecognizer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="1" selection-start="56" selection-end="56" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/platform/CCClass.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="171" column="26" selection-start="6507" selection-end="6507" vertical-scroll-proportion="0.0" vertical-offset="2331" max-vertical-offset="5389">
@@ -786,13 +759,6 @@
     <entry file="file://$PROJECT_DIR$/src/StatusLayer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="69" column="8" selection-start="2510" selection-end="2510" vertical-scroll-proportion="0.0" vertical-offset="978" max-vertical-offset="1819">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="283" column="0" selection-start="19676" selection-end="19676" vertical-scroll-proportion="0.0" vertical-offset="4718" max-vertical-offset="6120">
           <folding />
         </state>
       </provider>
@@ -811,20 +777,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="42" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/project.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="32" selection-start="483" selection-end="483" vertical-scroll-proportion="-13.076923" vertical-offset="0" max-vertical-offset="493">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/globals.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="17" column="2" selection-start="425" selection-end="425" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="391">
@@ -839,20 +791,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/GameOverLayer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="47" selection-start="230" selection-end="230" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="476">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="38" selection-start="1289" selection-end="1289" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1326">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="26" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0" vertical-offset="818" max-vertical-offset="1428">
@@ -860,16 +798,65 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/GameOverLayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="47" selection-start="230" selection-end="230" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="476">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="32" selection-start="483" selection-end="483" vertical-scroll-proportion="-13.076923" vertical-offset="0" max-vertical-offset="493">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="42" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/external/chipmunk/chipmunk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4809" column="32" selection-start="158308" selection-end="158308" vertical-scroll-proportion="0.0" vertical-offset="81653" max-vertical-offset="101524">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="283" column="17" selection-start="19693" selection-end="19693" vertical-scroll-proportion="0.0" vertical-offset="4711" max-vertical-offset="6120">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="75" column="75" selection-start="2295" selection-end="2295" vertical-scroll-proportion="0.0" vertical-offset="1128" max-vertical-offset="1428">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/SimpleRecognizer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="1" selection-start="56" selection-end="56" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="29" selection-start="1961" selection-end="1961" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
+        <state line="18" column="6" selection-start="718" selection-end="718" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1309">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="6" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.18545455" vertical-offset="663" max-vertical-offset="3332">
+        <state line="181" column="4" selection-start="5458" selection-end="5755" vertical-scroll-proportion="11.189091" vertical-offset="0" max-vertical-offset="3332">
           <folding />
         </state>
       </provider>

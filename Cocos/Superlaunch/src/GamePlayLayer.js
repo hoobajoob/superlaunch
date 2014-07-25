@@ -69,5 +69,11 @@ var GamePlayLayer = cc.Layer.extend({
 
     getEyeX:function () {
         return this.character.getPositionX() - g_runnerStartX;
+    },
+
+    applyImpulses:function (impulses) {
+        for (var i = 0; i < impulses.length; i++) {
+            this.character.body.applyImpulse(impulses[i][0], impulses[i][1]);
+        }
     }
 });
