@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Tweaked background image insertion and refresh.  To work on y-plane later">
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Worked on applying impulse on hitting an object">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/globals.js" afterPath="$PROJECT_DIR$/src/globals.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Superlaunch.iws" />
@@ -48,7 +50,25 @@
       <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="75" column="75" selection-start="2295" selection-end="2295" vertical-scroll-proportion="0.0" vertical-offset="1128" max-vertical-offset="1428">
+            <state line="72" column="0" selection-start="2127" selection-end="2127" vertical-scroll-proportion="-48.96" vertical-offset="0" max-vertical-offset="1496">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BackgroundObject.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="26" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0" vertical-offset="614" max-vertical-offset="1428">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="globals.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/globals.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="18" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
               <folding />
             </state>
           </provider>
@@ -63,10 +83,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayScene.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="PlayScene.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="6" selection-start="718" selection-end="718" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1309">
+            <state line="72" column="22" selection-start="2716" selection-end="2716" vertical-scroll-proportion="0.37666667" vertical-offset="1111" max-vertical-offset="1411">
               <folding />
             </state>
           </provider>
@@ -81,10 +101,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="181" column="4" selection-start="5458" selection-end="5755" vertical-scroll-proportion="11.189091" vertical-offset="0" max-vertical-offset="3332">
+            <state line="65" column="36" selection-start="2194" selection-end="2194" vertical-scroll-proportion="19.48" vertical-offset="1592" max-vertical-offset="3638">
               <folding />
             </state>
           </provider>
@@ -107,13 +127,13 @@
         <option value="$PROJECT_DIR$/src/StatusLayer.js" />
         <option value="$PROJECT_DIR$/src/app.js" />
         <option value="$PROJECT_DIR$/main.js" />
-        <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/Star.js" />
         <option value="$PROJECT_DIR$/project.json" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
+        <option value="$PROJECT_DIR$/src/globals.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
       </list>
     </option>
@@ -435,7 +455,11 @@
       <created>1406171381813</created>
       <updated>1406171381813</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Worked on applying impulse on hitting an object">
+      <created>1406263600424</created>
+      <updated>1406263600424</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -469,7 +493,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32736155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24925224" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3469591" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4117647" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4117647" sideWeight="0.49949747" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36928105" sideWeight="0.5005025" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -519,7 +543,8 @@
     <MESSAGE value="Created method for adding background objects and working on random creation of objects" />
     <MESSAGE value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
     <MESSAGE value="Tweaked background image insertion and refresh.  To work on y-plane later" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tweaked background image insertion and refresh.  To work on y-plane later" />
+    <MESSAGE value="Worked on applying impulse on hitting an object" />
+    <option name="LAST_COMMIT_MESSAGE" value="Worked on applying impulse on hitting an object" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -527,7 +552,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="39" />
+      <option name="time" value="50" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -777,23 +802,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/globals.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="2" selection-start="425" selection-end="425" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="391">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/resource.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="28" column="24" selection-start="1090" selection-end="1090" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1309">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="26" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0" vertical-offset="818" max-vertical-offset="1428">
           <folding />
         </state>
       </provider>
@@ -812,13 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="42" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/external/chipmunk/chipmunk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="4809" column="32" selection-start="158308" selection-end="158308" vertical-scroll-proportion="0.0" vertical-offset="81653" max-vertical-offset="101524">
@@ -833,13 +837,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="75" column="75" selection-start="2295" selection-end="2295" vertical-scroll-proportion="0.0" vertical-offset="1128" max-vertical-offset="1428">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/SimpleRecognizer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="4" column="1" selection-start="56" selection-end="56" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
@@ -847,16 +844,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
+    <entry file="file://$PROJECT_DIR$/src/globals.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="6" selection-start="718" selection-end="718" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1309">
+        <state line="2" column="18" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="42" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="26" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0" vertical-offset="818" max-vertical-offset="1428">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="72" column="0" selection-start="2127" selection-end="2127" vertical-scroll-proportion="-48.96" vertical-offset="0" max-vertical-offset="1496">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="181" column="4" selection-start="5458" selection-end="5755" vertical-scroll-proportion="11.189091" vertical-offset="0" max-vertical-offset="3332">
+        <state line="65" column="36" selection-start="2194" selection-end="2194" vertical-scroll-proportion="19.48" vertical-offset="1592" max-vertical-offset="3638">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="72" column="22" selection-start="2716" selection-end="2716" vertical-scroll-proportion="0.37666667" vertical-offset="1111" max-vertical-offset="1411">
           <folding />
         </state>
       </provider>

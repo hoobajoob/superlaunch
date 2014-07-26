@@ -1,8 +1,12 @@
 var BackgroundLayer = cc.Layer.extend({
-    map00:null,
-    map01:null,
+    sky1:null,
+    sky2:null,
+    skyMid1:null,
+    skyMid2:null,
     mapWidth:0,
-    mapIndex:0,
+    mapXIndex:0,
+    mapHeight:0,
+    mapYIndex:0,
     space:null,
     objects:[],
     mapLoad:false,
@@ -23,16 +27,25 @@ var BackgroundLayer = cc.Layer.extend({
 
         //create the background image and position it at the center of screen
         var centerPos = cc.p(winsize.width / 2, winsize.height / 2);
-        this.map00 = cc.Sprite.create(res.sky_png);
-        this.map00.setPosition(centerPos);
-        this.addChild(this.map00);
-        this.mapWidth = this.map00.getContentSize().width;
-        this.map01 = cc.Sprite.create(res.sky_png);
-        this.map01.setPosition(cc.p(this.map00.getContentSize().width, winsize.height / 2));
-        this.addChild(this.map01);
+        this.sky1 = cc.Sprite.create(res.sky_png);
+        this.sky1.setPosition(centerPos);
+        this.addChild(this.sky1);
+        this.mapWidth = this.sky1.getContentSize().width;
+        this.mapHeight = this.sky1.getContentSize().height;
+        this.skyMid1 = cc.Sprite.create(res.skyMiddle_png);
+        this.skyMid1.setPosition(cc.p(centerPos.x, centerPos.y + 320));
+        this.addChild(this.skyMid1);
+        this.sky2 = cc.Sprite.create(res.sky_png);
+        this.sky2.setPosition(cc.p(this.sky1.getContentSize().width, winsize.height / 2));
+        this.addChild(this.sky2);
+        this.skyMid2 = cc.Sprite.create(res.skyMiddle_png);
+        this.skyMid2.setPosition(cc.p(this.sky1.getContentSize().width, winsize.height / 2 + 320));
+        this.addChild(this.skyMid2);
         if (this.mapLoad) {
-            this.loadObjects(this.map00, 0);
-            this.loadObjects(this.map01, 1);
+            this.loadObjects(this.sky1, 0);
+            this.loadObjects(this.sky2, 1);
+            this.loadObjects(this.skyMid1, 3);
+            this.loadObjects(this.skyMid2, 4);
         }
         else
         {
@@ -42,17 +55,20 @@ var BackgroundLayer = cc.Layer.extend({
         this.scheduleUpdate();
     },
 
-    checkAndReload:function (eyeX) {
-        var newMapIndex = parseInt((eyeX + 240) / this.mapWidth);
-        if (this.mapIndex == newMapIndex) {
+    checkAndReload:function (eyeX, eyeY) {
+        var newXMapIndex = parseInt((eyeX + 240) / this.mapWidth);
+        var newYMapIndex = parseInt((eyeY + 160) / this.mapHeight);
+        if (this.mapXIndex == newXMapIndex) {
             return false;
         }
 
-        if (0 == newMapIndex % 2) {
+        //load next horizontal background if necessary and load/remove objects
+        if (0 == newXMapIndex % 2) {
             // change mapSecond
-            this.map01.setPositionX(this.mapWidth * (newMapIndex + 1));
+            this.sky2.setPositionX(this.mapWidth * (newXMapIndex + 1));
+            this.skyMid2.setPositionX(this.mapWidth * (newXMapIndex + 1));
             if (this.mapLoad){
-               this.loadObjects(this.map01, newMapIndex + 1);
+               this.loadObjects(this.sky2, newXMapIndex + 1);
             }
             else
             {
@@ -60,26 +76,28 @@ var BackgroundLayer = cc.Layer.extend({
             }
         } else {
             // change mapFirst
-            this.map00.setPositionX(this.mapWidth * (newMapIndex + 1));
+            this.sky1.setPositionX(this.mapWidth * (newXMapIndex + 1));
+            this.skyMid1.setPositionX(this.mapWidth * (newXMapIndex + 1));
             if (this.mapLoad){
 
-                this.loadObjects(this.map00, newMapIndex + 1);
+                this.loadObjects(this.sky1, newXMapIndex + 1);
             }
             else
             {
                 this.loadRandomObjects(eyeX);
             }
         }
-        this.removeObjects(newMapIndex - 1);
-        this.mapIndex = newMapIndex;
+        this.removeObjects(newXMapIndex - 1);
+        this.mapXIndex = newXMapIndex;
 
         return true;
     },
 
     update:function (dt) {
-        var animationLayer = this.getParent().getChildByTag(TagOfLayer.GamePlay);
-        var eyeX = animationLayer.getEyeX();
-        this.checkAndReload(eyeX);
+        var gamePlayLayer = this.getParent().getChildByTag(TagOfLayer.GamePlay);
+        var eyeX = gamePlayLayer.getEyeX();
+        var eyeY = gamePlayLayer.getEyeY();
+        this.checkAndReload(eyeX, eyeY);
     },
 
     loadObjects:function (map, mapIndex) {
@@ -169,7 +187,7 @@ var BackgroundLayer = cc.Layer.extend({
     removeObjects:function (mapIndex) {
         while((function (obj, index) {
             for (var i = 0; i < obj.length; i++) {
-                if (obj[i].mapIndex == index) {
+                if (obj[i].mapXIndex == index) {
                     obj[i].removeFromParent();
                     obj.splice(i, 1);
                     return true;
