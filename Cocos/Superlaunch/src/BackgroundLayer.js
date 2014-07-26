@@ -31,7 +31,6 @@ var BackgroundLayer = cc.Layer.extend({
 
         //TODO:Either merge all sky's to 1 image or implement collecting offscreen verticals and re-creating
         //create the background image and position it at the center of screen
-        var textureCache = cc.TextureCache.getInstance();
         var midHeight = winsize.height / 2;
         this.sky1 = cc.Sprite.create(res.sky_png);
         this.sky1.setPosition(cc.p(0, midHeight));

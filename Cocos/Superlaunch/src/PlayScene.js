@@ -1,6 +1,6 @@
 var PlayScene = cc.Scene.extend({
     space:null,
-    gamePlayLayer:null,
+    statusLayer:null,
     gameLayer:null,
     shapesToRemove:[],
     impulsesToApply:[],
@@ -13,7 +13,8 @@ var PlayScene = cc.Scene.extend({
         this.gameLayer.addChild(new BackgroundLayer(this.space), 0, TagOfLayer.Background);
         this.gameLayer.addChild(new GamePlayLayer(this.space), 0, TagOfLayer.GamePlay);
         this.addChild(this.gameLayer);
-        this.addChild(new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay)), 0, TagOfLayer.Status);
+        this.statusLayer = new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay));
+        this.addChild(this.statusLayer, 0, TagOfLayer.Status);
         this.shapesToRemove = [];
         this.scheduleUpdate();
     },
@@ -65,7 +66,8 @@ var PlayScene = cc.Scene.extend({
         this.gameLayer.getChildByTag(TagOfLayer.GamePlay).applyImpulses(this.impulsesToApply);
         this.impulsesToApply = [];
         var gamePlayLayer = this.gameLayer.getChildByTag(TagOfLayer.GamePlay);
-        var newX = 30 - gamePlayLayer.getEyeX();
+        var eyeX = gamePlayLayer.getEyeX();
+        var newX = 30 - eyeX;
         var eyeY = gamePlayLayer.getEyeY();
         var newY = -45
         if (eyeY > 200)
@@ -73,6 +75,10 @@ var PlayScene = cc.Scene.extend({
             newY = 155 - eyeY;
         }
 
+        //Move Camera to follow player
         this.gameLayer.setPosition(cc.p(newX,newY));
+
+        //Update Distance Label
+        this.statusLayer.updateDistance(eyeX);
     }
 });
