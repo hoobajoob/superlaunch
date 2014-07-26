@@ -3,6 +3,10 @@ var BackgroundLayer = cc.Layer.extend({
     sky2:null,
     skyMid1:null,
     skyMid2:null,
+    skyTop1:null,
+    skyTop2:null,
+    skyTrans1:null,
+    skyTrans2:null,
     mapWidth:0,
     mapXIndex:0,
     mapHeight:0,
@@ -25,22 +29,36 @@ var BackgroundLayer = cc.Layer.extend({
         this._super();
         var winsize = cc.director.getWinSize();
 
+        //TODO:Either merge all sky's to 1 image or implement collecting offscreen verticals and re-creating
         //create the background image and position it at the center of screen
-        var centerPos = cc.p(winsize.width / 2, winsize.height / 2);
+        var textureCache = cc.TextureCache.getInstance();
+        var midHeight = winsize.height / 2;
         this.sky1 = cc.Sprite.create(res.sky_png);
-        this.sky1.setPosition(centerPos);
+        this.sky1.setPosition(cc.p(0, midHeight));
         this.addChild(this.sky1);
         this.mapWidth = this.sky1.getContentSize().width;
         this.mapHeight = this.sky1.getContentSize().height;
         this.skyMid1 = cc.Sprite.create(res.skyMiddle_png);
-        this.skyMid1.setPosition(cc.p(centerPos.x, centerPos.y + 320));
+        this.skyMid1.setPosition(cc.p(0, midHeight + this.sky1.height));
         this.addChild(this.skyMid1);
+        this.skyTop1 = cc.Sprite.create(res.skyTop_png);
+        this.skyTop1.setPosition(cc.p(0, midHeight + this.sky1.height + this.skyMid1.height));
+        this.addChild(this.skyTop1);
+        this.skyTrans1 = cc.Sprite.create(res.skyTransition_png);
+        this.skyTrans1.setPosition(cc.p(0, midHeight + this.sky1.height + this.skyMid1.height + this.skyTop1.height));
+        this.addChild(this.skyTrans1);
         this.sky2 = cc.Sprite.create(res.sky_png);
-        this.sky2.setPosition(cc.p(this.sky1.getContentSize().width, winsize.height / 2));
+        this.sky2.setPosition(cc.p(this.sky1.getContentSize().width, midHeight));
         this.addChild(this.sky2);
         this.skyMid2 = cc.Sprite.create(res.skyMiddle_png);
-        this.skyMid2.setPosition(cc.p(this.sky1.getContentSize().width, winsize.height / 2 + 320));
+        this.skyMid2.setPosition(cc.p(this.skyMid1.getContentSize().width, midHeight + this.sky2.height));
         this.addChild(this.skyMid2);
+        this.skyTop2 = cc.Sprite.create(res.skyTop_png);
+        this.skyTop2.setPosition(cc.p(this.skyTop1.getContentSize().width, midHeight + this.sky2.height + this.skyMid2.height));
+        this.addChild(this.skyTop2);
+        this.skyTrans2 = cc.Sprite.create(res.skyTransition_png);
+        this.skyTrans2.setPosition(cc.p(this.skyTrans1.getContentSize().width, midHeight + this.sky2.height + this.skyMid2.height + this.skyTop2.height));
+        this.addChild(this.skyTrans2);
         if (this.mapLoad) {
             this.loadObjects(this.sky1, 0);
             this.loadObjects(this.sky2, 1);
@@ -67,6 +85,8 @@ var BackgroundLayer = cc.Layer.extend({
             // change mapSecond
             this.sky2.setPositionX(this.mapWidth * (newXMapIndex + 1));
             this.skyMid2.setPositionX(this.mapWidth * (newXMapIndex + 1));
+            this.skyTop2.setPositionX(this.mapWidth * (newXMapIndex + 1));
+            this.skyTrans2.setPositionX(this.mapWidth * (newXMapIndex + 1));
             if (this.mapLoad){
                this.loadObjects(this.sky2, newXMapIndex + 1);
             }
@@ -78,6 +98,8 @@ var BackgroundLayer = cc.Layer.extend({
             // change mapFirst
             this.sky1.setPositionX(this.mapWidth * (newXMapIndex + 1));
             this.skyMid1.setPositionX(this.mapWidth * (newXMapIndex + 1));
+            this.skyTop1.setPositionX(this.mapWidth * (newXMapIndex + 1));
+            this.skyTrans1.setPositionX(this.mapWidth * (newXMapIndex + 1));
             if (this.mapLoad){
 
                 this.loadObjects(this.sky1, newXMapIndex + 1);

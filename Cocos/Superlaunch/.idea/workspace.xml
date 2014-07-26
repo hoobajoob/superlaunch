@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Worked on applying impulse on hitting an object">
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Integrated mid sky loading&#10;Integrated maths for moving camera on y axis.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/globals.js" afterPath="$PROJECT_DIR$/src/globals.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Superlaunch.iws" />
@@ -29,6 +27,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="0" selection-start="734" selection-end="734" vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="986">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="CCDebugger.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -42,15 +49,6 @@
         <entry file="file://$PROJECT_DIR$/src/SimpleRecognizer.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="4" column="1" selection-start="56" selection-end="56" vertical-scroll-proportion="0.0" vertical-offset="553" max-vertical-offset="1275">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="72" column="0" selection-start="2127" selection-end="2127" vertical-scroll-proportion="-48.96" vertical-offset="0" max-vertical-offset="1496">
               <folding />
             </state>
           </provider>
@@ -83,10 +81,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayScene.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="PlayScene.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="72" column="22" selection-start="2716" selection-end="2716" vertical-scroll-proportion="0.37666667" vertical-offset="1111" max-vertical-offset="1411">
+            <state line="68" column="40" selection-start="2634" selection-end="2634" vertical-scroll-proportion="0.0" vertical-offset="1009" max-vertical-offset="1411">
               <folding />
             </state>
           </provider>
@@ -101,10 +99,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="65" column="36" selection-start="2194" selection-end="2194" vertical-scroll-proportion="19.48" vertical-offset="1592" max-vertical-offset="3638">
+            <state line="37" column="33" selection-start="1036" selection-end="1036" vertical-scroll-proportion="0.5781818" vertical-offset="470" max-vertical-offset="4012">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CCTextureCache.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/textures/CCTextureCache.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="256" column="40" selection-start="9092" selection-end="9092" vertical-scroll-proportion="0.0" vertical-offset="918" max-vertical-offset="5865">
               <folding />
             </state>
           </provider>
@@ -133,8 +140,8 @@
         <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
         <option value="$PROJECT_DIR$/src/globals.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
       </list>
     </option>
   </component>
@@ -459,7 +466,11 @@
       <created>1406263600424</created>
       <updated>1406263600424</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Integrated mid sky loading&#10;Integrated maths for moving camera on y axis.">
+      <created>1406339318876</created>
+      <updated>1406339318876</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -544,7 +555,8 @@
     <MESSAGE value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
     <MESSAGE value="Tweaked background image insertion and refresh.  To work on y-plane later" />
     <MESSAGE value="Worked on applying impulse on hitting an object" />
-    <option name="LAST_COMMIT_MESSAGE" value="Worked on applying impulse on hitting an object" />
+    <MESSAGE value="Integrated mid sky loading&#10;Integrated maths for moving camera on y axis." />
+    <option name="LAST_COMMIT_MESSAGE" value="Integrated mid sky loading&#10;Integrated maths for moving camera on y axis." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -552,7 +564,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="50" />
+      <option name="time" value="51" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -788,23 +800,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="0" selection-start="734" selection-end="734" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="986">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/base-nodes/CCNode.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1534" column="4" selection-start="60598" selection-end="60598" vertical-scroll-proportion="0.33222592" vertical-offset="25570" max-vertical-offset="42976">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/resource.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="24" selection-start="1090" selection-end="1090" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1309">
           <folding />
         </state>
       </provider>
@@ -865,6 +863,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/resource.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="11" selection-start="1127" selection-end="1127" vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="1309">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="72" column="0" selection-start="2127" selection-end="2127" vertical-scroll-proportion="-48.96" vertical-offset="0" max-vertical-offset="1496">
@@ -872,16 +877,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
+    <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="36" selection-start="2194" selection-end="2194" vertical-scroll-proportion="19.48" vertical-offset="1592" max-vertical-offset="3638">
+        <state line="68" column="40" selection-start="2634" selection-end="2634" vertical-scroll-proportion="0.0" vertical-offset="1009" max-vertical-offset="1411">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
+    <entry file="file://$PROJECT_DIR$/src/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="22" selection-start="2716" selection-end="2716" vertical-scroll-proportion="0.37666667" vertical-offset="1111" max-vertical-offset="1411">
+        <state line="25" column="0" selection-start="734" selection-end="734" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="986">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/textures/CCTextureCache.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="256" column="40" selection-start="9092" selection-end="9092" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5865">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="33" selection-start="1036" selection-end="1036" vertical-scroll-proportion="0.5781818" vertical-offset="470" max-vertical-offset="4012">
           <folding />
         </state>
       </provider>
