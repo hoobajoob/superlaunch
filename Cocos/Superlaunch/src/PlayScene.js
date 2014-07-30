@@ -33,6 +33,12 @@ var PlayScene = cc.Scene.extend({
             0);// thickness of wall
         this.space.addStaticShape(wallBottom);
 
+        var wallBack = new cp.SegmentShape(this.space.staticBody,
+            cp.v(0, g_groundHeight),// start point
+            cp.v(0, 1000),
+            0);// thickness of wall
+        this.space.addStaticShape(wallBack);
+
         // setup chipmunk CollisionHandler
         this.space.addCollisionHandler(SpriteTag.character, SpriteTag.star,
             this.collisionStarBegin.bind(this), null, null, null);
@@ -44,7 +50,7 @@ var PlayScene = cc.Scene.extend({
         var shapes = arbiter.getShapes();
         // shapes[0] is character
         //TODO:Find a way to pass the shape directly from handler
-        this.impulsesToApply.push([cp.v(20,1000), cp.v(-2,0)]);
+        this.impulsesToApply.push([cp.v(-500,100), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
     },
 

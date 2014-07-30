@@ -57,21 +57,20 @@ var StatusLayer = cc.Layer.extend({
         this.addChild(this.boostButton);
 
         this.boostBar = cc.LabelTTF.create("100" + this.boostLabel, "Helvetica", 20);
-        this.boostBar.setPosition(cc.p(winsize.width - 70, 20));
+        this.boostBar.setPosition(cc.p(70 , 20));
         this.addChild(this.boostBar);
 
         //create Lazar Button and assign onPlay event callback to it
-        this.lazarButton = cc.Menu.create(cc.MenuItemSprite.create(
+        var lazarButton = cc.MenuItemSprite.create(
             cc.Sprite.create(res.lazarGun),
             cc.Sprite.create(res.lazarGunOver),
-            this.gamePlayLayer.fireLazars(), this
-        ));
-        //boostMenuItem.setCallback(this.gamePlayLayer.fireLazars());
+            this.gamePlayLayer.fireLazars(), this);
+        this.lazarButton = cc.Menu.create(lazarButton);
         this.lazarButton.setPosition({x:this.lazarButtonX, y:this.lazarButtonY, a:this.lazarButtonAlpha});
         this.addChild(this.lazarButton);
 
         this.lazarBar = cc.LabelTTF.create("100" + this.lazarLabel, "Helvetica", 20);
-        this.lazarBar.setPosition(cc.p(70, 20));
+        this.lazarBar.setPosition(cc.p(winsize.width - 70, 20));
         this.addChild(this.lazarBar);
     },
 

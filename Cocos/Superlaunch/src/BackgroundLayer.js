@@ -16,6 +16,9 @@ var BackgroundLayer = cc.Layer.extend({
     mapLoad:false,
     newToys:true,
     spriteSheet:null,
+    mapMovedIndex:null,
+    firstReverse:null,
+    firstReverseChanged:false,
 
     ctor:function (space, mapLoad) {
         this._super();
@@ -72,9 +75,41 @@ var BackgroundLayer = cc.Layer.extend({
         this.scheduleUpdate();
     },
 
-    checkAndReload:function (eyeX, eyeY) {
+    checkAndReload:function (eyeX, eyeY, velocity) {
         var newXMapIndex = parseInt((eyeX + 240) / this.mapWidth);
         var newYMapIndex = parseInt((eyeY + 160) / this.mapHeight);
+        if (velocity.x < 0){
+            //load previous horizontal background if necessary
+            if (this.firstReverse == null) {this.firstReverse = newXMapIndex};
+            if (this.mapMovedIndex == null)
+            {
+                this.mapMovedIndex == newXMapIndex + 1;
+            }
+            var mapRemain = (eyeX + 120) % this.mapWidth;
+            var mapLessThanHalf = (mapRemain < (this.mapWidth / 2));
+            if ((this.firstReverseChanged && this.firstReverse == newXMapIndex && mapLessThanHalf) || this.firstReverse != newXMapIndex && this.mapMovedIndex != newXMapIndex){
+                this.firstReverseChanged = true;
+                this.mapMovedIndex = newXMapIndex;
+                var curLocation = this.mapWidth * (newXMapIndex - 1) + this.mapWidth;
+                if (0 == newXMapIndex % 2) {
+                    this.sky1.setPositionX(curLocation);
+                    this.skyMid1.setPositionX(curLocation);
+                    this.skyTop1.setPositionX(curLocation);
+                    this.skyTrans1.setPositionX(curLocation);
+                } else {
+                    this.sky2.setPositionX(curLocation);
+                    this.skyMid2.setPositionX(curLocation);
+                    this.skyTop2.setPositionX(curLocation);
+                    this.skyTrans2.setPositionX(curLocation);
+                }
+                return true;
+            }
+        }
+        else
+        {
+            this.firstReverseChanged = false;
+            this.firstReverse = null;
+        }
         if (this.mapXIndex == newXMapIndex) {
             return false;
         }
@@ -118,7 +153,8 @@ var BackgroundLayer = cc.Layer.extend({
         var gamePlayLayer = this.getParent().getChildByTag(TagOfLayer.GamePlay);
         var eyeX = gamePlayLayer.getEyeX();
         var eyeY = gamePlayLayer.getEyeY();
-        this.checkAndReload(eyeX, eyeY);
+        var velocity = gamePlayLayer.getVelocity();
+        this.checkAndReload(eyeX, eyeY, velocity);
     },
 
     loadObjects:function (map, mapIndex) {
