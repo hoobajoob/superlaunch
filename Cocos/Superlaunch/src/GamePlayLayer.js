@@ -7,6 +7,7 @@ var GamePlayLayer = cc.Layer.extend({
     applyBoost:null,
     applyLazars:null,
     character:null,
+    slingshot:null,
     start:null,
     timerEvents:{},
     launchType:"slingShot",
@@ -19,6 +20,7 @@ var GamePlayLayer = cc.Layer.extend({
     recognizer:null,
     _debugNode:null,
     prelaunch:true,
+    joint:null,
 
     ctor:function (space) {
         this._super();
@@ -36,15 +38,11 @@ var GamePlayLayer = cc.Layer.extend({
         this._super();
 
         //Create Slingshot Item
-        /*var slingshot = cc.PhysicsSprite.create(res.ramp_png);
-        var slingshotBody = new cp.Body(1, cp.momentForBox(1, 10, g_characterStartyY - g_groundHeight));
-        slingshotBody.p = cc.p(g_characterStartX, (g_characterStartyY / 2) + g_groundHeight + 100);
-        slingshotBody.setMass(1000);
-        this.space.addBody(slingshotBody);
-        var slingshotShape = new cp.BoxShape(slingshotBody, 10, g_characterStartyY - g_groundHeight);
-        this.space.addShape(slingshotShape);
-        slingshot.setBody(slingshotBody);
-        this.addChild(slingshot);*/
+        this.slingshot = cc.PhysicsSprite.create(res.slingshot_png);
+        var slingshotBody = new cp.StaticBody();
+        slingshotBody.p = cc.p(g_characterStartX, (g_characterStartyY / 2) + g_groundHeight);
+        this.slingshot.setBody(slingshotBody);
+        this.addChild(this.slingshot);
 
         //1. create PhysicsSprite with a sprite frame name
         this.character = cc.PhysicsSprite.create(res.aryaSprite_png);
@@ -53,23 +51,21 @@ var GamePlayLayer = cc.Layer.extend({
         var body = new cp.Body(1, cp.momentForBox(1, contentSize.width, contentSize.height));
         //3. set the position of the runner
         body.p = cc.p(g_characterStartX, g_characterStartyY); //g_groundHeight + contentSize.height / 2);
-        //4. apply impulse to the body
-        //body.applyImpulse(cp.v(300, 0), cp.v(0, 0));//run speed
-        //5. add the created body to space
+        //4. add the created body to space
         this.space.addBody(body);
-        //6. create the shape for the body
+        //5. create the shape for the body
         var shape = new cp.BoxShape(body, contentSize.width - 14, contentSize.height);
-        //7. add shape to space
+        //6. add shape to space
         this.space.addShape(shape);
         //8. set body to the physic sprite
         this.character.setBody(body);
         this.addChild(this.character);
 
         //Create Damped Spring Joint between Character and Slingshot
-        //var zeroPoint = slingshotBody.p;
-        //var joint = new cp.DampedSpring(slingshotBody, body, zeroPoint, zeroPoint, 10, 100, 10);
-        //this.space.addConstraint(joint);
-        //this.addChild(joint);
+        var zeroPoint = cc.p(0,0);
+        this.joint = new cp.DampedSpring(body, slingshotBody, zeroPoint, zeroPoint, 10, 50, 5);
+        this.space.addConstraint(this.joint);
+        this.addChild(this.joint);
 
         cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -130,5 +126,7 @@ var GamePlayLayer = cc.Layer.extend({
     onTouchEnded:function(touch, event) {
         //var rtn = event.getCurrentTarget().recognizer.endPoint();
         event.getCurrentTarget().prelaunch = false;
+        event.getCurrentTarget().space.removeConstraint(event.getCurrentTarget().joint);
+        event.getCurrentTarget().joint = null;
     }
 });

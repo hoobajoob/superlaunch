@@ -18,15 +18,16 @@ var res = {
     aryaSprite_png : "res/aryaSprite.png",
     aryaSprite_plist : "res/aryaSprite.plist",
     restart_n : "res/splash.png",
-    jetPack : "res/jetPack.png",
-    jetPackOver : "res/jetPackOver.png",
-    lazarGunOver : "res/lazarGunOver.png",
-    lazarGun : "res/lazarGun.png",
-    lazar : "res/lazar.png",
-    jetRefill : "res/jetRefill.png",
-    keg : "res/keg.png",
-    flame : "res/flame.png",
-    star : "res/star.png"
+    jetPack_png : "res/jetPack.png",
+    jetPackOver_png : "res/jetPackOver.png",
+    lazarGunOver_png : "res/lazarGunOver.png",
+    lazarGun_png : "res/lazarGun.png",
+    lazar_png : "res/lazar.png",
+    jetRefill_png : "res/jetRefill.png",
+    keg_png : "res/keg.png",
+    flame_png : "res/flame.png",
+    star_png : "res/star.png",
+    slingshot_png : "res/slingshot.png"
 };
 
 var g_resources = [
@@ -50,15 +51,16 @@ var g_resources = [
     res.aryaSprite_png,
     res.aryaSprite_plist,
     res.restart_n,
-    res.jetPack,
-    res.jetPackOver,
-    res.lazarGunOver,
-    res.lazarGun,
-    res.lazar,
-    res.jetRefill,
-    res.keg,
-    res.flame,
-    res.star
+    res.jetPack_png,
+    res.jetPackOver_png,
+    res.lazarGunOver_png,
+    res.lazarGun_png,
+    res.lazar_png,
+    res.jetRefill_png,
+    res.keg_png,
+    res.flame_png,
+    res.star_png,
+    res.slingshot_png
 
     //plist
 

@@ -32,10 +32,10 @@ var BackgroundObject = cc.Class.extend({
 
         this.type = type;
         if (type == SpriteTag.star){
-            this.sprite = cc.PhysicsSprite.create(res.star);
+            this.sprite = cc.PhysicsSprite.create(res.star_png);
         }
         else if (type == SpriteTag.keg){
-            this.sprite = cc.PhysicsSprite.create(res.keg);
+            this.sprite = cc.PhysicsSprite.create(res.keg_png);
         }
             // init physics
         var radius = 0.95 * this.sprite.getContentSize().width / 2;
