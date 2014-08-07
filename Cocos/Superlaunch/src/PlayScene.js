@@ -2,6 +2,7 @@ var PlayScene = cc.Scene.extend({
     space:null,
     statusLayer:null,
     gameLayer:null,
+    gamePlayLayer:null,
     shapesToRemove:[],
     impulsesToApply:[],
 
@@ -11,7 +12,8 @@ var PlayScene = cc.Scene.extend({
         this.gameLayer = cc.Layer.create();
         //add the three layers in the correct order
         this.gameLayer.addChild(new BackgroundLayer(this.space), 0, TagOfLayer.Background);
-        this.gameLayer.addChild(new GamePlayLayer(this.space), 0, TagOfLayer.GamePlay);
+        this.gamePlayLayer = new GamePlayLayer(this.space)
+        this.gameLayer.addChild(this.gamePlayLayer, 0, TagOfLayer.GamePlay);
         this.addChild(this.gameLayer);
         this.statusLayer = new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay));
         this.addChild(this.statusLayer, 0, TagOfLayer.Status);
@@ -81,10 +83,12 @@ var PlayScene = cc.Scene.extend({
             newY = 155 - eyeY;
         }
 
-        //Move Camera to follow player
-        this.gameLayer.setPosition(cc.p(newX,newY));
-
-        //Update Distance Label
-        this.statusLayer.updateDistance(eyeX);
+        if (this.gamePlayLayer.getPrelaunchStatus() == false)
+        {
+            //Move Camera to follow player
+            this.gameLayer.setPosition(cc.p(newX,newY));
+            //Update Distance Label
+            this.statusLayer.updateDistance(eyeX);
+        }
     }
 });
