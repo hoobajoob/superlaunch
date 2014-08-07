@@ -52,7 +52,7 @@ var PlayScene = cc.Scene.extend({
         var shapes = arbiter.getShapes();
         // shapes[0] is character
         //TODO:Find a way to pass the shape directly from handler
-        this.impulsesToApply.push([cp.v(100,200), cp.v(-2,0)]);
+        this.impulsesToApply.push([cp.v(50,300), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
     },
 
@@ -78,9 +78,9 @@ var PlayScene = cc.Scene.extend({
         var newX = 30 - eyeX;
         var eyeY = gamePlayLayer.getEyeY();
         var newY = -45
-        if (eyeY > 200)
+        if (eyeY > 0)
         {
-            newY = 155 - eyeY;
+            newY = (-45) - eyeY;
         }
 
         if (this.gamePlayLayer.getPrelaunchStatus() == false)

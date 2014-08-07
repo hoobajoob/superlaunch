@@ -234,10 +234,14 @@ var BackgroundLayer = cc.Layer.extend({
 
     genRandomPos:function(posX){
         var xRand = Math.random();
-        if (xRand <= (10 / 480)){ xRand = 10} else { xRand = xRand * 480};
+        var yMin = 100;
+        var yMax = 1080;
+        var xMin = 10;
+        var xMax = 480;
+        if (xRand <= (xMin / xMax)){ xRand = xMin} else { xRand = xRand * xMax};
         var yRand = Math.random();
-        if (yRand <= (40 / 480)){ yRand = 40} else { yRand = yRand * 480};
-        var result = cc.p(posX + 960 + xRand, xRand);
+        if (yRand <= (yMin / yMax)){ yRand = yMin} else { yRand = yRand * yMax};
+        var result = cc.p(posX + 960 + xRand, yRand);
         return result;
     },
 
