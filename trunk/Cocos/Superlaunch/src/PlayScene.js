@@ -52,7 +52,7 @@ var PlayScene = cc.Scene.extend({
         var shapes = arbiter.getShapes();
         // shapes[0] is character
         //TODO:Find a way to pass the shape directly from handler
-        this.impulsesToApply.push([cp.v(-500,100), cp.v(-2,0)]);
+        this.impulsesToApply.push([cp.v(100,200), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
     },
 

@@ -237,7 +237,7 @@ var BackgroundLayer = cc.Layer.extend({
         if (xRand <= (10 / 480)){ xRand = 10} else { xRand = xRand * 480};
         var yRand = Math.random();
         if (yRand <= (40 / 480)){ yRand = 40} else { yRand = yRand * 480};
-        var result = cc.p(posX + 960 + xRand, cc.director.getWinSize().height / 2);
+        var result = cc.p(posX + 960 + xRand, xRand);
         return result;
     },
 

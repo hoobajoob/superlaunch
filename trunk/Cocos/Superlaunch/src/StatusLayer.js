@@ -51,7 +51,7 @@ var StatusLayer = cc.Layer.extend({
             this.fireBoost(), this
         );
         this.boostButton = cc.Menu.create(boostMenuItem);*/
-        this.boostButton = cc.Sprite.create(res.jetPack);
+        this.boostButton = cc.Sprite.create(res.jetPack_png);
         //this.boostButton.setCallback(this.fireBoost());
         this.boostButton.setPosition({x:this.boostButtonX, y:this.boostButtonY, a:this.boostButtonAlpha});
         this.addChild(this.boostButton);
@@ -62,8 +62,8 @@ var StatusLayer = cc.Layer.extend({
 
         //create Lazar Button and assign onPlay event callback to it
         var lazarButton = cc.MenuItemSprite.create(
-            cc.Sprite.create(res.lazarGun),
-            cc.Sprite.create(res.lazarGunOver),
+            cc.Sprite.create(res.lazarGun_png),
+            cc.Sprite.create(res.lazarGunOver_png),
             this.gamePlayLayer.fireLazars(), this);
         this.lazarButton = cc.Menu.create(lazarButton);
         this.lazarButton.setPosition({x:this.lazarButtonX, y:this.lazarButtonY, a:this.lazarButtonAlpha});
