@@ -37,6 +37,12 @@ var BackgroundObject = cc.Class.extend({
         else if (type == SpriteTag.keg){
             this.sprite = cc.PhysicsSprite.create(res.keg_png);
         }
+        else if (type == SpriteTag.grass){
+            this.sprite = cc.PhysicsSprite.create(res.grass_png);
+        }
+        else if (type == SpriteTag.lava){
+            this.sprite = cc.PhysicsSprite.create(res.lava_png);
+        }
             // init physics
         var radius = 0.95 * this.sprite.getContentSize().width / 2;
         var width = this.sprite.getContentSize().width;
@@ -44,7 +50,12 @@ var BackgroundObject = cc.Class.extend({
 
         if (type == SpriteTag.keg || type == SpriteTag.ramp)
         {
-            pos = cc.p(pos.x, g_groundHeight + height / 2);
+            pos = cc.p(pos.x, g_groundHeight - height / 2);
+        }
+
+        if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
+        {
+            pos = cc.p(pos.x, g_groundHeight - height);
         }
 
         body = new cp.StaticBody();
@@ -61,6 +72,11 @@ var BackgroundObject = cc.Class.extend({
             this.shape = new cp.BoxShape(body, width, height);
             this.shape.setCollisionType(SpriteTag.keg);
         }
+        else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
+        {
+            this.shape = new cp.BoxShape(body, width, height - 20);
+        }
+
         this.space.addStaticShape(this.shape);
 
         // add sprite to sprite sheet

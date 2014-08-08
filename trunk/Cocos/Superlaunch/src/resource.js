@@ -27,7 +27,9 @@ var res = {
     keg_png : "res/keg.png",
     flame_png : "res/flame.png",
     star_png : "res/star.png",
-    slingshot_png : "res/slingshot.png"
+    slingshot_png : "res/slingshot.png",
+    grass_png : "res/grass.png",
+    lava_png : "res/lava.png"
 };
 
 var g_resources = [
@@ -60,7 +62,9 @@ var g_resources = [
     res.keg_png,
     res.flame_png,
     res.star_png,
-    res.slingshot_png
+    res.slingshot_png,
+    res.grass_png,
+    res.lava_png
 
     //plist
 
