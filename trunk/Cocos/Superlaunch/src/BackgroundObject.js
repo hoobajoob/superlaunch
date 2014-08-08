@@ -41,6 +41,12 @@ var BackgroundObject = cc.Class.extend({
         var radius = 0.95 * this.sprite.getContentSize().width / 2;
         var width = this.sprite.getContentSize().width;
         var height = this.sprite.getContentSize().height;
+
+        if (type == SpriteTag.keg || type == SpriteTag.ramp)
+        {
+            pos = cc.p(pos.x, g_groundHeight + height / 2);
+        }
+
         body = new cp.StaticBody();
         body.setPos(pos);
         this.sprite.setBody(body);

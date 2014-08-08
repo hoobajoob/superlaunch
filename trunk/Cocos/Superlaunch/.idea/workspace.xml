@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Moved numbers around a bit to make sky translation look smooth again and stars show up in the right places.">
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Moved numbers around a bit to make sky translation look smooth again.&#10;Made semi-constants and adjusted numbers to make stars/background objects show up in the right places.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundObject.js" afterPath="$PROJECT_DIR$/src/BackgroundObject.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Superlaunch.iws" />
@@ -81,10 +81,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BackgroundObject.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="BackgroundObject.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="40" selection-start="1040" selection-end="1040" vertical-scroll-proportion="13.4" vertical-offset="947" max-vertical-offset="1428">
+            <state line="42" column="57" selection-start="1324" selection-end="1324" vertical-scroll-proportion="0.5962733" vertical-offset="522" max-vertical-offset="1530">
               <folding />
             </state>
           </provider>
@@ -99,10 +99,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="236" column="23" selection-start="8757" selection-end="8757" vertical-scroll-proportion="0.5248447" vertical-offset="3843" max-vertical-offset="4675">
+            <state line="221" column="13" selection-start="8511" selection-end="8511" vertical-scroll-proportion="7.52" vertical-offset="3945" max-vertical-offset="4726">
               <folding />
             </state>
           </provider>
@@ -137,11 +137,11 @@
         <option value="$PROJECT_DIR$/project.json" />
         <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/StatusLayer.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
         <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
       </list>
     </option>
   </component>
@@ -406,7 +406,11 @@
       <created>1407383277226</created>
       <updated>1407383277226</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Moved numbers around a bit to make sky translation look smooth again.&#10;Made semi-constants and adjusted numbers to make stars/background objects show up in the right places.">
+      <created>1407384213507</created>
+      <updated>1407384213507</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -439,7 +443,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32899022" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24925224" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3459621" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3006536" sideWeight="0.7457627" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3006536" sideWeight="0.7457627" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3006536" sideWeight="0.2542373" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -498,7 +502,8 @@
     <MESSAGE value="Beginning to add slingshot object and joint for launch" />
     <MESSAGE value="Came up with solution for initial launch touch tracking and preventing screen from updating until prelaunch is finished" />
     <MESSAGE value="A little better implementation of slingshot.&#10;Changed Stars to be more realstic and be on random y axis.&#10;Added and fixed names of resources&#10;&#10;At some point I messed up my vertical location and camera work.  Need to make a global variable that fixes that&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="A little better implementation of slingshot.&#10;Changed Stars to be more realstic and be on random y axis.&#10;Added and fixed names of resources&#10;&#10;At some point I messed up my vertical location and camera work.  Need to make a global variable that fixes that&#10;" />
+    <MESSAGE value="Moved numbers around a bit to make sky translation look smooth again.&#10;Made semi-constants and adjusted numbers to make stars/background objects show up in the right places." />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved numbers around a bit to make sky translation look smooth again.&#10;Made semi-constants and adjusted numbers to make stars/background objects show up in the right places." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -506,7 +511,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="108" />
+      <option name="time" value="109" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -771,13 +776,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="40" selection-start="1040" selection-end="1040" vertical-scroll-proportion="13.4" vertical-offset="947" max-vertical-offset="1428">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/menus/CCMenuItem.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="814" column="4" selection-start="23702" selection-end="23702" vertical-scroll-proportion="0.0" vertical-offset="13738" max-vertical-offset="23664">
@@ -808,7 +806,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="236" column="23" selection-start="8757" selection-end="8757" vertical-scroll-proportion="0.5248447" vertical-offset="3843" max-vertical-offset="4675">
+        <state line="221" column="13" selection-start="8511" selection-end="8511" vertical-scroll-proportion="7.52" vertical-offset="3945" max-vertical-offset="4726">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="57" selection-start="1324" selection-end="1324" vertical-scroll-proportion="0.5962733" vertical-offset="522" max-vertical-offset="1530">
           <folding />
         </state>
       </provider>
