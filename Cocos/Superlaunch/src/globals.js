@@ -1,4 +1,4 @@
-var g_groundHeight = 57;
+var g_groundHeight = 150;
 var g_characterStartX = 180;
 var g_characterStartyY = 300;
 if(typeof TagOfLayer == "undefined") {
@@ -16,4 +16,7 @@ if(typeof SpriteTag == "undefined") {
     SpriteTag.bacon = 2;
     SpriteTag.keg = 3;
     SpriteTag.ramp = 4;
+    SpriteTag.grass = 5;
+    SpriteTag.lava = 6;
+    SpriteTag.quickSand = 7;
 };

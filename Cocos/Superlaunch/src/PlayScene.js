@@ -18,6 +18,8 @@ var PlayScene = cc.Scene.extend({
         this.statusLayer = new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay));
         this.addChild(this.statusLayer, 0, TagOfLayer.Status);
         this.shapesToRemove = [];
+        //randomize math
+        Math.random();
         this.scheduleUpdate();
     },
 
@@ -27,13 +29,6 @@ var PlayScene = cc.Scene.extend({
         this.space = new cp.Space();
         //2. setup the  Gravity
         this.space.gravity = cp.v(0, -350);
-
-        // 3. set up Walls
-        var wallBottom = new cp.SegmentShape(this.space.staticBody,
-            cp.v(0, g_groundHeight),// start point
-            cp.v(4294967295, g_groundHeight),// MAX INT:4294967295
-            0);// thickness of wall
-        this.space.addStaticShape(wallBottom);
 
         var wallBack = new cp.SegmentShape(this.space.staticBody,
             cp.v(0, g_groundHeight),// start point

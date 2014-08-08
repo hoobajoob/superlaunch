@@ -69,6 +69,9 @@ var BackgroundLayer = cc.Layer.extend({
         }
         else
         {
+            this.loadGroundObjects(winsize.width / 2 - 320);
+            this.loadGroundObjects(winsize.width / 2 - 640);
+            this.loadGroundObjects(winsize.width / 2);
             this.loadRandomObjects(winsize.width / 2);
         }
 
@@ -126,6 +129,7 @@ var BackgroundLayer = cc.Layer.extend({
             }
             else
             {
+                this.loadGroundObjects(eyeX);
                 this.loadRandomObjects(eyeX);
             }
         } else {
@@ -140,6 +144,7 @@ var BackgroundLayer = cc.Layer.extend({
             }
             else
             {
+                this.loadGroundObjects(eyeX);
                 this.loadRandomObjects(eyeX);
             }
         }
@@ -182,9 +187,37 @@ var BackgroundLayer = cc.Layer.extend({
         }
     },
 
+    loadGroundObjects:function (xScreen) {
+        //Load ground objects
+        var addition = 640
+        if (Math.random() < 4/5)
+        {
+            //Insert Grass
+            var grass = new BackgroundObject(this,
+                this.space, cc.p(xScreen + addition, g_groundHeight),
+                SpriteTag.grass);
+            this.objects.push(grass);
+        }
+        else
+        {
+            if (Math.random() < 3/5)
+            {
+                //Insert Grass
+                var lava = new BackgroundObject(this,
+                    this.space, cc.p(xScreen + addition, g_groundHeight),
+                    SpriteTag.lava);
+                this.objects.push(lava);
+            }
+            else
+            {
+                //Todo:Insert QuickSand
+            }
+        }
+    },
+
     loadRandomObjects:function (xScreen) {
-        //randomize first location
-        Math.random();
+
+
         //Load objects in the near future
         if (this.newToys){
             //Insert Star
