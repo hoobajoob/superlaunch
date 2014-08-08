@@ -214,7 +214,10 @@ var BackgroundLayer = cc.Layer.extend({
                 }
                 else
                 {
-                    //Todo:Insert Keg
+                    var keg = new BackgroundObject(this,
+                        this.space, this.genRandomPos(xScreen),
+                        SpriteTag.keg);
+                    this.objects.push(keg);
                 }
             }
             if (Math.random < 1/5)
