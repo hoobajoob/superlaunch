@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Initial implementation of ground, needs work.&#10;Adjusted ground height and fixed some equations to work correctly related to ground height, not just by luck.&#10;Removed invisible ground object.&#10;Added lava and quicksand.&#10;Added ground objects to BackgroundObject class.&#10;Moved Math.Random() to initialization of the game so it is not being called every time new objects are added, which should reduce CPU utilization.">
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Only update distance meter when moving forward and in a position positive from the slingshot.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -35,19 +36,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="93" column="65" selection-start="2992" selection-end="2992" vertical-scroll-proportion="-9.92" vertical-offset="1333" max-vertical-offset="2329">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="resource.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/resource.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="28" selection-start="1231" selection-end="1231" vertical-scroll-proportion="0.0" vertical-offset="1051" max-vertical-offset="1411">
+            <state line="23" column="15" selection-start="496" selection-end="496" vertical-scroll-proportion="-4.80758" vertical-offset="2040" max-vertical-offset="2924">
               <folding />
             </state>
           </provider>
@@ -57,6 +49,15 @@
         <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/physics/CCPhysicsSprite.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="273" column="28" selection-start="11641" selection-end="11641" vertical-scroll-proportion="0.0" vertical-offset="4135" max-vertical-offset="6426">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="chipmunk.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/external/chipmunk/chipmunk.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="3606" column="27" selection-start="115810" selection-end="115810" vertical-scroll-proportion="0.0" vertical-offset="61180" max-vertical-offset="101524">
               <folding />
             </state>
           </provider>
@@ -83,16 +84,16 @@
       <file leaf-file-name="BackgroundObject.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="59" selection-start="1692" selection-end="1692" vertical-scroll-proportion="-6.76" vertical-offset="715" max-vertical-offset="1802">
+            <state line="52" column="59" selection-start="1692" selection-end="1692" vertical-scroll-proportion="-23.08" vertical-offset="307" max-vertical-offset="1802">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayScene.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="PlayScene.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="85" column="60" selection-start="3121" selection-end="3121" vertical-scroll-proportion="0.42696628" vertical-offset="1293" max-vertical-offset="1649">
+            <state line="34" column="26" selection-start="1230" selection-end="1230" vertical-scroll-proportion="3.4" vertical-offset="663" max-vertical-offset="1649">
               <folding />
             </state>
           </provider>
@@ -135,12 +136,12 @@
         <option value="$PROJECT_DIR$/src/Star.js" />
         <option value="$PROJECT_DIR$/project.json" />
         <option value="$PROJECT_DIR$/src/StatusLayer.js" />
-        <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
         <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
+        <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
       </list>
     </option>
   </component>
@@ -403,7 +404,11 @@
       <created>1407467445575</created>
       <updated>1407467445575</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Only update distance meter when moving forward and in a position positive from the slingshot.">
+      <created>1407802163484</created>
+      <updated>1407802163484</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -428,7 +433,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -436,7 +441,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32899022" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24925224" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3459621" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3006536" sideWeight="0.7457627" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3006536" sideWeight="0.7457627" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3006536" sideWeight="0.2542373" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -498,7 +503,8 @@
     <MESSAGE value="Moved numbers around a bit to make sky translation look smooth again.&#10;Made semi-constants and adjusted numbers to make stars/background objects show up in the right places." />
     <MESSAGE value="Added kegs and implemented plan  for placing ground objects on the ground." />
     <MESSAGE value="Initial implementation of ground, needs work.&#10;Adjusted ground height and fixed some equations to work correctly related to ground height, not just by luck.&#10;Removed invisible ground object.&#10;Added lava and quicksand.&#10;Added ground objects to BackgroundObject class.&#10;Moved Math.Random() to initialization of the game so it is not being called every time new objects are added, which should reduce CPU utilization." />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial implementation of ground, needs work.&#10;Adjusted ground height and fixed some equations to work correctly related to ground height, not just by luck.&#10;Removed invisible ground object.&#10;Added lava and quicksand.&#10;Added ground objects to BackgroundObject class.&#10;Moved Math.Random() to initialization of the game so it is not being called every time new objects are added, which should reduce CPU utilization." />
+    <MESSAGE value="Only update distance meter when moving forward and in a position positive from the slingshot." />
+    <option name="LAST_COMMIT_MESSAGE" value="Only update distance meter when moving forward and in a position positive from the slingshot." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -506,7 +512,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="109" />
+      <option name="time" value="113" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -743,30 +749,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/external/chipmunk/chipmunk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1386" column="20" selection-start="43644" selection-end="43650" vertical-scroll-proportion="-2.8354037" vertical-offset="24475" max-vertical-offset="101524">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/physics/CCPhysicsSprite.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="273" column="28" selection-start="11641" selection-end="11641" vertical-scroll-proportion="0.0" vertical-offset="4135" max-vertical-offset="6426">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/menus/CCMenuItem.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="814" column="4" selection-start="23702" selection-end="23702" vertical-scroll-proportion="0.0" vertical-offset="13738" max-vertical-offset="23664">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/resource.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="28" selection-start="1231" selection-end="1231" vertical-scroll-proportion="0.0" vertical-offset="1051" max-vertical-offset="1411">
           <folding />
         </state>
       </provider>
@@ -785,13 +770,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="65" selection-start="2992" selection-end="2992" vertical-scroll-proportion="-9.92" vertical-offset="1333" max-vertical-offset="2329">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="160" column="16" selection-start="6549" selection-end="6553" vertical-scroll-proportion="-55.96" vertical-offset="1321" max-vertical-offset="5287">
@@ -799,16 +777,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/resource.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="28" selection-start="1231" selection-end="1231" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="1411">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/external/chipmunk/chipmunk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3606" column="27" selection-start="115810" selection-end="115810" vertical-scroll-proportion="0.0" vertical-offset="61180" max-vertical-offset="101524">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="59" selection-start="1692" selection-end="1692" vertical-scroll-proportion="-6.76" vertical-offset="715" max-vertical-offset="1802">
+        <state line="52" column="59" selection-start="1692" selection-end="1692" vertical-scroll-proportion="-23.08" vertical-offset="307" max-vertical-offset="1802">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="60" selection-start="3121" selection-end="3121" vertical-scroll-proportion="0.42696628" vertical-offset="1293" max-vertical-offset="1649">
+        <state line="34" column="26" selection-start="1230" selection-end="1230" vertical-scroll-proportion="3.4" vertical-offset="663" max-vertical-offset="1649">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/physics/CCPhysicsSprite.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="273" column="28" selection-start="11641" selection-end="11641" vertical-scroll-proportion="0.0" vertical-offset="4135" max-vertical-offset="6426">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="15" selection-start="496" selection-end="496" vertical-scroll-proportion="-4.80758" vertical-offset="2040" max-vertical-offset="2924">
           <folding />
         </state>
       </provider>
