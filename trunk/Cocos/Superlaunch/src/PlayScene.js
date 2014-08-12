@@ -12,7 +12,7 @@ var PlayScene = cc.Scene.extend({
         this.gameLayer = cc.Layer.create();
         //add the three layers in the correct order
         this.gameLayer.addChild(new BackgroundLayer(this.space), 0, TagOfLayer.Background);
-        this.gamePlayLayer = new GamePlayLayer(this.space)
+        this.gamePlayLayer = new GamePlayLayer(this.space);
         this.gameLayer.addChild(this.gamePlayLayer, 0, TagOfLayer.GamePlay);
         this.addChild(this.gameLayer);
         this.statusLayer = new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay));
