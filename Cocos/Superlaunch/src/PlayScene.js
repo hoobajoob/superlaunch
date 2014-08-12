@@ -83,7 +83,10 @@ var PlayScene = cc.Scene.extend({
             //Move Camera to follow player
             this.gameLayer.setPosition(cc.p(newX,newY));
             //Update Distance Label
-            this.statusLayer.updateDistance(eyeX);
+            if(gamePlayLayer.getVelocity().x > 0 && eyeX > 0)
+            {
+                this.statusLayer.updateDistance(eyeX);
+            }
         }
     }
 });
