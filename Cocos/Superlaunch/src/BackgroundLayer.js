@@ -15,7 +15,6 @@ var BackgroundLayer = cc.Layer.extend({
     objects:[],
     mapLoad:false,
     newToys:true,
-    spriteSheet:null,
     mapMovedIndex:null,
     firstReverse:null,
     firstReverseChanged:false,
@@ -167,7 +166,7 @@ var BackgroundLayer = cc.Layer.extend({
         var starGroup = map.getObjectGroup("star");
         var starArray = starGroup.getObjects();
         for (var i = 0; i < starArray.length; i++) {
-            var star = new BackgroundObject(this.spriteSheet,
+            var star = new BackgroundObject(this,
                 this.space,
                 cc.p(starArray[i]["x"] + this.mapWidth * mapIndex,starArray[i]["y"])
                 , SpriteTag.star);
@@ -179,7 +178,7 @@ var BackgroundLayer = cc.Layer.extend({
         var kegGroup = map.getObjectGroup("keg");
         var kegArray = kegGroup.getObjects();
         for (var i = 0; i < kegArray.length; i++) {
-            var rock = new BackgroundObject(this.spriteSheet,
+            var rock = new BackgroundObject(this,
                 this.space,
                 kegArray[i]["x"] + this.mapWidth * mapIndex, SpriteTag.keg);
             rock.mapIndex = mapIndex;
