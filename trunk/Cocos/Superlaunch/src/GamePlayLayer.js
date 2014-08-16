@@ -24,13 +24,12 @@ var GamePlayLayer = cc.Layer.extend({
     joint:null,
     slingshotStart:null,
     slingshotStrength:5,
+    slingshotLeftRope:null,
+    slingshotRightRope:null,
 
     ctor:function (space) {
         this._super();
         this.space = space;
-        this._debugNode = cc.PhysicsDebugNode.create(this.space);
-        // Parallax ratio and offset
-        this.addChild(this._debugNode, 10);
         this.init();
     },
     init:function(){
@@ -47,6 +46,8 @@ var GamePlayLayer = cc.Layer.extend({
         slingshotBody.p = this.slingshotStart;
         this.slingshot.setBody(slingshotBody);
         this.addChild(this.slingshot);
+
+        //this.slingshotLeftRope =
 
         //1. create PhysicsSprite with a sprite frame name
         this.character = cc.PhysicsSprite.create(res.aryaSprite_png);
@@ -70,10 +71,14 @@ var GamePlayLayer = cc.Layer.extend({
         this.addChild(this.staticCharacter);
 
         //Create Damped Spring Joint between Character and Slingshot
-        var zeroPoint = cc.p(0,0);
-        this.joint = new cp.DampedSpring(body, slingshotBody, zeroPoint, zeroPoint, 10, 50, 5);
-        this.space.addConstraint(this.joint);
-        this.addChild(this.joint);
+        //var zeroPoint = cc.p(0,0);
+        //this.joint = new cp.DampedSpring(body, slingshotBody, zeroPoint, zeroPoint, 10, 50, 5);
+        //this.space.addConstraint(this.joint);
+        //this.addChild(this.joint);
+
+        this.slingshotLeftRope = new Rope(this, this.space, 6, slingshotBody, body);
+        this.slingshotRightRope = new Rope(this, this.space, 6, slingshotBody, body);
+
 
         cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -151,7 +156,7 @@ var GamePlayLayer = cc.Layer.extend({
             target.staticCharacter = null;
             var xImpulse = (target.slingshotStart.x + pos.x) * target.slingshotStrength;
             var yImpulse = (target.slingshotStart.y - pos.y) * target.slingshotStrength;
-            target.character.body.applyImpulse(cp.v(xImpulse, yImpulse), cp.v(0,5));
+            target.character.body.applyImpulse(cp.v(xImpulse, yImpulse), cp.v(0,0));
             //Remove OnTouch Listener
             cc.eventManager.removeListener(this);
         }

@@ -27,6 +27,9 @@ var PlayScene = cc.Scene.extend({
     initPhysics:function() {
         //1. new space object
         this.space = new cp.Space();
+        this._debugNode = cc.PhysicsDebugNode.create(this.space);
+        // Parallax ratio and offset
+        this.addChild(this._debugNode, 10);
         //2. setup the  Gravity
         this.space.gravity = cp.v(0, -350);
 
