@@ -45,6 +45,9 @@ var GamePlayLayer = cc.Layer.extend({
         var slingshotBody = new cp.StaticBody();
         slingshotBody.p = this.slingshotStart;
         this.slingshot.setBody(slingshotBody);
+        //var contentSize = this.slingshot.getContentSize();
+        //var shape = new cp.BoxShape(slingshotBody, contentSize.width, contentSize.height);
+        //this.space.addShape(shape);
         this.addChild(this.slingshot);
 
         //this.slingshotLeftRope =
@@ -76,8 +79,8 @@ var GamePlayLayer = cc.Layer.extend({
         //this.space.addConstraint(this.joint);
         //this.addChild(this.joint);
 
-        this.slingshotLeftRope = new Rope(this, this.space, 6, slingshotBody, body);
-        this.slingshotRightRope = new Rope(this, this.space, 6, slingshotBody, body);
+        this.slingshotLeftRope = new Rope(this, this.space, 2, body, slingshotBody, body.p);
+        //this.slingshotRightRope = new Rope(this, this.space, 1, slingshotBody, body, body.p);
 
 
         cc.eventManager.addListener({
