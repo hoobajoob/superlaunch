@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Restored only physics objects for launch and integrated rope disconnect.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Figured how to update character position every update while touch event in progress.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Rope.js" afterPath="$PROJECT_DIR$/src/Rope.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Superlaunch.iws" />
@@ -36,10 +35,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="128" column="0" selection-start="3963" selection-end="3963" vertical-scroll-proportion="0.33152175" vertical-offset="2054" max-vertical-offset="2924">
+            <state line="129" column="9" selection-start="4007" selection-end="4007" vertical-scroll-proportion="0.0" vertical-offset="2054" max-vertical-offset="2924">
               <folding />
             </state>
           </provider>
@@ -63,13 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Rope.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Rope.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Rope.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="57" selection-start="1883" selection-end="1883" vertical-scroll-proportion="0.0" vertical-offset="601" max-vertical-offset="1530">
-              <folding>
-                <marker date="1408158733798" expanded="true" signature="2086:2257" placeholder="{...}" />
-              </folding>
+            <state line="67" column="55" selection-start="2462" selection-end="2462" vertical-scroll-proportion="0.73913044" vertical-offset="867" max-vertical-offset="1547">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -125,9 +122,9 @@
         <option value="$PROJECT_DIR$/project.json" />
         <option value="$PROJECT_DIR$/main.js" />
         <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
-        <option value="$PROJECT_DIR$/src/Rope.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
+        <option value="$PROJECT_DIR$/src/Rope.js" />
       </list>
     </option>
   </component>
@@ -415,7 +412,11 @@
       <created>1408158794906</created>
       <updated>1408158794906</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Figured how to update character position every update while touch event in progress.">
+      <created>1408159721764</created>
+      <updated>1408159721765</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -515,7 +516,8 @@
     <MESSAGE value="Fixed debug node to show physics object outlines" />
     <MESSAGE value="More work on rope." />
     <MESSAGE value="Restored only physics objects for launch and integrated rope disconnect." />
-    <option name="LAST_COMMIT_MESSAGE" value="Restored only physics objects for launch and integrated rope disconnect." />
+    <MESSAGE value="Figured how to update character position every update while touch event in progress." />
+    <option name="LAST_COMMIT_MESSAGE" value="Figured how to update character position every update while touch event in progress." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -790,15 +792,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Rope.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="57" selection-start="1883" selection-end="1883" vertical-scroll-proportion="0.0" vertical-offset="601" max-vertical-offset="1530">
-          <folding>
-            <marker date="1408158733798" expanded="true" signature="2086:2257" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="68" column="46" selection-start="2456" selection-end="2476" vertical-scroll-proportion="0.0" vertical-offset="1034" max-vertical-offset="1768">
@@ -815,7 +808,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="128" column="0" selection-start="3963" selection-end="3963" vertical-scroll-proportion="0.33152175" vertical-offset="2054" max-vertical-offset="2924">
+        <state line="129" column="9" selection-start="4007" selection-end="4007" vertical-scroll-proportion="0.0" vertical-offset="2054" max-vertical-offset="2924">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Rope.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="67" column="55" selection-start="2462" selection-end="2462" vertical-scroll-proportion="0.73913044" vertical-offset="867" max-vertical-offset="1547">
           <folding />
         </state>
       </provider>
