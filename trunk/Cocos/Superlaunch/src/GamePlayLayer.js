@@ -26,6 +26,7 @@ var GamePlayLayer = cc.Layer.extend({
     slingshotLeftRope:null,
     slingshotRightRope:null,
     stepListener:null,
+    touchPos:null,
 
     ctor:function (space) {
         this._super();
@@ -124,26 +125,34 @@ var GamePlayLayer = cc.Layer.extend({
         }
     },
 
+    moveCharacterToTouch:function(){
+        if (this.touchPos != null)
+        {
+            this.character.setPosition(this.touchPos);
+        }
+    },
+
     onTouchBegan:function(touch, event) {
-        var pos = touch.getLocation();
         var target = event.getCurrentTarget();
-        target.character.setPosition(pos)
+        target.touchPos = touch.getLocation();
+        target.character.setPosition(target.touchPos);
         return true;
     },
 
     onTouchMoved:function(touch, event) {
-        var pos = touch.getLocation();
         var target = event.getCurrentTarget();
-        target.character.setPosition(pos);
+        target.touchPos = touch.getLocation();
+        target.character.setPosition(target.touchPos);
     },
 
     onTouchEnded:function(touch, event) {
         //var rtn = event.getCurrentTarget().recognizer.endPoint();
-        var pos = touch.getLocation();
         var target = event.getCurrentTarget();
-        target.character.body.setPos(pos);
-        if ((target.slingshotStart.x - pos.x > 60) || (target.slingshotStart.y - pos.y > 60))
+        target.touchPos = touch.getLocation();
+        target.character.body.setPos(target.touchPos);
+        if ((target.slingshotStart.x - target.touchPos.x > 60) || (target.slingshotStart.y - target.touchPos.y > 60))
         {
+            target.touchPos = null;
             target.prelaunch = false;
             //var xImpulse = (target.slingshotStart.x + pos.x) * target.slingshotStrength;
             //var yImpulse = (target.slingshotStart.y - pos.y) * target.slingshotStrength;

@@ -62,27 +62,31 @@ var PlayScene = cc.Scene.extend({
         //chipmunk step
         this.space.step(dt);
 
-        // Simulation cpSpaceAddPostStepCallback
-        for(var i = 0; i < this.shapesToRemove.length; i++) {
-            var shape = this.shapesToRemove[i];
-            this.gameLayer.getChildByTag(TagOfLayer.Background).removeObjectByShape(shape);
-        }
-        this.shapesToRemove = [];
-
-        this.gameLayer.getChildByTag(TagOfLayer.GamePlay).applyImpulses(this.impulsesToApply);
-        this.impulsesToApply = [];
         var gamePlayLayer = this.gameLayer.getChildByTag(TagOfLayer.GamePlay);
-        var eyeX = gamePlayLayer.getEyeX();
-        var newX = 30 - eyeX;
-        var eyeY = gamePlayLayer.getEyeY();
-        var newY = -45
-        if (eyeY > 0)
-        {
-            newY = (-45) - eyeY;
-        }
 
-        if (this.gamePlayLayer.getPrelaunchStatus() == false)
+        if (this.gamePlayLayer.getPrelaunchStatus() == true)
         {
+            gamePlayLayer.moveCharacterToTouch();
+        }
+        else
+        {
+            gamePlayLayer.applyImpulses(this.impulsesToApply);
+            this.impulsesToApply = [];
+            var backgroundLayer = this.gameLayer.getChildByTag(TagOfLayer.Background);
+            // Simulation cpSpaceAddPostStepCallback
+            for(var i = 0; i < this.shapesToRemove.length; i++) {
+                var shape = this.shapesToRemove[i];
+                backgroundLayer.removeObjectByShape(shape);
+            }
+            this.shapesToRemove = [];
+            var eyeX = gamePlayLayer.getEyeX();
+            var newX = 30 - eyeX;
+            var eyeY = gamePlayLayer.getEyeY();
+            var newY = -45
+            if (eyeY > 0)
+            {
+                newY = (-45) - eyeY;
+            }
             //Move Camera to follow player
             this.gameLayer.setPosition(cc.p(newX,newY));
             //Update Distance Label
