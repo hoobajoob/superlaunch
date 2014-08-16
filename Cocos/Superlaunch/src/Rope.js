@@ -7,6 +7,7 @@ var Rope = cc.Class.extend({
     length:.5,
     stiffness:100,
     links:[],
+    startLink:null,
 
 
     /** Constructor
@@ -14,7 +15,7 @@ var Rope = cc.Class.extend({
      * @param {cp.Space *}
      * @param {cc.p}
      */
-    ctor:function (spriteSheet, space, length, startBody, endBody, startPoint) {
+    ctor:function (spriteSheet, space, length, characterBody, slingshotBody, startPoint) {
         this.space = space;
         var sprite = cc.PhysicsSprite.create(res.chainlink_png);
         // init physics
@@ -25,12 +26,13 @@ var Rope = cc.Class.extend({
         sprite.setBody(body);
         body.p = startPoint;
         spriteSheet.addChild(sprite);
-        this.space.addBody(body);
+        this.startLink = body;
+        this.space.addBody(this.startLink);
 
         var zeroPoint = cc.p(0,0);
         var leftPoint = cc.p(-width / 3,0);
         var rightPoint = cc.p(width / 3,0);
-        this.startJoint = new cp.DampedSpring(body, startBody, rightPoint, zeroPoint, this.length, this.stiffness, this.dampening);
+        this.startJoint = new cp.DampedSpring(body, slingshotBody, rightPoint, zeroPoint, this.length, this.stiffness, this.dampening);
         this.space.addConstraint(this.startJoint);
         spriteSheet.addChild(this.startJoint);
 
@@ -48,9 +50,22 @@ var Rope = cc.Class.extend({
             this.links.push(body);
         }
 
-        this.endJoint = new cp.DampedSpring(endBody, body, zeroPoint, leftPoint, this.length, this.stiffness, this.dampening);
+        this.endJoint = new cp.DampedSpring(characterBody, body, zeroPoint, leftPoint, this.length, this.stiffness, this.dampening);
         this.space.addConstraint(this.endJoint);
         spriteSheet.addChild(this.endJoint);
+    },
+
+    removeAll:function() {
+        this.space.removeBody(this.startLink);
+        for (var i = 0; i < this.links.length; i++)
+        {
+            this.space.removeBody(links[0]);
+        }
+    },
+
+    disconnectFromCharacter:function() {
+        this.space.removeConstraint(this.endJoint);
+        this.endJoint = null;
     },
 
     removeFromParent:function () {

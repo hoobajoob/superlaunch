@@ -7,7 +7,6 @@ var GamePlayLayer = cc.Layer.extend({
     applyBoost:null,
     applyLazars:null,
     character:null,
-    staticCharacter:null,
     slingshot:null,
     start:null,
     timerEvents:{},
@@ -26,6 +25,7 @@ var GamePlayLayer = cc.Layer.extend({
     slingshotStrength:5,
     slingshotLeftRope:null,
     slingshotRightRope:null,
+    stepListener:null,
 
     ctor:function (space) {
         this._super();
@@ -68,10 +68,6 @@ var GamePlayLayer = cc.Layer.extend({
         //8. set body to the physic sprite
         this.character.setBody(body);
         this.addChild(this.character);
-
-        this.staticCharacter = cc.Sprite.create(res.aryaSprite_png);
-        this.staticCharacter.visible = false;
-        this.addChild(this.staticCharacter);
 
         //Create Damped Spring Joint between Character and Slingshot
         //var zeroPoint = cc.p(0,0);
@@ -131,45 +127,32 @@ var GamePlayLayer = cc.Layer.extend({
     onTouchBegan:function(touch, event) {
         var pos = touch.getLocation();
         var target = event.getCurrentTarget();
-        target.character.visible = false;
-        target.staticCharacter.setPosition(pos);
-        target.staticCharacter.visible = true;
-        target.space.removeConstraint(target.joint);
-        target.joint = null;
+        target.character.setPosition(pos)
         return true;
     },
 
     onTouchMoved:function(touch, event) {
         var pos = touch.getLocation();
         var target = event.getCurrentTarget();
-        target.staticCharacter.setPosition(pos);
+        target.character.setPosition(pos);
     },
 
     onTouchEnded:function(touch, event) {
         //var rtn = event.getCurrentTarget().recognizer.endPoint();
         var pos = touch.getLocation();
         var target = event.getCurrentTarget();
-        target.staticCharacter.visible = false;
         target.character.body.setPos(pos);
-        target.character.visible = true;
         if ((target.slingshotStart.x - pos.x > 60) || (target.slingshotStart.y - pos.y > 60))
         {
             target.prelaunch = false;
-            target.removeChild(target.staticCharacter);
-            target.staticCharacter = null;
-            var xImpulse = (target.slingshotStart.x + pos.x) * target.slingshotStrength;
-            var yImpulse = (target.slingshotStart.y - pos.y) * target.slingshotStrength;
-            target.character.body.applyImpulse(cp.v(xImpulse, yImpulse), cp.v(0,0));
+            //var xImpulse = (target.slingshotStart.x + pos.x) * target.slingshotStrength;
+            //var yImpulse = (target.slingshotStart.y - pos.y) * target.slingshotStrength;
+            //target.character.body.applyImpulse(cp.v(xImpulse, yImpulse), cp.v(0,0));
+            target.slingshotLeftRope.disconnectFromCharacter();
+            target.removeChild(target.slingshotLeftRope);
+            target.slingshotLeftRope = null;
             //Remove OnTouch Listener
             cc.eventManager.removeListener(this);
-        }
-        else if(target.prelaunch == true)
-        {
-            //Create Damped Spring Joint between Character and Slingshot
-            var zeroPoint = cc.p(0,0);
-            var target = event.getCurrentTarget();
-            target.joint = new cp.DampedSpring(body, target.character.getBody(), zeroPoint, zeroPoint, 10, 50, 5);
-            target.space.addConstraint(target.joint);
         }
     }
 });
