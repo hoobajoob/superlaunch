@@ -10,7 +10,7 @@ var MenuLayer = cc.Layer.extend({
         //call super class's super function
         this._super();
 
-        //2. get screen size of game canvas
+        /*//2. get screen size of game canvas
         var winsize = cc.director.getWinSize();
 
         //calculate center point
@@ -32,7 +32,8 @@ var MenuLayer = cc.Layer.extend({
         );
         var menu = cc.Menu.create(menuItemPlay);
         menu.setPosition(centerpos);
-        this.addChild(menu);
+        this.addChild(menu);*/
+        cc.director.runScene(new PlayScene());
     },
 
     onPlay : function(){
