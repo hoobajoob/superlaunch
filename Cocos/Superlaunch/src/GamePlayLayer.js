@@ -34,7 +34,7 @@ var GamePlayLayer = cc.Layer.extend({
         this.init();
     },
     init:function(){
-        this.slingshotStart = cc.p(g_characterStartX, (g_characterStartyY / 2) + g_groundHeight);
+        this.slingshotStart = cc.p(g_characterStartX, (g_characterStartyY / 2) + g_groundHeight / 2);
         this.initAction();
     },
 
@@ -51,7 +51,6 @@ var GamePlayLayer = cc.Layer.extend({
         //this.space.addShape(shape);
         this.addChild(this.slingshot);
 
-        //this.slingshotLeftRope =
 
         //1. create PhysicsSprite with a sprite frame name
         this.character = cc.PhysicsSprite.create(res.aryaSprite_png);
@@ -70,13 +69,7 @@ var GamePlayLayer = cc.Layer.extend({
         this.character.setBody(body);
         this.addChild(this.character);
 
-        //Create Damped Spring Joint between Character and Slingshot
-        //var zeroPoint = cc.p(0,0);
-        //this.joint = new cp.DampedSpring(body, slingshotBody, zeroPoint, zeroPoint, 10, 50, 5);
-        //this.space.addConstraint(this.joint);
-        //this.addChild(this.joint);
-
-        this.slingshotLeftRope = new Rope(this, this.space, 2, body, slingshotBody, body.p);
+        this.slingshotLeftRope = new Rope(this, this.space, 1, body, slingshotBody, body.p);
         //this.slingshotRightRope = new Rope(this, this.space, 1, slingshotBody, body, body.p);
 
 

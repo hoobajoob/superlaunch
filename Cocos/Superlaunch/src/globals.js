@@ -19,4 +19,5 @@ if(typeof SpriteTag == "undefined") {
     SpriteTag.grass = 5;
     SpriteTag.lava = 6;
     SpriteTag.quickSand = 7;
+    SpriteTag.bomb = 8;
 };

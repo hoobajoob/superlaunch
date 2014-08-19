@@ -34,6 +34,7 @@ var Rope = cc.Class.extend({
         var leftPoint = cc.p(-width / 3,0);
         var rightPoint = cc.p(width / 3,0);
         this.characterJoint = new cp.DampedSpring(body, characterBody, rightPoint, zeroPoint, this.length, this.stiffness, this.dampening);
+        body.setMoment(10000);
         this.space.addConstraint(this.characterJoint);
         spriteSheet.addChild(this.characterJoint);
 
@@ -43,11 +44,13 @@ var Rope = cc.Class.extend({
             var sprite = cc.PhysicsSprite.create(res.chainlink_png);
             this.endLink = new cp.Body(1, cp.momentForBox(1, width, height));
             sprite.setBody(this.endLink);
+            this.endLink.p = startPoint;
             spriteSheet.addChild(sprite);
             this.space.addBody(this.endLink);
             var midJoint = new cp.DampedSpring(this.endLink, this.links[i], leftPoint, rightPoint, this.length, this.stiffness, this.dampening);
             this.space.addConstraint(midJoint);
             spriteSheet.addChild(midJoint);
+            this.endLink.setMoment(10000);
             this.links.push(this.endLink);
         }
 
