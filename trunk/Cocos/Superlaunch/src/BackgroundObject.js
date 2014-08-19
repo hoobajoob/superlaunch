@@ -43,6 +43,15 @@ var BackgroundObject = cc.Class.extend({
         else if (type == SpriteTag.lava){
             this.sprite = cc.PhysicsSprite.create(res.lava_png);
         }
+        else if (type == SpriteTag.ramp){
+            this.sprite = cc.PhysicsSprite.create(res.ramp_png);
+        }
+        else if (type == SpriteTag.bomb){
+            this.sprite = cc.PhysicsSprite.create(res.bomb_png);
+        }
+        else if (type == SpriteTag.bacon){
+            this.sprite = cc.PhysicsSprite.create(res.bacon_png);
+        }
             // init physics
         var radius = 0.95 * this.sprite.getContentSize().width / 2;
         var width = this.sprite.getContentSize().width;
@@ -62,20 +71,24 @@ var BackgroundObject = cc.Class.extend({
         body.setPos(pos);
         this.sprite.setBody(body);
 
-        if (type == SpriteTag.star){
+        if (type == SpriteTag.star || type == SpriteTag.bomb){
             this.shape = new cp.CircleShape(body, radius, cp.vzero);
-            this.shape.setCollisionType(SpriteTag.star);
             //Sensors only call collision callbacks, and never generate real collisions
+            this.shape.setSensor(true);
+        }
+        else if (type == SpriteTag.bacon){
+            this.shape = new cp.BoxShape(body, width, height);
             this.shape.setSensor(true);
         }
         else if (type == SpriteTag.keg){
             this.shape = new cp.BoxShape(body, width, height);
-            this.shape.setCollisionType(SpriteTag.keg);
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {
-            this.shape = new cp.BoxShape(body, width, height - 20);
+            this.shape = new cp.BoxShape(body, width, height);
         }
+
+        this.shape.setCollisionType(type);
 
         this.space.addStaticShape(this.shape);
 
