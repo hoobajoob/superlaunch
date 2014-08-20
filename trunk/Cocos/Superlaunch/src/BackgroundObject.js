@@ -76,11 +76,11 @@ var BackgroundObject = cc.Class.extend({
             //Sensors only call collision callbacks, and never generate real collisions
             this.shape.setSensor(true);
         }
-        else if (type == SpriteTag.bacon){
+        else if (type == SpriteTag.bacon || type == SpriteTag.jetRefill){
             this.shape = new cp.BoxShape(body, width, height);
             this.shape.setSensor(true);
         }
-        else if (type == SpriteTag.keg){
+        else if (type == SpriteTag.keg || type == SpriteTag.ramp){
             this.shape = new cp.BoxShape(body, width, height);
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)

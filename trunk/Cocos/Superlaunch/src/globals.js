@@ -20,4 +20,5 @@ if(typeof SpriteTag == "undefined") {
     SpriteTag.lava = 6;
     SpriteTag.quickSand = 7;
     SpriteTag.bomb = 8;
+    SpriteTag.jetRefill = 9;
 };
