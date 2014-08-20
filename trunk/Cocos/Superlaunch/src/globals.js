@@ -1,4 +1,4 @@
-var g_groundHeight = 150;
+var g_groundHeight = 155;
 var g_characterStartX = 180;
 var g_characterStartyY = 300;
 if(typeof TagOfLayer == "undefined") {
