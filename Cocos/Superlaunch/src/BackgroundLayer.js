@@ -18,7 +18,6 @@ var BackgroundLayer = cc.Layer.extend({
     mapMovedIndex:null,
     firstReverse:null,
     firstReverseChanged:false,
-    screenAdvance:240,
 
     ctor:function (space, mapLoad) {
         this._super();
@@ -79,7 +78,7 @@ var BackgroundLayer = cc.Layer.extend({
     },
 
     checkAndReload:function (eyeX, eyeY, velocity) {
-        var newXMapIndex = parseInt((eyeX + this.screenAdvance) / this.mapWidth);
+        var newXMapIndex = parseInt((eyeX + g_screenAdvance) / this.mapWidth);
         var newYMapIndex = parseInt((eyeY + 160) / this.mapHeight);
         if (velocity.x < 0){
             //load previous horizontal background if necessary
@@ -193,7 +192,7 @@ var BackgroundLayer = cc.Layer.extend({
         {
             //Insert Grass
             var grass = new BackgroundObject(this,
-                this.space, cc.p(mapIndex * this.mapWidth + this.screenAdvance, g_groundHeight),
+                this.space, cc.p(mapIndex * this.mapWidth + g_screenAdvance, g_groundHeight),
                 SpriteTag.grass);
             this.objects.push(grass);
         }
@@ -203,7 +202,7 @@ var BackgroundLayer = cc.Layer.extend({
             //{
                 //Insert Lava
                 var lava = new BackgroundObject(this,
-                    this.space, cc.p(mapIndex * this.mapWidth + this.screenAdvance, g_groundHeight),
+                    this.space, cc.p(mapIndex * this.mapWidth + g_screenAdvance, g_groundHeight),
                     SpriteTag.lava);
                 this.objects.push(lava);
             //}

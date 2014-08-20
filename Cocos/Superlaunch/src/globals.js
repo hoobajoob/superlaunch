@@ -1,6 +1,7 @@
 var g_groundHeight = 155;
 var g_characterStartX = 180;
-var g_characterStartyY = 300;
+var g_characterStartY = 300;
+var g_screenAdvance = 300;
 if(typeof TagOfLayer == "undefined") {
     var TagOfLayer = {};
     TagOfLayer.Background = 0;
