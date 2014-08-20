@@ -34,7 +34,7 @@ var GamePlayLayer = cc.Layer.extend({
         this.init();
     },
     init:function(){
-        this.slingshotStart = cc.p(g_characterStartX, (g_characterStartyY / 2) + g_groundHeight / 2);
+        this.slingshotStart = cc.p(g_characterStartX, (g_characterStartY / 2) + g_groundHeight / 2);
         this.initAction();
     },
 
@@ -58,7 +58,7 @@ var GamePlayLayer = cc.Layer.extend({
         // 2. init the runner physic body
         var body = new cp.Body(1, cp.momentForBox(1, contentSize.width, contentSize.height));
         //3. set the position of the runner
-        body.p = cc.p(g_characterStartX, g_characterStartyY); //g_groundHeight + contentSize.height / 2);
+        body.p = cc.p(g_characterStartX, g_characterStartY); //g_groundHeight + contentSize.height / 2);
         //4. add the created body to space
         this.space.addBody(body);
         //5. create the shape for the body
@@ -101,7 +101,7 @@ var GamePlayLayer = cc.Layer.extend({
     },
 
     getEyeY:function () {
-        return this.character.getPositionY() - g_characterStartyY;
+        return this.character.getPositionY() - g_characterStartY;
     },
 
     getVelocity:function() {

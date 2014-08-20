@@ -54,7 +54,7 @@ var PlayScene = cc.Scene.extend({
         var shapes = arbiter.getShapes();
         // shapes[0] is character
         //TODO:Find a way to pass the shape directly from handler
-        this.impulsesToApply.push([cp.v(50,300), cp.v(-2,0)]);
+        this.impulsesToApply.push([cp.v(50,500), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
         cc.log("==Hit Star");
     },
@@ -63,7 +63,7 @@ var PlayScene = cc.Scene.extend({
         var shapes = arbiter.getShapes();
         // shapes[0] is character
         //TODO:Find a way to pass the shape directly from handler
-        this.impulsesToApply.push([cp.v(20,50), cp.v(-2,0)]);
+        this.impulsesToApply.push([cp.v(20,500), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
         //TODO: Adjust Health
         cc.log("==Hit Bacon");
@@ -108,12 +108,16 @@ var PlayScene = cc.Scene.extend({
             }
             this.shapesToRemove = [];
             var eyeX = gamePlayLayer.getEyeX();
-            var newX = 30 - eyeX;
+            var newX = 0;
+            if (eyeX > -g_characterStartX / 2)
+            {
+                newX = (-g_characterStartX / 2) - eyeX;
+            }
             var eyeY = gamePlayLayer.getEyeY();
-            var newY = -45
+            var newY = 0;
             if (eyeY > 0)
             {
-                newY = (-45) - eyeY;
+                newY = -eyeY;
             }
             //Move Camera to follow player
             this.gameLayer.setPosition(cc.p(newX,newY));
