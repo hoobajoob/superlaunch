@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Integrated ramp and creating it's polygon shape">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GamePlayLayer.js" afterPath="$PROJECT_DIR$/src/GamePlayLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundObject.js" afterPath="$PROJECT_DIR$/src/BackgroundObject.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/globals.js" afterPath="$PROJECT_DIR$/src/globals.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -29,10 +27,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5884774" vertical-offset="3359" max-vertical-offset="5440">
+            <state vertical-scroll-proportion="-5.72" vertical-offset="3359" max-vertical-offset="5440">
               <caret line="206" column="40" selection-start-line="206" selection-start-column="40" selection-end-line="206" selection-end-column="40" />
               <folding />
             </state>
@@ -49,11 +47,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="globals.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="globals.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/globals.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
-              <caret line="3" column="19" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.24199288" vertical-offset="0" max-vertical-offset="527">
+              <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -122,7 +120,7 @@
       <file leaf-file-name="BackgroundObject.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1424" max-vertical-offset="2091">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1390" max-vertical-offset="2125">
               <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
               <folding />
             </state>
@@ -152,10 +150,10 @@
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/Rope.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
-        <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
+        <option value="$PROJECT_DIR$/src/globals.js" />
       </list>
     </option>
   </component>
@@ -461,7 +459,11 @@
       <created>1408506984695</created>
       <updated>1408506984695</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point.">
+      <created>1408508414019</created>
+      <updated>1408508414019</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -543,7 +545,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Created method for adding background objects and working on random creation of objects" />
     <MESSAGE value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
     <MESSAGE value="Tweaked background image insertion and refresh.  To work on y-plane later" />
     <MESSAGE value="Worked on applying impulse on hitting an object" />
@@ -568,7 +569,8 @@
     <MESSAGE value="Fixed size of ground objects to work with sky refresh rate.&#10;Made screenAdvance variable to be more constant.&#10;Updated loadGroundObjects method to take a map index, rather than x value, and a grassOnly variable.&#10;Corrected calculations of ground objects.&#10;&#10;Now inserting Bacon, Bombs and JetRefills." />
     <MESSAGE value="Updated Ground Level to show a little more underground texture&#10;Fixed debugging shapes not being accurate at launch by adding debugnode to gamelayer, rather than whole screen.&#10;Adjusted back wall to not let black screen be shown and also be a little thicker for debugging visibility." />
     <MESSAGE value="Integrated ramp and creating it's polygon shape" />
-    <option name="LAST_COMMIT_MESSAGE" value="Integrated ramp and creating it's polygon shape" />
+    <MESSAGE value="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point." />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -899,14 +901,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1424" max-vertical-offset="2091">
-          <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-62.56" vertical-offset="816" max-vertical-offset="2805">
@@ -931,18 +925,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/globals.js">
+    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
-          <caret line="3" column="19" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="19" />
+        <state vertical-scroll-proportion="-5.72" vertical-offset="3359" max-vertical-offset="5440">
+          <caret line="206" column="40" selection-start-line="206" selection-start-column="40" selection-end-line="206" selection-end-column="40" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
+    <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5884774" vertical-offset="3359" max-vertical-offset="5440">
-          <caret line="206" column="40" selection-start-line="206" selection-start-column="40" selection-end-line="206" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1390" max-vertical-offset="2125">
+          <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/globals.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.24199288" vertical-offset="0" max-vertical-offset="527">
+          <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
           <folding />
         </state>
       </provider>

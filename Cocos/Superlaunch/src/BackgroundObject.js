@@ -64,7 +64,7 @@ var BackgroundObject = cc.Class.extend({
 
         if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {
-            pos = cc.p(pos.x, g_groundHeight - height);
+            pos = cc.p(pos.x, g_groundHeight - height + g_groundSpriteOffset);
         }
 
         body = new cp.StaticBody();
@@ -89,7 +89,9 @@ var BackgroundObject = cc.Class.extend({
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {
-            this.shape = new cp.BoxShape(body, width, height);
+            var halfWidth = width / 2;
+            var halfHeight = height / 2;
+            this.shape = new cp.PolyShape(body, [ -halfWidth,-halfHeight, -halfWidth,halfHeight,  halfWidth, halfHeight, halfWidth, -halfHeight], cc.p(0, -g_groundSpriteOffset));
         }
 
         this.shape.setCollisionType(type);
