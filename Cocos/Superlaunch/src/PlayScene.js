@@ -14,6 +14,8 @@ var PlayScene = cc.Scene.extend({
         this.gameLayer.addChild(new BackgroundLayer(this.space), 0, TagOfLayer.Background);
         this.gamePlayLayer = new GamePlayLayer(this.space);
         this.gameLayer.addChild(this.gamePlayLayer, 0, TagOfLayer.GamePlay);
+        // Parallax ratio and offset
+        this.gameLayer.addChild(this._debugNode, 10);
         this.addChild(this.gameLayer);
         this.statusLayer = new StatusLayer(this.gameLayer.getChildByTag(TagOfLayer.GamePlay));
         this.addChild(this.statusLayer, 0, TagOfLayer.Status);
@@ -28,15 +30,13 @@ var PlayScene = cc.Scene.extend({
         //1. new space object
         this.space = new cp.Space();
         this._debugNode = cc.PhysicsDebugNode.create(this.space);
-        // Parallax ratio and offset
-        this.addChild(this._debugNode, 10);
         //2. setup the  Gravity
         this.space.gravity = cp.v(0, -350);
 
         var wallBack = new cp.SegmentShape(this.space.staticBody,
-            cp.v(0, g_groundHeight),// start point
-            cp.v(0, 1000),
-            0);// thickness of wall
+            cp.v(-125, 0),// start point
+            cp.v(-125, 1000),
+            20);// thickness of wall
         this.space.addStaticShape(wallBack);
 
         // setup chipmunk CollisionHandler

@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Fixed size of ground objects to work with sky refresh rate.&#10;Made screenAdvance variable to be more constant.&#10;Updated loadGroundObjects method to take a map index, rather than x value, and a grassOnly variable.&#10;Corrected calculations of ground objects.&#10;&#10;Now inserting Bacon, Bombs and JetRefills.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/grass.png" afterPath="$PROJECT_DIR$/res/grass.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/lava.png" afterPath="$PROJECT_DIR$/res/lava.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/quickSand.png" afterPath="$PROJECT_DIR$/res/quickSand.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundObject.js" afterPath="$PROJECT_DIR$/src/BackgroundObject.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PlayScene.js" afterPath="$PROJECT_DIR$/src/PlayScene.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/globals.js" afterPath="$PROJECT_DIR$/src/globals.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -35,8 +30,8 @@
       <file leaf-file-name="BackgroundLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-127.84" vertical-offset="306" max-vertical-offset="5457">
-              <caret line="206" column="36" selection-start-line="206" selection-start-column="36" selection-end-line="206" selection-end-column="36" />
+            <state vertical-scroll-proportion="-10.04" vertical-offset="3285" max-vertical-offset="5457">
+              <caret line="208" column="15" selection-start-line="208" selection-start-column="15" selection-end-line="208" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -45,8 +40,8 @@
       <file leaf-file-name="GamePlayLayer.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="969" max-vertical-offset="2805">
-              <caret line="65" column="31" selection-start-line="65" selection-start-column="31" selection-end-line="65" selection-end-column="31" />
+            <state vertical-scroll-proportion="-93.16" vertical-offset="0" max-vertical-offset="2805">
+              <caret line="137" column="36" selection-start-line="137" selection-start-column="25" selection-end-line="137" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -55,8 +50,8 @@
       <file leaf-file-name="globals.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/globals.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="32" max-vertical-offset="493">
-              <caret line="22" column="27" selection-start-line="22" selection-start-column="27" selection-end-line="22" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
+              <caret line="0" column="24" selection-start-line="0" selection-start-column="24" selection-end-line="0" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -115,8 +110,8 @@
       <file leaf-file-name="PlayScene.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.54448396" vertical-offset="1207" max-vertical-offset="2244">
-              <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.53125" vertical-offset="459" max-vertical-offset="2244">
+              <caret line="35" column="53" selection-start-line="35" selection-start-column="53" selection-end-line="35" selection-end-column="53" />
               <folding />
             </state>
           </provider>
@@ -155,9 +150,9 @@
         <option value="$PROJECT_DIR$/src/GamePlayLayer.js" />
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/Rope.js" />
-        <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
+        <option value="$PROJECT_DIR$/src/globals.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
       </list>
     </option>
@@ -261,6 +256,10 @@
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder4" value="4" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth5" value="783" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder5" value="5" />
+    <property name="options.lastSelected" value="preferences.keymap" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -448,7 +447,11 @@
       <created>1408412880547</created>
       <updated>1408412880548</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Fixed size of ground objects to work with sky refresh rate.&#10;Made screenAdvance variable to be more constant.&#10;Updated loadGroundObjects method to take a map index, rather than x value, and a grassOnly variable.&#10;Corrected calculations of ground objects.&#10;&#10;Now inserting Bacon, Bombs and JetRefills.">
+      <created>1408497821761</created>
+      <updated>1408497821761</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -554,18 +557,12 @@
     <MESSAGE value="Figured how to update character position every update while touch event in progress." />
     <MESSAGE value="A little more rope fine tuning" />
     <MESSAGE value="More rope tuning&#10;fixing of background objects and adding bacon and bombs" />
-    <option name="LAST_COMMIT_MESSAGE" value="More rope tuning&#10;fixing of background objects and adding bacon and bombs" />
+    <MESSAGE value="Fixed size of ground objects to work with sky refresh rate.&#10;Made screenAdvance variable to be more constant.&#10;Updated loadGroundObjects method to take a map index, rather than x value, and a grassOnly variable.&#10;Corrected calculations of ground objects.&#10;&#10;Now inserting Bacon, Bombs and JetRefills." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed size of ground objects to work with sky refresh rate.&#10;Made screenAdvance variable to be more constant.&#10;Updated loadGroundObjects method to take a map index, rather than x value, and a grassOnly variable.&#10;Corrected calculations of ground objects.&#10;&#10;Now inserting Bacon, Bombs and JetRefills." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/BackgroundLayer.js</url>
-          <line>204</line>
-          <option name="timeStamp" value="159" />
-        </line-breakpoint>
-      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
@@ -892,14 +889,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/globals.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="32" max-vertical-offset="493">
-          <caret line="22" column="27" selection-start-line="22" selection-start-column="27" selection-end-line="22" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/resource.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.06" vertical-offset="813" max-vertical-offset="1479">
@@ -916,26 +905,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
+    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="969" max-vertical-offset="2805">
-          <caret line="65" column="31" selection-start-line="65" selection-start-column="31" selection-end-line="65" selection-end-column="31" />
+        <state vertical-scroll-proportion="-10.04" vertical-offset="3285" max-vertical-offset="5457">
+          <caret line="208" column="15" selection-start-line="208" selection-start-column="15" selection-end-line="208" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
+    <entry file="file://$PROJECT_DIR$/src/globals.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-127.84" vertical-offset="306" max-vertical-offset="5457">
-          <caret line="206" column="36" selection-start-line="206" selection-start-column="36" selection-end-line="206" selection-end-column="36" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
+          <caret line="0" column="24" selection-start-line="0" selection-start-column="24" selection-end-line="0" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/GamePlayLayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-93.16" vertical-offset="0" max-vertical-offset="2805">
+          <caret line="137" column="36" selection-start-line="137" selection-start-column="25" selection-end-line="137" selection-end-column="36" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/PlayScene.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.54448396" vertical-offset="1207" max-vertical-offset="2244">
-          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.53125" vertical-offset="459" max-vertical-offset="2244">
+          <caret line="35" column="53" selection-start-line="35" selection-start-column="53" selection-end-line="35" selection-end-column="53" />
           <folding />
         </state>
       </provider>
