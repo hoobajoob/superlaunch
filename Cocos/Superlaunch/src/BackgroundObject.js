@@ -80,8 +80,12 @@ var BackgroundObject = cc.Class.extend({
             this.shape = new cp.BoxShape(body, width, height);
             this.shape.setSensor(true);
         }
-        else if (type == SpriteTag.keg || type == SpriteTag.ramp){
+        else if (type == SpriteTag.keg){
             this.shape = new cp.BoxShape(body, width, height);
+        }
+        else if (type == SpriteTag.ramp)
+        {
+            this.shape = new cp.PolyShape(body, [ 32,-25, -32,-25, 32,31], cc.p(0,-7) );
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {

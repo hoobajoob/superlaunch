@@ -230,17 +230,17 @@ var BackgroundLayer = cc.Layer.extend({
             this.objects.push(bacon);
             if (Math.random() < .85)
             {
-                if (Math.random() < (3/5))
+                if (Math.random() < (1/5))
                 {
                     //Todo:Insert Trampoline
                     //Just genRandomX
                 }
                 else
                 {
-                    //var ramp = new BackgroundObject(this,
-                    //    this.space, this.genRandomPos(xScreen),
-                    //    SpriteTag.ramp);
-                    //this.objects.push(ramp);
+                    var ramp = new BackgroundObject(this,
+                        this.space, this.genRandomPos(xScreen),
+                        SpriteTag.ramp);
+                    this.objects.push(ramp);
                 }
             }
             else
