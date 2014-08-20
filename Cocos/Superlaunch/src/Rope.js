@@ -4,7 +4,7 @@ var Rope = cc.Class.extend({
     characterJoint:null,
     slingshotJoint:null,
     dampening:10,
-    length:.5,
+    length:2,
     stiffness:100,
     links:[],
     startLink:null,
@@ -18,7 +18,7 @@ var Rope = cc.Class.extend({
      */
     ctor:function (spriteSheet, space, length, characterBody, slingshotBody, startPoint) {
         this.space = space;
-        var sprite = cc.PhysicsSprite.create(res.chainlink_png);
+ /*       var sprite = cc.PhysicsSprite.create(res.chainlink_png);
         // init physics
         var width = sprite.getContentSize().width;
         var height = sprite.getContentSize().height;
@@ -33,7 +33,7 @@ var Rope = cc.Class.extend({
         var zeroPoint = cc.p(0,0);
         var leftPoint = cc.p(-width / 3,0);
         var rightPoint = cc.p(width / 3,0);
-        this.characterJoint = new cp.DampedSpring(body, characterBody, rightPoint, zeroPoint, this.length, this.stiffness, this.dampening);
+        this.characterJoint = new cp.SlideJoint(body, characterBody, rightPoint, zeroPoint, 0, this.length);
         body.setMoment(10000);
         this.space.addConstraint(this.characterJoint);
         spriteSheet.addChild(this.characterJoint);
@@ -47,15 +47,15 @@ var Rope = cc.Class.extend({
             this.endLink.p = startPoint;
             spriteSheet.addChild(sprite);
             this.space.addBody(this.endLink);
-            var midJoint = new cp.DampedSpring(this.endLink, this.links[i], leftPoint, rightPoint, this.length, this.stiffness, this.dampening);
+            var midJoint = new cp.SlideJoint(this.endLink, this.links[i], leftPoint, rightPoint, 0, this.length);
             this.space.addConstraint(midJoint);
             spriteSheet.addChild(midJoint);
             this.endLink.setMoment(10000);
             this.links.push(this.endLink);
-        }
+        }*/
 
-        this.slingshotJoint = new cp.DampedSpring(slingshotBody, this.endLink, zeroPoint, leftPoint, this.length, this.stiffness, this.dampening);
-        this.space.addConstraint(this.slingshotJoint);
+        this.slingshotJoint = new cp.SlideJoint(slingshotBody, characterBody, cc.p(0,0), cc.p(0,0), 0, this.length);
+        space.addConstraint(this.slingshotJoint);
         spriteSheet.addChild(this.slingshotJoint);
     },
 
