@@ -44,6 +44,10 @@ var PlayScene = cc.Scene.extend({
             this.collisionStarBegin.bind(this), null, null, null);
         this.space.addCollisionHandler(SpriteTag.character, SpriteTag.bacon,
             this.collisionBaconBegin.bind(this), null, null, null);
+        this.space.addCollisionHandler(SpriteTag.character, SpriteTag.bomb,
+            this.collisionBombBegin.bind(this), null, null, null);
+        this.space.addCollisionHandler(SpriteTag.character, SpriteTag.jetRefill,
+            this.collisionJetRefillBegin.bind(this), null, null, null);
     },
 
     collisionStarBegin:function (arbiter, space) {
@@ -52,10 +56,34 @@ var PlayScene = cc.Scene.extend({
         //TODO:Find a way to pass the shape directly from handler
         this.impulsesToApply.push([cp.v(50,300), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
+        cc.log("==Hit Star");
     },
 
     collisionBaconBegin:function (arbiter, space) {
-        cc.log("==game over");
+        var shapes = arbiter.getShapes();
+        // shapes[0] is character
+        //TODO:Find a way to pass the shape directly from handler
+        this.impulsesToApply.push([cp.v(20,50), cp.v(-2,0)]);
+        this.shapesToRemove.push(shapes[1]);
+        //TODO: Adjust Health
+        cc.log("==Hit Bacon");
+    },
+
+    collisionBombBegin:function (arbiter, space) {
+        var shapes = arbiter.getShapes();
+        // shapes[0] is character
+        //TODO:Find a way to pass the shape directly from handler
+        this.impulsesToApply.push([cp.v(-200,-200), cp.v(-2,0)]);
+        this.shapesToRemove.push(shapes[1]);
+        //TODO: Adjust Health
+        cc.log("==Hit Bomb");
+    },
+
+    collisionJetRefillBegin:function (arbiter, space) {
+        var shapes = arbiter.getShapes();
+        this.shapesToRemove.push(shapes[1]);
+        //TODO: Adjust Boost Level
+        cc.log("==Hit Jet Refill");
     },
 
     update:function(dt) {

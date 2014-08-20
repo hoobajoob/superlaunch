@@ -18,6 +18,7 @@ var BackgroundLayer = cc.Layer.extend({
     mapMovedIndex:null,
     firstReverse:null,
     firstReverseChanged:false,
+    screenAdvance:240,
 
     ctor:function (space, mapLoad) {
         this._super();
@@ -68,9 +69,9 @@ var BackgroundLayer = cc.Layer.extend({
         }
         else
         {
-            this.loadGroundObjects(winsize.width / 2 - 320);
-            this.loadGroundObjects(winsize.width / 2 - 640);
-            this.loadGroundObjects(winsize.width / 2);
+            this.loadGroundObjects(-1, true);
+            this.loadGroundObjects(0, true);
+            this.loadGroundObjects(1, true);
             this.loadRandomObjects(winsize.width / 2);
         }
 
@@ -78,7 +79,7 @@ var BackgroundLayer = cc.Layer.extend({
     },
 
     checkAndReload:function (eyeX, eyeY, velocity) {
-        var newXMapIndex = parseInt((eyeX + 240) / this.mapWidth);
+        var newXMapIndex = parseInt((eyeX + this.screenAdvance) / this.mapWidth);
         var newYMapIndex = parseInt((eyeY + 160) / this.mapHeight);
         if (velocity.x < 0){
             //load previous horizontal background if necessary
@@ -128,7 +129,7 @@ var BackgroundLayer = cc.Layer.extend({
             }
             else
             {
-                this.loadGroundObjects(eyeX);
+                this.loadGroundObjects(newXMapIndex + 1);
                 this.loadRandomObjects(eyeX);
             }
         } else {
@@ -143,7 +144,7 @@ var BackgroundLayer = cc.Layer.extend({
             }
             else
             {
-                this.loadGroundObjects(eyeX);
+                this.loadGroundObjects(newXMapIndex + 1);
                 this.loadRandomObjects(eyeX);
             }
         }
@@ -174,7 +175,7 @@ var BackgroundLayer = cc.Layer.extend({
             this.objects.push(star);
         }
 
-        // add bacon
+        // add keg
         var kegGroup = map.getObjectGroup("keg");
         var kegArray = kegGroup.getObjects();
         for (var i = 0; i < kegArray.length; i++) {
@@ -186,31 +187,30 @@ var BackgroundLayer = cc.Layer.extend({
         }
     },
 
-    loadGroundObjects:function (xScreen) {
+    loadGroundObjects:function (mapIndex, grassOnly) {
         //Load ground objects
-        var addition = 640
-        if (Math.random() < 4/5)
+        if (grassOnly || Math.random() < 4/5)
         {
             //Insert Grass
             var grass = new BackgroundObject(this,
-                this.space, cc.p(xScreen + addition, g_groundHeight),
+                this.space, cc.p(mapIndex * this.mapWidth + this.screenAdvance, g_groundHeight),
                 SpriteTag.grass);
             this.objects.push(grass);
         }
         else
         {
-            if (Math.random() < 3/5)
-            {
-                //Insert Grass
+            //if (Math.random() < 3/5)
+            //{
+                //Insert Lava
                 var lava = new BackgroundObject(this,
-                    this.space, cc.p(xScreen + addition, g_groundHeight),
+                    this.space, cc.p(mapIndex * this.mapWidth + this.screenAdvance, g_groundHeight),
                     SpriteTag.lava);
                 this.objects.push(lava);
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 //Todo:Insert QuickSand
-            }
+            //}
         }
     },
 
@@ -224,7 +224,10 @@ var BackgroundLayer = cc.Layer.extend({
                 this.space, this.genRandomPos(xScreen),
                 SpriteTag.star);
             this.objects.push(star);
-            //Todo:Insert Bacon
+            var bacon = new BackgroundObject(this,
+                this.space, this.genRandomPos(xScreen),
+                SpriteTag.bacon);
+            this.objects.push(bacon);
             if (Math.random() < .85)
             {
                 if (Math.random() < (3/5))
@@ -234,13 +237,15 @@ var BackgroundLayer = cc.Layer.extend({
                 }
                 else
                 {
-                    //Todo:Insert Ramp
-                    //Just genRandomX
+                    //var ramp = new BackgroundObject(this,
+                    //    this.space, this.genRandomPos(xScreen),
+                    //    SpriteTag.ramp);
+                    //this.objects.push(ramp);
                 }
             }
             else
             {
-                if (Math.random < 3/5)
+                if (Math.random < 1)
                 {
                     //Todo:Insert Spikewall
                 }
@@ -254,11 +259,17 @@ var BackgroundLayer = cc.Layer.extend({
             }
             if (Math.random < 1/5)
             {
-                //Todo:Insert Bomb
+                var bomb = new BackgroundObject(this,
+                    this.space, this.genRandomPos(xScreen),
+                    SpriteTag.bomb);
+                this.objects.push(bomb);
             }
             if (Math.random < 1/2)
             {
-                //Todo:Insert JetRefill
+                var jetRefill = new BackgroundObject(this,
+                    this.space, this.genRandomPos(xScreen),
+                    SpriteTag.jetRefill);
+                this.objects.push(jetRefill);
             }
             if (Math.random < 1/10)
             {
