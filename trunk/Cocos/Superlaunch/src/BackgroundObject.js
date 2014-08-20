@@ -67,7 +67,7 @@ var BackgroundObject = cc.Class.extend({
             pos = cc.p(pos.x, g_groundHeight - height + g_groundSpriteOffset);
         }
 
-        body = new cp.StaticBody();
+        var body = new cp.StaticBody();
         body.setPos(pos);
         this.sprite.setBody(body);
 
@@ -86,6 +86,7 @@ var BackgroundObject = cc.Class.extend({
         else if (type == SpriteTag.ramp)
         {
             this.shape = new cp.PolyShape(body, [ 32,-25, -32,-25, 32,31], cc.p(0,-7) );
+            this.shape.setFriction(.1);
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {

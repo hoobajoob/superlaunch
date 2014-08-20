@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point.">
+    <list default="true" readonly="true" id="de52484b-8c80-4cce-aa07-a2fc2fae570d" name="Default" comment="Loading ground sections earlier to prevent objects from being behind ground.&#10;">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundLayer.js" afterPath="$PROJECT_DIR$/src/BackgroundLayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/BackgroundObject.js" afterPath="$PROJECT_DIR$/src/BackgroundObject.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/globals.js" afterPath="$PROJECT_DIR$/src/globals.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Superlaunch.iws" />
@@ -27,11 +27,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="BackgroundLayer.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.72" vertical-offset="3359" max-vertical-offset="5440">
-              <caret line="206" column="40" selection-start-line="206" selection-start-column="40" selection-end-line="206" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.8947368" vertical-offset="714" max-vertical-offset="5474">
+              <caret line="73" column="93" selection-start-line="73" selection-start-column="93" selection-end-line="73" selection-end-column="93" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CCDebugger.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="4722" max-vertical-offset="6120">
+              <caret line="283" column="17" selection-start-line="283" selection-start-column="17" selection-end-line="283" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -47,10 +57,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="globals.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="globals.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/globals.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24199288" vertical-offset="0" max-vertical-offset="527">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
               <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
               <folding />
             </state>
@@ -72,16 +82,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="3502" max-vertical-offset="6426">
               <caret line="229" column="48" selection-start-line="229" selection-start-column="48" selection-end-line="229" selection-end-column="48" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="136" max-vertical-offset="238">
-              <caret line="8" column="14" selection-start-line="8" selection-start-column="14" selection-end-line="8" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -120,8 +120,8 @@
       <file leaf-file-name="BackgroundObject.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1390" max-vertical-offset="2125">
-              <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+            <state vertical-scroll-proportion="-64.6" vertical-offset="0" max-vertical-offset="2142">
+              <caret line="95" column="9" selection-start-line="95" selection-start-column="9" selection-end-line="95" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -151,17 +151,17 @@
         <option value="$PROJECT_DIR$/src/resource.js" />
         <option value="$PROJECT_DIR$/src/Rope.js" />
         <option value="$PROJECT_DIR$/src/PlayScene.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
-        <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
         <option value="$PROJECT_DIR$/src/globals.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundObject.js" />
+        <option value="$PROJECT_DIR$/src/BackgroundLayer.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1040" />
-    <option name="height" value="744" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -463,7 +463,11 @@
       <created>1408508414019</created>
       <updated>1408508414019</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Incorporated groundSpriteOffset to make the character look like it's running on 3D-ish ground, rather than on top of a 3d sprite.">
+      <created>1408509316805</created>
+      <updated>1408509316805</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -487,7 +491,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -495,8 +499,8 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32899022" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24925224" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18344966" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4640523" sideWeight="0.7457627" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.0968931" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3073593" sideWeight="0.7457627" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3006536" sideWeight="0.2542373" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -545,7 +549,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Adding background objects (Star only at this point) seems to be working theoretically with no visual verification." />
     <MESSAGE value="Tweaked background image insertion and refresh.  To work on y-plane later" />
     <MESSAGE value="Worked on applying impulse on hitting an object" />
     <MESSAGE value="Integrated mid sky loading&#10;Integrated maths for moving camera on y axis." />
@@ -570,7 +573,8 @@
     <MESSAGE value="Updated Ground Level to show a little more underground texture&#10;Fixed debugging shapes not being accurate at launch by adding debugnode to gamelayer, rather than whole screen.&#10;Adjusted back wall to not let black screen be shown and also be a little thicker for debugging visibility." />
     <MESSAGE value="Integrated ramp and creating it's polygon shape" />
     <MESSAGE value="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point." />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved screenadvance to global variable.&#10;Adjusted X and Y camera algorithms so they make more sense mathematically and so the camera doesn't move negatively on the X axis from the start point." />
+    <MESSAGE value="Incorporated groundSpriteOffset to make the character look like it's running on 3D-ish ground, rather than on top of a 3d sprite." />
+    <option name="LAST_COMMIT_MESSAGE" value="Incorporated groundSpriteOffset to make the character look like it's running on 3D-ish ground, rather than on top of a 3d sprite." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -855,13 +859,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33152175" vertical-offset="4689" max-vertical-offset="6120">
-          <caret line="283" column="17" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/cocos2d/core/base-nodes/BaseNodesWebGL.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33152175" vertical-offset="1357" max-vertical-offset="2652">
@@ -925,26 +922,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
+    <entry file="file://$PROJECT_DIR$/src/globals.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.72" vertical-offset="3359" max-vertical-offset="5440">
-          <caret line="206" column="40" selection-start-line="206" selection-start-column="40" selection-end-line="206" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+          <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frameworks/cocos2d-html5/CCDebugger.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4722" max-vertical-offset="6120">
+          <caret line="283" column="17" selection-start-line="283" selection-start-column="17" selection-end-line="283" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/BackgroundObject.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1390" max-vertical-offset="2125">
-          <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+        <state vertical-scroll-proportion="-64.6" vertical-offset="0" max-vertical-offset="2142">
+          <caret line="95" column="9" selection-start-line="95" selection-start-column="9" selection-end-line="95" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/globals.js">
+    <entry file="file://$PROJECT_DIR$/src/BackgroundLayer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24199288" vertical-offset="0" max-vertical-offset="527">
-          <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
+        <state vertical-scroll-proportion="0.8947368" vertical-offset="714" max-vertical-offset="5474">
+          <caret line="73" column="93" selection-start-line="73" selection-start-column="93" selection-end-line="73" selection-end-column="93" />
           <folding />
         </state>
       </provider>
