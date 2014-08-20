@@ -71,6 +71,8 @@ var BackgroundLayer = cc.Layer.extend({
             this.loadGroundObjects(-1, true);
             this.loadGroundObjects(0, true);
             this.loadGroundObjects(1, true);
+            //TODO:Change so that Ground Objects are put to back, rather than loading earlier
+            this.loadGroundObjects(2, true);
             this.loadRandomObjects(winsize.width / 2);
         }
 
@@ -128,7 +130,7 @@ var BackgroundLayer = cc.Layer.extend({
             }
             else
             {
-                this.loadGroundObjects(newXMapIndex + 1);
+                this.loadGroundObjects(newXMapIndex + 2);
                 this.loadRandomObjects(eyeX);
             }
         } else {
@@ -143,7 +145,7 @@ var BackgroundLayer = cc.Layer.extend({
             }
             else
             {
-                this.loadGroundObjects(newXMapIndex + 1);
+                this.loadGroundObjects(newXMapIndex + 2);
                 this.loadRandomObjects(eyeX);
             }
         }
@@ -229,7 +231,7 @@ var BackgroundLayer = cc.Layer.extend({
             this.objects.push(bacon);
             if (Math.random() < .85)
             {
-                if (Math.random() < (1/5))
+                if (Math.random() < (3/5))
                 {
                     //Todo:Insert Trampoline
                     //Just genRandomX
