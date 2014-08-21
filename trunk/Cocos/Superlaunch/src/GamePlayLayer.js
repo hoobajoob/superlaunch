@@ -63,6 +63,8 @@ var GamePlayLayer = cc.Layer.extend({
         this.space.addBody(body);
         //5. create the shape for the body
         var shape = new cp.BoxShape(body, contentSize.width - 14, contentSize.height);
+        shape.setElasticity(0);
+        //shape.setMass(2.2);
         shape.setFriction(.5);
         body.setMoment(1000000);
         //6. add shape to space
@@ -83,6 +85,7 @@ var GamePlayLayer = cc.Layer.extend({
             onTouchMoved: this.onTouchMoved,
             onTouchEnded: this.onTouchEnded
         }, this);
+        if (g_debugAutoLaunch){this.autoLaunch();}
     },
 
     fireLazars:function(){
@@ -159,5 +162,14 @@ var GamePlayLayer = cc.Layer.extend({
             //Remove OnTouch Listener
             cc.eventManager.removeListener(this);
         }
+    },
+
+    autoLaunch:function(){
+        this.prelaunch = false;
+        this.slingshotLeftRope.disconnectFromCharacter();
+        this.removeChild(this.slingshotLeftRope);
+        this.slingshotLeftRope = null;
+        this.character.body.applyImpulse(cc.p(500, -10), cc.p(0,0));
+        cc.eventManager.removeAllListeners();
     }
 });

@@ -31,7 +31,9 @@ var res = {
     slingshot_png : "res/slingshot.png",
     grass_png : "res/grass.png",
     lava_png : "res/lava.png",
-    chainlink_png : "res/chainlink.png"
+    chainlink_png : "res/chainlink.png",
+    spikewall_png : "res/spikewall.png",
+    trampoline_png : "res/trampoline.png"
 };
 
 var g_resources = [
@@ -68,7 +70,9 @@ var g_resources = [
     res.slingshot_png,
     res.grass_png,
     res.lava_png,
-    res.chainlink_png
+    res.chainlink_png,
+    res.spikewall_png,
+    res.trampoline_png
 
     //plist
 

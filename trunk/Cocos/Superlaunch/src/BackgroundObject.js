@@ -55,17 +55,26 @@ var BackgroundObject = cc.Class.extend({
         else if (type == SpriteTag.bacon){
             this.sprite = cc.PhysicsSprite.create(res.bacon_png);
         }
+        else if (type == SpriteTag.trampoline){
+            this.sprite = cc.PhysicsSprite.create(res.trampoline_png);
+        }
+        else if (type == SpriteTag.spikeWall){
+            this.sprite = cc.PhysicsSprite.create(res.spikewall_png);
+        }
             // init physics
         var radius = 0.95 * this.sprite.getContentSize().width / 2;
         var width = this.sprite.getContentSize().width;
         var height = this.sprite.getContentSize().height;
 
-        if (type == SpriteTag.keg || type == SpriteTag.ramp)
+        if (type == SpriteTag.keg || type == SpriteTag.ramp || type == SpriteTag.spikeWall)
         {
             pos = cc.p(pos.x, g_groundHeight - height / 2);
         }
-
-        if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
+        else if (type == SpriteTag.trampoline)
+        {
+            pos = cc.p(pos.x, g_groundHeight - g_groundSpriteOffset - height / 2.5);
+        }
+        else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {
             pos = cc.p(pos.x, g_groundHeight - height + g_groundSpriteOffset);
         }
@@ -88,26 +97,41 @@ var BackgroundObject = cc.Class.extend({
         }
         else if (type == SpriteTag.ramp)
         {
-            this.shape = new cp.PolyShape(body, [ 32,-25, -32,-25, 32,31], cc.p(0,-7) );
+            this.shape = new cp.PolyShape(body, [ 32,-25, -40,-25, 32,29], cc.p(0,-8) );
             this.shape.setFriction(.001);
+            this.shape.setElasticity(.2);
+        }
+        else if (type == SpriteTag.spikeWall)
+        {
+            this.shape = new cp.PolyShape(body, [ 20,-43, -38,40, -22,40, 36,-43], cc.p(0,-8) );
+            this.shape.setSensor(true);
+        }
+        else if (type == SpriteTag.trampoline)
+        {
+            this.shape = new cp.PolyShape(body, [ 20,-7, -20,-5, -20,-4, 20,0], cc.p(0,-2) );
+            this.shape.setFriction(.001);
+            this.shape.setElasticity(5);
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {
             var halfWidth = width / 2;
             var halfHeight = height / 2;
-            this.shape = new cp.PolyShape(body, [ -halfWidth,-halfHeight, -halfWidth,halfHeight,  halfWidth, halfHeight, halfWidth, -halfHeight], cc.p(0, -g_groundSpriteOffset));
+            this.shape = new cp.PolyShape(body, [ -halfWidth,-halfHeight, -halfWidth,halfHeight - 3, -halfWidth + 10, halfHeight,  halfWidth, halfHeight, halfWidth, -halfHeight], cc.p(0, -g_groundSpriteOffset));
 
             if (type == SpriteTag.grass)
             {
                 this.shape.setFriction(.025);
+                this.shape.setElasticity(.25);
             }
             if (type == SpriteTag.lava)
             {
                 this.shape.setFriction(.1);
+                this.shape.setElasticity(.2);
             }
             else if (type == SpriteTag.quickSand)
             {
                 this.shape.setFriction(.25);
+                this.shape.setElasticity(0);
             }
         }
 
