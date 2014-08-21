@@ -63,6 +63,8 @@ var GamePlayLayer = cc.Layer.extend({
         this.space.addBody(body);
         //5. create the shape for the body
         var shape = new cp.BoxShape(body, contentSize.width - 14, contentSize.height);
+        shape.setFriction(.5);
+        body.setMoment(1000000);
         //6. add shape to space
         this.space.addShape(shape);
         //8. set body to the physic sprite

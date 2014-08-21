@@ -190,7 +190,7 @@ var BackgroundLayer = cc.Layer.extend({
 
     loadGroundObjects:function (mapIndex, grassOnly) {
         //Load ground objects
-        if (grassOnly || Math.random() < 4/5)
+        if (grassOnly || Math.random() < 2/5)
         {
             //Insert Grass
             var grass = new BackgroundObject(this,
@@ -200,18 +200,22 @@ var BackgroundLayer = cc.Layer.extend({
         }
         else
         {
-            //if (Math.random() < 3/5)
-            //{
+            if (Math.random() < 3/5)
+            {
                 //Insert Lava
                 var lava = new BackgroundObject(this,
                     this.space, cc.p(mapIndex * this.mapWidth + g_screenAdvance, g_groundHeight),
                     SpriteTag.lava);
                 this.objects.push(lava);
-            //}
-            //else
-            //{
-                //Todo:Insert QuickSand
-            //}
+            }
+            else
+            {
+                //Insert Quicksand
+                var quickSand = new BackgroundObject(this,
+                    this.space, cc.p(mapIndex * this.mapWidth + g_screenAdvance, g_groundHeight),
+                    SpriteTag.quickSand);
+                this.objects.push(quickSand);
+            }
         }
     },
 

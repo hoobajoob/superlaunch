@@ -43,6 +43,9 @@ var BackgroundObject = cc.Class.extend({
         else if (type == SpriteTag.lava){
             this.sprite = cc.PhysicsSprite.create(res.lava_png);
         }
+        else if (type == SpriteTag.quickSand){
+            this.sprite = cc.PhysicsSprite.create(res.quickSand_png);
+        }
         else if (type == SpriteTag.ramp){
             this.sprite = cc.PhysicsSprite.create(res.ramp_png);
         }
@@ -86,13 +89,26 @@ var BackgroundObject = cc.Class.extend({
         else if (type == SpriteTag.ramp)
         {
             this.shape = new cp.PolyShape(body, [ 32,-25, -32,-25, 32,31], cc.p(0,-7) );
-            this.shape.setFriction(.1);
+            this.shape.setFriction(.001);
         }
         else if (type == SpriteTag.grass || type == SpriteTag.lava || type == SpriteTag.quickSand)
         {
             var halfWidth = width / 2;
             var halfHeight = height / 2;
             this.shape = new cp.PolyShape(body, [ -halfWidth,-halfHeight, -halfWidth,halfHeight,  halfWidth, halfHeight, halfWidth, -halfHeight], cc.p(0, -g_groundSpriteOffset));
+
+            if (type == SpriteTag.grass)
+            {
+                this.shape.setFriction(.025);
+            }
+            if (type == SpriteTag.lava)
+            {
+                this.shape.setFriction(.1);
+            }
+            else if (type == SpriteTag.quickSand)
+            {
+                this.shape.setFriction(.25);
+            }
         }
 
         this.shape.setCollisionType(type);
