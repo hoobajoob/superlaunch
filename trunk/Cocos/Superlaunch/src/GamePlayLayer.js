@@ -69,8 +69,9 @@ var GamePlayLayer = cc.Layer.extend({
         this.character.setBody(body);
         this.addChild(this.character);
 
-        this.slingshotLeftRope = new Rope(this, this.space, 1, body, slingshotBody, body.p);
-        //this.slingshotRightRope = new Rope(this, this.space, 1, slingshotBody, body, body.p);
+        this.slingshotLeftRope = new Rope(this, this.space, 0, body, slingshotBody, body.p);
+        //this.slingshotLeftRope = new cp.SlideJoint(body, slingshotBody, cc.p(0,0), cc.p(0,0), 1, 5);
+        //this.space.addConstraint(this.slingshotLeftRope);
 
 
         cc.eventManager.addListener({
