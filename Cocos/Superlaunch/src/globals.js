@@ -3,6 +3,7 @@ var g_characterStartX = 180;
 var g_characterStartY = 300;
 var g_screenAdvance = 300;
 var g_groundSpriteOffset = 30;
+var g_debugAutoLaunch = true;
 if(typeof TagOfLayer == "undefined") {
     var TagOfLayer = {};
     TagOfLayer.Background = 0;
@@ -23,4 +24,6 @@ if(typeof SpriteTag == "undefined") {
     SpriteTag.quickSand = 7;
     SpriteTag.bomb = 8;
     SpriteTag.jetRefill = 9;
+    SpriteTag.trampoline = 10;
+    SpriteTag.spikeWall = 11;
 };

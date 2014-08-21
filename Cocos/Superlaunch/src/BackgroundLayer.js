@@ -237,8 +237,10 @@ var BackgroundLayer = cc.Layer.extend({
             {
                 if (Math.random() < (3/5))
                 {
-                    //Todo:Insert Trampoline
-                    //Just genRandomX
+                    var trampoline = new BackgroundObject(this,
+                        this.space, this.genRandomPos(xScreen),
+                        SpriteTag.trampoline);
+                    this.objects.push(trampoline);
                 }
                 else
                 {
@@ -252,7 +254,10 @@ var BackgroundLayer = cc.Layer.extend({
             {
                 if (Math.random < 1)
                 {
-                    //Todo:Insert Spikewall
+                    var spikeWall = new BackgroundObject(this,
+                        this.space, this.genRandomPos(xScreen),
+                        SpriteTag.spikeWall);
+                    this.objects.push(spikeWall);
                 }
                 else
                 {
