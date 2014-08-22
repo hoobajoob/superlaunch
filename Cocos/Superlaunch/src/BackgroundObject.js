@@ -100,6 +100,7 @@ var BackgroundObject = cc.Class.extend({
             this.shape = new cp.PolyShape(body, [ 32,-25, -40,-25, 32,29], cc.p(0,-8) );
             this.shape.setFriction(.001);
             this.shape.setElasticity(.2);
+            this.shape.surfaceVelocity = 1000;
         }
         else if (type == SpriteTag.spikeWall)
         {
@@ -108,7 +109,7 @@ var BackgroundObject = cc.Class.extend({
         }
         else if (type == SpriteTag.trampoline)
         {
-            this.shape = new cp.PolyShape(body, [ 20,-7, -20,-5, -20,-4, 20,0], cc.p(0,-2) );
+            this.shape = new cp.PolyShape(body, [ 20,-7, -25,-5, -25,-4, 20,7], cc.p(0,-8) );
             this.shape.setFriction(.001);
             this.shape.setElasticity(5);
         }
