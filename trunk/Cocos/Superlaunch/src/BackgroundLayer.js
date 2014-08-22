@@ -235,7 +235,7 @@ var BackgroundLayer = cc.Layer.extend({
             this.objects.push(bacon);
             if (Math.random() < .85)
             {
-                if (Math.random() < (3/5))
+                if (Math.random() < (2/5))
                 {
                     var trampoline = new BackgroundObject(this,
                         this.space, this.genRandomPos(xScreen),

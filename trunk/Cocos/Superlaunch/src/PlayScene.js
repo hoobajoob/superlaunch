@@ -5,6 +5,8 @@ var PlayScene = cc.Scene.extend({
     gamePlayLayer:null,
     shapesToRemove:[],
     impulsesToApply:[],
+    lastUpdateTime:null,
+    lastReverseTime:null,
 
     onEnter:function () {
         this._super();
@@ -48,6 +50,7 @@ var PlayScene = cc.Scene.extend({
             this.collisionBombBegin.bind(this), null, null, null);
         this.space.addCollisionHandler(SpriteTag.character, SpriteTag.jetRefill,
             this.collisionJetRefillBegin.bind(this), null, null, null);
+        this.space.setDefaultCollisionHandler(null, null,this.collisionImpactPostSolve.bind(this), null);
     },
 
     collisionStarBegin:function (arbiter, space) {
@@ -57,6 +60,8 @@ var PlayScene = cc.Scene.extend({
         this.impulsesToApply.push([cp.v(50,500), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
         cc.log("==Hit Star");
+        //prevent any further collision processing
+        return false;
     },
 
     collisionBaconBegin:function (arbiter, space) {
@@ -65,8 +70,10 @@ var PlayScene = cc.Scene.extend({
         //TODO:Find a way to pass the shape directly from handler
         this.impulsesToApply.push([cp.v(20,500), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
-        //TODO: Adjust Health
+        this.statusLayer.updateLife(25);
         cc.log("==Hit Bacon");
+        //prevent any further collision processing
+        return false;
     },
 
     collisionBombBegin:function (arbiter, space) {
@@ -75,15 +82,36 @@ var PlayScene = cc.Scene.extend({
         //TODO:Find a way to pass the shape directly from handler
         this.impulsesToApply.push([cp.v(-200,-200), cp.v(-2,0)]);
         this.shapesToRemove.push(shapes[1]);
-        //TODO: Adjust Health
+        this.statusLayer.updateLife(15);
         cc.log("==Hit Bomb");
+        //prevent any further collision processing
+        return false;
     },
 
     collisionJetRefillBegin:function (arbiter, space) {
         var shapes = arbiter.getShapes();
         this.shapesToRemove.push(shapes[1]);
-        //TODO: Adjust Boost Level
+        this.statusLayer.updateBoost(40);
         cc.log("==Hit Jet Refill");
+        //prevent any further collision processing
+        return false;
+    },
+
+    collisionImpactPostSolve:function (arbiter, space) {
+        if (arbiter.isFirstContact()) {
+            var impact = arbiter.totalImpulse();
+            var damage = 0;
+            if (Math.abs(impact.x) > Math.abs(impact.y))
+            {
+                damage = Math.abs(impact.x) - Math.abs(impact.y);
+            }
+            else
+            {
+                damage = Math.abs(impact.y) - Math.abs(impact.x);
+            }
+            cc.log("==Character Impact" + damage.toString());
+            this.statusLayer.updateLife(-damage / 100);
+        }
     },
 
     update:function(dt) {
@@ -121,10 +149,25 @@ var PlayScene = cc.Scene.extend({
             }
             //Move Camera to follow player
             this.gameLayer.setPosition(cc.p(newX,newY));
-            //Update Distance Label
-            if(gamePlayLayer.getVelocity().x > 0 && eyeX > 0)
+
+            var velocity = gamePlayLayer.getVelocity();
+            //Check and reduce life if going backwards
+            if(velocity.x > 0)
             {
-                this.statusLayer.updateDistance(eyeX);
+                this.lastReverseTime = null;
+                //Update Distance Label
+                if(velocity.x > 0 && eyeX > 0)
+                {
+                    this.statusLayer.updateDistance(eyeX);
+                }
+            }
+            else
+            {
+                var curTime = new Date().getTime();
+                if (this.lastReverseTime == null || (curTime - this.lastReverseTime) > 50){
+                    this.statusLayer.updateLife(-1);
+                    this.lastReverseTime = curTime;
+                }
             }
         }
     }

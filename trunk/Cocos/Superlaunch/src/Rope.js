@@ -35,7 +35,7 @@ var Rope = cc.Class.extend({
             var leftPoint = cc.p(-width / 3, 0);
             var rightPoint = cc.p(width / 3, 0);
             this.characterJoint = new cp.SlideJoint(body, characterBody, rightPoint, zeroPoint, 1, this.length);
-            body.setMoment(10000);
+            body.setMoment(Infinity);
             this.space.addConstraint(this.characterJoint);
             spriteSheet.addChild(this.characterJoint);
             this.endLink = this.startLink;
@@ -51,7 +51,7 @@ var Rope = cc.Class.extend({
                 var midJoint = new cp.SlideJoint(this.endLink, this.links[i - 1], leftPoint, rightPoint, 1, this.length);
                 this.space.addConstraint(midJoint);
                 spriteSheet.addChild(midJoint);
-                this.endLink.setMoment(10000);
+                this.endLink.setMoment(Infinity);
                 this.links.push(this.endLink);
             }
         }

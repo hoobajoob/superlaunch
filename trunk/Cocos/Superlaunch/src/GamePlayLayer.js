@@ -66,7 +66,7 @@ var GamePlayLayer = cc.Layer.extend({
         shape.setElasticity(0);
         //shape.setMass(2.2);
         shape.setFriction(.5);
-        body.setMoment(1000000);
+        body.setMoment(Infinity);
         //6. add shape to space
         this.space.addShape(shape);
         //8. set body to the physic sprite
@@ -169,7 +169,7 @@ var GamePlayLayer = cc.Layer.extend({
         this.slingshotLeftRope.disconnectFromCharacter();
         this.removeChild(this.slingshotLeftRope);
         this.slingshotLeftRope = null;
-        this.character.body.applyImpulse(cc.p(500, -10), cc.p(0,0));
+        this.character.body.applyImpulse(cc.p(1000, 200), cc.p(0,0));
         cc.eventManager.removeAllListeners();
     }
 });

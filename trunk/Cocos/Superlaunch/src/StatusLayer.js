@@ -5,6 +5,8 @@ var StatusLayer = cc.Layer.extend({
     boostBar:null,
     lazarBar:null,
     coins:0,
+    life:100,
+    boost:100,
     lifeLabel:"Life",
     timeLabel:"Time:",
     distanceLabel:"Meters",
@@ -87,12 +89,38 @@ var StatusLayer = cc.Layer.extend({
         this.labelTime.setString(this.timeLabel + parseInt(timeRemaining));
     },
 
-    updateLife:function (remainder) {
-        this.lifeBar.setString(parseInt(remainder) + this.lifeLabel);
+    updateLife:function (change) {
+        this.life = this.life + parseInt(change);
+        if (this.life > 100)
+        {
+            this.life = 100;
+        }
+        else if (this.life < 0)
+        {
+            this.life = 0;
+        }
+        this.lifeBar.setString(this.life + this.lifeLabel);
     },
 
-    updateBoost:function (remainder) {
-        this.boostBar.setString(parseInt(remainder) + this.boostLabel);
+    getLife:function(){
+        return this.life;
+    },
+
+    updateBoost:function (change) {
+        this.boost = this.boost + parseInt(change);
+        if (this.boost > 100)
+        {
+            this.boost = 100;
+        }
+        else if (this.boost < 0)
+        {
+            this.boost = 0;
+        }
+        this.lifeBar.setString(this.boost + this.boostLabel);
+    },
+
+    getBoost:function(){
+        return this.boost;
     },
 
     updateLazar:function (remainder) {
