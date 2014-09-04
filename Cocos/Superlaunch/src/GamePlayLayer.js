@@ -89,16 +89,14 @@ var GamePlayLayer = cc.Layer.extend({
     },
 
     fireLazars:function(){
-        cc.log("==Lazars Fired");
+        //TODO:Implement Lazar Firing
     },
 
     fireBoost:function(){
-        this.character.body.applyImpulse(cp.v(10, 0), cp.v(20, 0));
+        this.character.body.applyImpulse(cp.v(10, 10), cp.v(20, 0));
     },
 
     onExit:function() {
-        this.applyBoost.release();
-        this.applyLazars.release();
         this._super();
     },
 

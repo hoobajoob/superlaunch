@@ -7,6 +7,7 @@ var StatusLayer = cc.Layer.extend({
     coins:0,
     life:100,
     boost:100,
+    lazar:100,
     lifeLabel:"Life",
     timeLabel:"Time:",
     distanceLabel:"Meters",
@@ -21,6 +22,9 @@ var StatusLayer = cc.Layer.extend({
     boostButtonY:70,
     boostButtonAlpha:.5,
     gamePlayLayer:null,
+    touchPos:null,
+    boostOn:false,
+    lazarOn:false,
 
     ctor:function (gamePlayLayer) {
         this._super();
@@ -42,7 +46,7 @@ var StatusLayer = cc.Layer.extend({
         this.labelDistance.setPosition(cc.p(winsize.width - 70, winsize.height - 20));
         this.addChild(this.labelDistance);
 
-        this.lifeBar = cc.LabelTTF.create("100" + this.lifeLabel, "Helvetica", 20);
+        this.lifeBar = cc.LabelTTF.create(this.life + this.lifeLabel, "Helvetica", 20);
         this.lifeBar.setPosition(cc.p(winsize.width / 2, 20));
         this.addChild(this.lifeBar);
 
@@ -54,31 +58,38 @@ var StatusLayer = cc.Layer.extend({
         );
         this.boostButton = cc.Menu.create(boostMenuItem);*/
         this.boostButton = cc.Sprite.create(res.jetPack_png);
-        //this.boostButton.setCallback(this.fireBoost());
         this.boostButton.setPosition({x:this.boostButtonX, y:this.boostButtonY, a:this.boostButtonAlpha});
         this.addChild(this.boostButton);
 
-        this.boostBar = cc.LabelTTF.create("100" + this.boostLabel, "Helvetica", 20);
+        this.boostBar = cc.LabelTTF.create(this.boost + this.boostLabel, "Helvetica", 20);
         this.boostBar.setPosition(cc.p(70 , 20));
         this.addChild(this.boostBar);
 
-        //create Lazar Button and assign onPlay event callback to it
-        var lazarButton = cc.MenuItemSprite.create(
-            cc.Sprite.create(res.lazarGun_png),
-            cc.Sprite.create(res.lazarGunOver_png),
-            this.gamePlayLayer.fireLazars(), this);
-        this.lazarButton = cc.Menu.create(lazarButton);
+        //create Lazar Button
+        this.lazarButton = cc.Sprite.create(res.lazarGun_png);
         this.lazarButton.setPosition({x:this.lazarButtonX, y:this.lazarButtonY, a:this.lazarButtonAlpha});
         this.addChild(this.lazarButton);
 
-        this.lazarBar = cc.LabelTTF.create("100" + this.lazarLabel, "Helvetica", 20);
+        this.lazarBar = cc.LabelTTF.create(this.lazar + this.lazarLabel, "Helvetica", 20);
         this.lazarBar.setPosition(cc.p(winsize.width - 70, 20));
         this.addChild(this.lazarBar);
+
+        cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            onTouchBegan: this.onTouchBegan,
+            onTouchEnded: this.onTouchEnded
+        }, this);
     },
 
     fireBoost:function(){
         cc.log("==Boost Fired");
         this.gamePlayLayer.fireBoost();
+    },
+
+    fireLazars:function(){
+        cc.log("==Lazars Fired");
+        this.gamePlayLayer.fireLazars();
     },
 
     updateDistance:function (pixels){
@@ -116,14 +127,68 @@ var StatusLayer = cc.Layer.extend({
         {
             this.boost = 0;
         }
-        this.lifeBar.setString(this.boost + this.boostLabel);
+        this.boostBar.setString(this.boost + this.boostLabel);
     },
 
     getBoost:function(){
         return this.boost;
     },
 
-    updateLazar:function (remainder) {
-        this.lazarBar.setString(parseInt(remainder) + this.lazarLabel);
+    updateLazar:function (change) {
+        this.lazar = this.lazar + parseInt(change);
+        if (this.lazar > 100)
+        {
+            this.lazar = 100;
+        }
+        else if (this.lazar < 0)
+        {
+            this.lazar = 0;
+        }
+        this.lazarBar.setString(this.lazar + this.lazarLabel);
+    },
+    onTouchBegan:function(touch, event) {
+        var target = event.getCurrentTarget();
+        target.touchPos = touch.getLocation();
+        var boostDiffX = target.boostButtonX - target.touchPos.x;
+        var boostDiffY = target.boostButtonY - target.touchPos.y;
+        if ( -20 < boostDiffX && boostDiffX < 20 && -20 < boostDiffY  && boostDiffY< 20)
+        {
+            target.boostOn = true;
+        }
+        var lazarDiffX = target.lazarButtonX - target.touchPos.x;
+        var lazarDiffY = target.lazarButtonY - target.touchPos.y;
+        if ( -20 < lazarDiffX && lazarDiffX < 20 && -20 < lazarDiffY  && lazarDiffY< 20)
+        {
+            target.lazarOn = true;
+        }
+        return true;
+    },
+
+    onTouchEnded:function(touch, event) {
+        var target = event.getCurrentTarget();
+        target.touchPos = touch.getLocation();
+        var boostDiffX = target.boostButtonX - target.touchPos.x;
+        var boostDiffY = target.boostButtonY - target.touchPos.y;
+        if ( -20 < boostDiffX && boostDiffX < 20 && -20 < boostDiffY  && boostDiffY< 20)
+        {
+            target.boostOn = false;
+        }
+        var lazarDiffX = target.lazarButtonX - target.touchPos.x;
+        var lazarDiffY = target.lazarButtonY - target.touchPos.y;
+        if ( -20 < lazarDiffX && lazarDiffX < 20 && -20 < lazarDiffY  && lazarDiffY< 20)
+        {
+            target.lazarOn = false;
+        }
+        return true;
+    },
+
+    getBoostStatus:function()
+    {
+        return (this.boost > 0 && this.boostOn);
+    },
+
+    getLazarStatus:function()
+    {
+        return this.lazarOn;
     }
 });
