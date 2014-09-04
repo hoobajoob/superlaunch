@@ -189,6 +189,6 @@ var StatusLayer = cc.Layer.extend({
 
     getLazarStatus:function()
     {
-        return this.lazarOn;
+        return (this.lazar > 0 && this.lazarOn);
     }
 });

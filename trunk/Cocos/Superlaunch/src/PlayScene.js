@@ -184,7 +184,7 @@ var PlayScene = cc.Scene.extend({
                 if (statusLayer.getLazarStatus())
                 {
                     cc.log("==Lazars Fired");
-                    gamePlayLayer.fireLazars()
+                    gamePlayLayer.fireLazars();
                     statusLayer.updateLazar(-1);
                 }
             }
