@@ -6,7 +6,6 @@ var PlayScene = cc.Scene.extend({
     shapesToRemove:[],
     impulsesToApply:[],
     lastUpdateTime:null,
-    lastReverseTime:null,
 
     onEnter:function () {
         this._super();
@@ -118,7 +117,8 @@ var PlayScene = cc.Scene.extend({
         //chipmunk step
         this.space.step(dt);
 
-        var gamePlayLayer = this.gameLayer.getChildByTag(TagOfLayer.GamePlay);
+        var gamePlayLayer = this.gamePlayLayer;
+        var statusLayer = this.statusLayer;
 
         if (this.gamePlayLayer.getPrelaunchStatus() == true)
         {
@@ -126,6 +126,12 @@ var PlayScene = cc.Scene.extend({
         }
         else
         {
+            if (statusLayer.getLife() <= 0)
+            {
+                cc.log("==game over by life");
+                cc.director.pause();
+                this.addChild(new GameOverLayer());
+            }
             gamePlayLayer.applyImpulses(this.impulsesToApply);
             this.impulsesToApply = [];
             var backgroundLayer = this.gameLayer.getChildByTag(TagOfLayer.Background);
@@ -154,19 +160,32 @@ var PlayScene = cc.Scene.extend({
             //Check and reduce life if going backwards
             if(velocity.x > 0)
             {
-                this.lastReverseTime = null;
                 //Update Distance Label
                 if(velocity.x > 0 && eyeX > 0)
                 {
                     this.statusLayer.updateDistance(eyeX);
                 }
             }
-            else
+            var curTime = new Date().getTime();
+            if (this.lastUpdateTime == null || (curTime - this.lastUpdateTime) > 50)
             {
-                var curTime = new Date().getTime();
-                if (this.lastReverseTime == null || (curTime - this.lastReverseTime) > 50){
-                    this.statusLayer.updateLife(-1);
-                    this.lastReverseTime = curTime;
+                if (velocity.x <= 0)
+                {
+                        this.statusLayer.updateLife(-1);
+                }
+
+                if (statusLayer.getBoostStatus())
+                {
+                    cc.log("==Boost Fired");
+                    gamePlayLayer.fireBoost();
+                    statusLayer.updateBoost(-1);
+                }
+
+                if (statusLayer.getLazarStatus())
+                {
+                    cc.log("==Lazars Fired");
+                    gamePlayLayer.fireLazars()
+                    statusLayer.updateLazar(-1);
                 }
             }
         }
